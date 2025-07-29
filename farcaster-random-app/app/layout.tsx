@@ -17,11 +17,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "App Roulette - Spin & Discover Farcaster Mini Apps",
   description: "🎰 Discover amazing Farcaster mini apps with our interactive roulette! Spin to find your next favorite app or add your own to the collection.",
-  metadataBase: new URL('https://your-domain.vercel.app'),
+  metadataBase: new URL('https://base-app-roulette.vercel.app'),
   openGraph: {
     title: "App Roulette 🎰",
     description: "Spin & discover amazing Farcaster mini apps! Find your next favorite app in our curated roulette.",
-    url: 'https://your-domain.vercel.app',
+    url: 'https://base-app-roulette.vercel.app',
     siteName: 'App Roulette',
     images: [
       {
@@ -43,12 +43,12 @@ export const metadata: Metadata = {
   other: {
     'fc:miniapp': JSON.stringify({
       version: "1",
-      imageUrl: "https://your-domain.vercel.app/og-image.png",
+      imageUrl: "https://base-app-roulette.vercel.app/og-image.png",
       button: {
         title: "🎰 Spin the Roulette",
         action: {
           type: "post",
-          url: "https://your-domain.vercel.app"
+          url: "https://base-app-roulette.vercel.app"
         }
       }
     }),

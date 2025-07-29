@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
                 { label: '🔗 Visit App', action: 'link', target: randomApp.mini_app_url },
                 { label: '🏠 Home', action: 'post' }
               ],
-              postUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/frame`
+              postUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://base-app-roulette.vercel.app'}/api/frame`
             }
           ]
         })
@@ -41,11 +41,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         frames: [
           {
-            image: `${process.env.NEXT_PUBLIC_BASE_URL}/add-app-image.png`,
+            image: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://base-app-roulette.vercel.app'}/add-app-image.png`,
             buttons: [
               { label: '🏠 Back to Home', action: 'post' }
             ],
-            postUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/frame`
+            postUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://base-app-roulette.vercel.app'}/api/frame`
           }
         ]
       })
@@ -55,12 +55,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       frames: [
         {
-          image: `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.png`,
+          image: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://base-app-roulette.vercel.app'}/og-image.png`,
           buttons: [
             { label: '🎰 Spin the Roulette', action: 'post' },
             { label: '➕ Add Your App', action: 'post' }
           ],
-          postUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/frame`
+          postUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://base-app-roulette.vercel.app'}/api/frame`
         }
       ]
     })
@@ -97,19 +97,19 @@ async function getRandomApp() {
 async function generateAppImage(app: any) {
   // For now, return a static image URL
   // In production, you'd generate a dynamic image with the app details
-  return `${process.env.NEXT_PUBLIC_BASE_URL}/app-image.png`
+  return `${process.env.NEXT_PUBLIC_BASE_URL || 'https://base-app-roulette.vercel.app'}/app-image.png`
 }
 
 export async function GET() {
   return NextResponse.json({
     frames: [
       {
-        image: `${process.env.NEXT_PUBLIC_BASE_URL}/og-image.png`,
+        image: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://base-app-roulette.vercel.app'}/og-image.png`,
         buttons: [
           { label: '🎰 Spin the Roulette', action: 'post' },
           { label: '➕ Add Your App', action: 'post' }
         ],
-        postUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/frame`
+        postUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://base-app-roulette.vercel.app'}/api/frame`
       }
     ]
   })

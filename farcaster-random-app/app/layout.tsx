@@ -7,8 +7,8 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "RandomApp - Discover Farcaster Mini Apps",
-  description: "Explore amazing mini apps from the Farcaster ecosystem. Developers can add their apps instantly!",
+  title: "App Roulette - Spin & Discover Farcaster Mini Apps",
+  description: "🎰 Spin the roulette and discover amazing mini apps from the Farcaster ecosystem. Developers can add their apps instantly!",
     generator: 'v0.dev'
 }
 

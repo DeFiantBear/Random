@@ -10,6 +10,12 @@ const FARCASTER_APP_SOURCES = [
 
 async function fetchRealFarcasterApps() {
   try {
+    // Check if API key is available
+    if (!process.env.FARCASTER_API_KEY) {
+      console.log("No FARCASTER_API_KEY found, returning empty array")
+      return []
+    }
+
     // In production, you'd scrape or use APIs from:
     // - Warpcast frame directory
     // - Farcaster app registries
@@ -22,14 +28,19 @@ async function fetchRealFarcasterApps() {
       },
     })
 
+    if (!response.ok) {
+      console.error("Farcaster API response not ok:", response.status)
+      return []
+    }
+
     const data = await response.json()
 
     // Filter for lesser-known apps (low engagement/new)
-    return data.apps.filter(
+    return data.apps?.filter(
       (app) =>
         app.weeklyActiveUsers < 1000 || // Hidden gems criteria
         app.createdAt > Date.now() - 30 * 24 * 60 * 60 * 1000, // New apps
-    )
+    ) || []
   } catch (error) {
     console.error("Failed to fetch real apps:", error)
     return []

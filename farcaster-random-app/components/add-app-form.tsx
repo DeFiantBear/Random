@@ -90,16 +90,16 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
   }
 
   return (
-    <Card className="border border-purple-500/20 shadow-2xl bg-black/20 backdrop-blur-xl rounded-3xl overflow-hidden">
+    <Card className="border border-blue-500/20 shadow-2xl bg-black/20 backdrop-blur-xl rounded-3xl overflow-hidden">
       <CardContent className="p-8">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-purple-500/25">
+          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-blue-500/25">
             <Zap className="w-8 h-8 text-white" />
           </div>
-          <h3 className="text-2xl font-bold text-white mb-3 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+          <h3 className="text-2xl font-bold text-white mb-3 bg-gradient-to-r from-blue-400 via-blue-300 to-blue-500 bg-clip-text text-transparent">
             Add to the Roulette
           </h3>
-          <p className="text-purple-200 text-lg">Just paste your URL - that's it!</p>
+          <p className="text-blue-200 text-lg">Just paste your URL - that's it!</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -109,12 +109,12 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
               placeholder="https://farcaster.xyz/miniapps/[ID]/[app-name]"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              className={`h-14 text-base pr-12 rounded-2xl border-2 transition-all duration-300 bg-black/20 backdrop-blur-sm text-white placeholder:text-purple-300/50 ${
+              className={`h-14 text-base pr-12 rounded-2xl border-2 transition-all duration-300 bg-black/20 backdrop-blur-sm text-white placeholder:text-blue-300/50 ${
                 url
                   ? isValidUrl(url)
                     ? "border-green-500 focus:border-green-500 bg-green-500/10"
                     : "border-red-500 focus:border-red-500 bg-red-500/10"
-                  : "border-purple-500/20 focus:border-purple-400 focus:bg-purple-500/10"
+                  : "border-blue-500/20 focus:border-blue-400 focus:bg-blue-500/10"
               }`}
             />
             {url && (
@@ -132,7 +132,7 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
             <Button
               type="submit"
               disabled={isSubmitting || !isValidUrl(url)}
-              className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-2xl border border-purple-400/20 disabled:transform-none disabled:opacity-50"
+              className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-2xl border border-blue-400/20 disabled:transform-none disabled:opacity-50"
             >
               {isSubmitting ? (
                 <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
@@ -147,7 +147,7 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
                 type="button" 
                 onClick={testUrl} 
                 variant="outline" 
-                className="h-14 px-6 bg-black/20 border-2 border-purple-500/20 hover:border-purple-400 hover:bg-purple-500/10 text-purple-300 font-semibold transition-all duration-300 transform hover:scale-105 rounded-2xl backdrop-blur-sm"
+                className="h-14 px-6 bg-black/20 border-2 border-blue-500/20 hover:border-blue-400 hover:bg-blue-500/10 text-blue-300 font-semibold transition-all duration-300 transform hover:scale-105 rounded-2xl backdrop-blur-sm"
               >
                 <ExternalLink className="w-5 h-5" />
               </Button>
@@ -155,9 +155,9 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
           </div>
         </form>
 
-        <div className="mt-6 p-4 bg-purple-500/10 rounded-2xl border border-purple-500/20 backdrop-blur-sm">
-          <p className="text-sm text-purple-200 text-center font-medium">
-            Example: <code className="bg-black/20 px-2 py-1 rounded text-purple-300">https://farcaster.xyz/miniapps/abc123/my-awesome-app</code>
+        <div className="mt-6 p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20 backdrop-blur-sm">
+          <p className="text-sm text-blue-200 text-center font-medium">
+            Example: <code className="bg-black/20 px-2 py-1 rounded text-blue-300">https://farcaster.xyz/miniapps/abc123/my-awesome-app</code>
           </p>
         </div>
       </CardContent>

@@ -63,7 +63,7 @@ export default function RandomApp() {
 
       setCurrentApp(randomApp)
       setTotalApps(data.total)
-      setRecentlyShown((prev) => new Set([...prev, randomApp.id]))
+      setRecentlyShown((prev) => new Set([...prev, randomApp.app_id]))
 
       toast({
         title: "Found something based!",
@@ -71,7 +71,7 @@ export default function RandomApp() {
       })
 
       if (data.reset) {
-        setRecentlyShown(new Set([randomApp.id]))
+        setRecentlyShown(new Set([randomApp.app_id]))
         toast({
           title: "All apps shown!",
           description: "Starting over with a fresh selection",
@@ -100,13 +100,13 @@ export default function RandomApp() {
 
   const openMiniApp = () => {
     if (currentApp) {
-      window.open(currentApp.miniAppUrl, "_blank")
+      window.open(currentApp.mini_app_url, "_blank")
     }
   }
 
   const viewCreator = () => {
     if (currentApp) {
-      window.open(`https://warpcast.com/${currentApp.creator}`, "_blank")
+      window.open(`https://warpcast.com/${currentApp.creator || 'unknown'}`, "_blank")
     }
   }
 
@@ -163,7 +163,7 @@ export default function RandomApp() {
 
                   {/* URL Display */}
                   <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
-                    <code className="text-sm text-gray-800 break-all font-mono">{currentApp.miniAppUrl}</code>
+                    <code className="text-sm text-gray-800 break-all font-mono">{currentApp.mini_app_url}</code>
                   </div>
 
                   {/* Creator and Category */}
@@ -173,17 +173,17 @@ export default function RandomApp() {
                       className="flex items-center space-x-1 hover:text-blue-600 transition-colors"
                     >
                       <Users className="w-4 h-4" />
-                      <span>@{currentApp.creator}</span>
+                      <span>@{currentApp.creator || 'unknown'}</span>
                       <ArrowUpRight className="w-3 h-3" />
                     </button>
                     <div className="text-xs text-gray-400">
-                      Added {new Date(currentApp.addedAt).toLocaleDateString()}
+                      Added {new Date(currentApp.added_at).toLocaleDateString()}
                     </div>
                   </div>
 
                   {/* Badges */}
                   <div className="flex flex-wrap gap-2 mb-6">
-                    <Badge className="bg-blue-100 text-blue-800 border-blue-200">{currentApp.category}</Badge>
+                    <Badge className="bg-blue-100 text-blue-800 border-blue-200">{currentApp.category || 'Other'}</Badge>
                   </div>
                 </div>
 

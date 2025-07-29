@@ -1,9 +1,11 @@
 export interface FarcasterApp {
-  id: string
+  id: number
+  app_id: string
   name: string
-  description: string
-  miniAppUrl: string
-  creator: string
-  category: string
-  addedAt: string
+  description: string | null
+  mini_app_url: string
+  creator: string | null
+  category: string | null
+  added_at: string
+  updated_at: string
 }

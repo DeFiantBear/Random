@@ -1,15 +1,58 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "@/components/ui/toaster"
 
-const inter = Inter({ subsets: ["latin"] })
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+})
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+})
 
 export const metadata: Metadata = {
   title: "App Roulette - Spin & Discover Farcaster Mini Apps",
-  description: "🎰 Spin the roulette and discover amazing mini apps from the Farcaster ecosystem. Developers can add their apps instantly!",
-    generator: 'v0.dev'
+  description: "🎰 Discover amazing Farcaster mini apps with our interactive roulette! Spin to find your next favorite app or add your own to the collection.",
+  metadataBase: new URL('https://your-domain.vercel.app'),
+  openGraph: {
+    title: "App Roulette 🎰",
+    description: "Spin & discover amazing Farcaster mini apps! Find your next favorite app in our curated roulette.",
+    url: 'https://your-domain.vercel.app',
+    siteName: 'App Roulette',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'App Roulette - Farcaster Mini App Discovery',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'App Roulette 🎰',
+    description: 'Spin & discover amazing Farcaster mini apps!',
+    images: ['/og-image.png'],
+  },
+  other: {
+    'fc:miniapp': JSON.stringify({
+      version: "1",
+      imageUrl: "https://your-domain.vercel.app/og-image.png",
+      button: {
+        title: "🎰 Spin the Roulette",
+        action: {
+          type: "post",
+          url: "https://your-domain.vercel.app"
+        }
+      }
+    }),
+  },
 }
 
 export default function RootLayout({
@@ -19,7 +62,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <head>
+        <link rel="preconnect" href="https://auth.farcaster.xyz" />
+        <link rel="dns-prefetch" href="https://auth.farcaster.xyz" />
+      </head>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         {children}
         <Toaster />
       </body>

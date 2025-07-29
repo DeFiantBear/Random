@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Shuffle, RefreshCw, Plus, ExternalLink, Sparkles, Circle } from "lucide-react"
+import { Shuffle, RefreshCw, Plus, ExternalLink, Sparkles, Circle, Share2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import AddAppForm from "@/components/add-app-form"
 import type { FarcasterApp } from "@/types/app"
+import { sdk } from '@farcaster/miniapp-sdk'
 
 export default function AppRoulette() {
   const [currentApp, setCurrentApp] = useState<FarcasterApp | null>(null)
@@ -113,9 +114,46 @@ export default function AppRoulette() {
     }
   }
 
+  const shareOnFarcaster = async () => {
+    if (!currentApp) return
+
+    try {
+      const shareText = `🎰 Just discovered "${currentApp.name}" on App Roulette!\n\n${currentApp.description}\n\nCheck it out: ${currentApp.mini_app_url}\n\n#Farcaster #MiniApps #AppRoulette`
+      
+      await sdk.actions.openUrl({
+        url: `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`
+      })
+      
+      toast({
+        title: "Shared on Farcaster!",
+        description: "Your discovery has been shared with the community",
+      })
+    } catch (error) {
+      console.error("Error sharing on Farcaster:", error)
+      toast({
+        title: "Share Failed",
+        description: "Couldn't share on Farcaster. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
   useEffect(() => {
-    getStats()
-    getRandomApp()
+    const initializeApp = async () => {
+      try {
+        await getStats()
+        await getRandomApp()
+        
+        // Tell Farcaster the app is ready to display
+        await sdk.actions.ready()
+      } catch (error) {
+        console.error("Error initializing app:", error)
+        // Still call ready() even if there's an error
+        await sdk.actions.ready()
+      }
+    }
+
+    initializeApp()
   }, [])
 
   return (
@@ -243,10 +281,20 @@ export default function AppRoulette() {
                     Visit App
                   </Button>
                   <Button
+                    onClick={shareOnFarcaster}
+                    className="flex-1 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-2xl border border-green-400/20"
+                  >
+                    <Share2 className="w-5 h-5 mr-3" />
+                    Share on Farcaster
+                  </Button>
+                </div>
+
+                <div className="flex justify-center">
+                  <Button
                     onClick={getRandomApp}
                     disabled={isLoading}
                     variant="outline"
-                    className="flex-1 sm:flex-none h-14 px-8 bg-black/20 border-2 border-blue-500/20 hover:border-blue-400 hover:bg-blue-500/10 text-blue-300 font-semibold transition-all duration-300 transform hover:scale-105 rounded-2xl backdrop-blur-sm"
+                    className="bg-black/20 border-2 border-blue-500/20 hover:border-blue-400 hover:bg-blue-500/10 text-blue-300 font-semibold transition-all duration-300 transform hover:scale-105 rounded-2xl backdrop-blur-sm px-8"
                   >
                     <Shuffle className={`w-5 h-5 mr-3 ${isSpinning ? 'animate-spin' : ''}`} />
                     Spin Again

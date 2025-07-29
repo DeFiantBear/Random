@@ -1,48 +1,28 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
-import { Plus, RefreshCw, ExternalLink, Check, X, Sparkles, Circle } from "lucide-react"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Circle, Share2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { sdk } from '@farcaster/miniapp-sdk'
 
 interface AddAppFormProps {
   onAppAdded: () => void
 }
 
 export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
-  const [url, setUrl] = useState("")
+  const [name, setName] = useState("")
+  const [description, setDescription] = useState("")
+  const [miniAppUrl, setMiniAppUrl] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
 
-  const isValidUrl = (url: string) => {
-    return url.startsWith("https://farcaster.xyz/miniapps/") && url.length > 35
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (!url.trim()) {
-      toast({
-        title: "URL Required",
-        description: "Please enter your mini app URL",
-        variant: "destructive",
-      })
-      return
-    }
-
-    if (!isValidUrl(url.trim())) {
-      toast({
-        title: "Invalid URL",
-        description: "URL must start with https://farcaster.xyz/miniapps/",
-        variant: "destructive",
-      })
-      return
-    }
-
     setIsSubmitting(true)
 
     try {
@@ -52,30 +32,30 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          url: url.trim(),
+          name,
+          description,
+          mini_app_url: miniAppUrl,
         }),
       })
 
-      const data = await response.json()
-
-      if (data.success) {
+      if (response.ok) {
         toast({
-          title: "🎰 Added to Roulette!",
-          description: "Your app has been added to the roulette",
+          title: "Added to Roulette!",
+          description: "Your app has been successfully added to the collection.",
         })
-        setUrl("")
+        
+        setName("")
+        setDescription("")
+        setMiniAppUrl("")
         onAppAdded()
       } else {
-        toast({
-          title: "Failed to add app",
-          description: data.error,
-          variant: "destructive",
-        })
+        throw new Error("Failed to add app")
       }
     } catch (error) {
+      console.error("Error adding app:", error)
       toast({
         title: "Error",
-        description: "Failed to add app. Please try again.",
+        description: "Failed to add your app. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -83,83 +63,128 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
     }
   }
 
-  const testUrl = () => {
-    if (url.trim()) {
-      window.open(url.trim(), "_blank")
+  const shareOnFarcaster = async () => {
+    try {
+      const shareText = `🎰 Just added my app to App Roulette!\n\nHelp grow the Farcaster mini app ecosystem by adding your app too!\n\n#Farcaster #MiniApps #AppRoulette #BuildOnFarcaster`
+      
+      await sdk.actions.openUrl({
+        url: `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`
+      })
+      
+      toast({
+        title: "Shared on Farcaster!",
+        description: "Help spread the word about App Roulette!",
+      })
+    } catch (error) {
+      console.error("Error sharing on Farcaster:", error)
+      toast({
+        title: "Share Failed",
+        description: "Couldn't share on Farcaster. Please try again.",
+        variant: "destructive",
+      })
     }
   }
 
   return (
-    <Card className="border border-blue-500/20 shadow-2xl bg-black/20 backdrop-blur-xl rounded-3xl overflow-hidden">
-      <CardContent className="p-8">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-blue-500/25">
-            <Circle className="w-8 h-8 text-white animate-spin" />
+    <Card className="border border-blue-500/20 shadow-2xl bg-black/20 backdrop-blur-xl rounded-3xl">
+      <CardHeader className="text-center">
+        <div className="flex items-center justify-center mb-4">
+          <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 mr-3">
+            <Circle className="w-6 h-6 text-white animate-spin" />
           </div>
-          <h3 className="text-2xl font-bold text-white mb-3 bg-gradient-to-r from-blue-400 via-blue-300 to-blue-500 bg-clip-text text-transparent">
-            Add to the Roulette
-          </h3>
-          <p className="text-blue-200 text-lg">Just paste your URL - that's it!</p>
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-blue-300 to-blue-500 bg-clip-text text-transparent">
+            Add Your Mini App
+          </CardTitle>
         </div>
-
+        <p className="text-blue-200 text-lg">
+          Help grow the Farcaster mini app ecosystem!
+        </p>
+      </CardHeader>
+      <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="relative">
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-blue-200 font-medium">
+              App Name *
+            </Label>
             <Input
-              type="url"
-              placeholder="https://farcaster.xyz/miniapps/[ID]/[app-name]"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              className={`h-14 text-base pr-12 rounded-2xl border-2 transition-all duration-300 bg-black/20 backdrop-blur-sm text-white placeholder:text-blue-300/50 ${
-                url
-                  ? isValidUrl(url)
-                    ? "border-green-500 focus:border-green-500 bg-green-500/10"
-                    : "border-red-500 focus:border-red-500 bg-red-500/10"
-                  : "border-blue-500/20 focus:border-blue-400 focus:bg-blue-500/10"
-              }`}
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your app name"
+              required
+              className="bg-black/20 border-blue-500/20 text-white placeholder:text-blue-300/50 focus:border-blue-400 focus:ring-blue-400/20"
             />
-            {url && (
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                {isValidUrl(url) ? (
-                  <Check className="w-6 h-6 text-green-400 animate-in zoom-in-50 duration-200" />
-                ) : (
-                  <X className="w-6 h-6 text-red-400 animate-in zoom-in-50 duration-200" />
-                )}
-              </div>
-            )}
           </div>
 
-          <div className="flex gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-blue-200 font-medium">
+              Description *
+            </Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Describe what your app does..."
+              required
+              rows={3}
+              className="bg-black/20 border-blue-500/20 text-white placeholder:text-blue-300/50 focus:border-blue-400 focus:ring-blue-400/20 resize-none"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="url" className="text-blue-200 font-medium">
+              Mini App URL *
+            </Label>
+            <Input
+              id="url"
+              type="url"
+              value={miniAppUrl}
+              onChange={(e) => setMiniAppUrl(e.target.value)}
+              placeholder="https://your-app.vercel.app"
+              required
+              className="bg-black/20 border-blue-500/20 text-white placeholder:text-blue-300/50 focus:border-blue-400 focus:ring-blue-400/20"
+            />
+          </div>
+
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4">
+            <h4 className="text-blue-200 font-semibold mb-2">Example URLs:</h4>
+            <div className="text-sm text-blue-300 space-y-1">
+              <div>• https://my-app.vercel.app</div>
+              <div>• https://my-app.netlify.app</div>
+              <div>• https://my-app.pages.dev</div>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4">
             <Button
               type="submit"
-              disabled={isSubmitting || !isValidUrl(url)}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-2xl border border-blue-400/20 disabled:transform-none disabled:opacity-50"
+              disabled={isSubmitting}
+              className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-2xl border border-blue-400/20"
             >
               {isSubmitting ? (
-                <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
+                <>
+                  <Circle className="w-5 h-5 mr-3 animate-spin" />
+                  Adding...
+                </>
               ) : (
-                <Plus className="w-5 h-5 mr-3" />
+                <>
+                  <Circle className="w-5 h-5 mr-3" />
+                  Add to Roulette
+                </>
               )}
-              {isSubmitting ? "Adding to Roulette..." : "Add to Roulette"}
             </Button>
-
-            {url && isValidUrl(url) && (
-              <Button 
-                type="button" 
-                onClick={testUrl} 
-                variant="outline" 
-                className="h-14 px-6 bg-black/20 border-2 border-blue-500/20 hover:border-blue-400 hover:bg-blue-500/10 text-blue-300 font-semibold transition-all duration-300 transform hover:scale-105 rounded-2xl backdrop-blur-sm"
-              >
-                <ExternalLink className="w-5 h-5" />
-              </Button>
-            )}
+            
+            <Button
+              type="button"
+              onClick={shareOnFarcaster}
+              className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white h-14 px-6 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-2xl border border-green-400/20"
+            >
+              <Share2 className="w-5 h-5 mr-3" />
+              Share
+            </Button>
           </div>
         </form>
-
-        <div className="mt-6 p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20 backdrop-blur-sm">
-          <p className="text-sm text-blue-200 text-center font-medium">
-            Example: <code className="bg-black/20 px-2 py-1 rounded text-blue-300">https://farcaster.xyz/miniapps/abc123/my-awesome-app</code>
-          </p>
-        </div>
       </CardContent>
     </Card>
   )

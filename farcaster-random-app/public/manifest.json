@@ -1,0 +1,39 @@
+{
+  "name": "App Roulette",
+  "description": "Discover amazing Farcaster mini apps with our interactive roulette! Spin to find your next favorite app or add your own to the collection.",
+  "image": "https://your-domain.vercel.app/og-image.png",
+  "external_url": "https://your-domain.vercel.app",
+  "app_url": "https://your-domain.vercel.app",
+  "category": "entertainment",
+  "tags": ["farcaster", "mini-apps", "discovery", "roulette", "apps"],
+  "author": {
+    "name": "Second City Studio",
+    "url": "https://linktr.ee/2ndCityStudio"
+  },
+  "version": "1.0.0",
+  "features": [
+    "Random app discovery",
+    "App submission",
+    "Interactive roulette",
+    "Share on Farcaster",
+    "Farcaster Mini App integration"
+  ],
+  "permissions": [
+    "read",
+    "write"
+  ],
+  "sdk_version": "0.1.8",
+  "miniapp": {
+    "version": "1",
+    "name": "App Roulette",
+    "description": "Spin & discover amazing Farcaster mini apps!",
+    "image": "https://your-domain.vercel.app/og-image.png",
+    "button": {
+      "title": "🎰 Spin the Roulette",
+      "action": {
+        "type": "post",
+        "url": "https://your-domain.vercel.app"
+      }
+    }
+  }
+} 

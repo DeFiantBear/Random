@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Shuffle, RefreshCw, Plus, ExternalLink, Sparkles } from "lucide-react"
+import { Shuffle, RefreshCw, Plus, ExternalLink, Sparkles, Zap, Globe } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import AddAppForm from "@/components/add-app-form"
 import type { FarcasterApp } from "@/types/app"
@@ -16,6 +16,7 @@ export default function AppRoulette() {
   const [error, setError] = useState<string | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
   const [isSpinning, setIsSpinning] = useState(false)
+  const [showRouletteAnimation, setShowRouletteAnimation] = useState(false)
   const { toast } = useToast()
 
   // Fetch database stats
@@ -33,6 +34,7 @@ export default function AppRoulette() {
   const getRandomApp = async () => {
     setIsLoading(true)
     setIsSpinning(true)
+    setShowRouletteAnimation(true)
     setError(null)
 
     try {
@@ -50,6 +52,7 @@ export default function AppRoulette() {
 
       if (data.apps.length === 0) {
         setError("No apps available")
+        setShowRouletteAnimation(false)
         toast({
           title: "Need More Apps!",
           description: "Add your mini app to get started.",
@@ -62,12 +65,13 @@ export default function AppRoulette() {
       const randomIndex = Math.floor(Math.random() * data.apps.length)
       const randomApp = data.apps[randomIndex]
 
-      // Add a small delay for the spinning animation
+      // Add a longer delay for the roulette animation
       setTimeout(() => {
         setCurrentApp(randomApp)
         setTotalApps(data.total)
         setRecentlyShown((prev) => new Set([...prev, randomApp.app_id]))
         setIsSpinning(false)
+        setShowRouletteAnimation(false)
 
         toast({
           title: "🎰 Jackpot!",
@@ -81,11 +85,12 @@ export default function AppRoulette() {
             description: "Starting over with a fresh selection",
           })
         }
-      }, 800)
+      }, 2000) // Longer animation time
 
     } catch (error) {
       setError("Network error")
       setIsSpinning(false)
+      setShowRouletteAnimation(false)
       toast({
         title: "Connection Error",
         description: "Couldn't connect to the service.",
@@ -117,29 +122,46 @@ export default function AppRoulette() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+
+      {/* Grid Pattern Overlay */}
+      <div className="absolute inset-0 opacity-30" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+      }}></div>
+
       {/* Navigation */}
-      <nav className="border-b border-blue-100 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+      <nav className="border-b border-purple-500/20 bg-black/20 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
               <div className="relative">
-                <Sparkles className="w-8 h-8 text-blue-600 animate-pulse" />
+                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/25">
+                  <Zap className="w-6 h-6 text-white" />
+                </div>
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                App Roulette
-              </span>
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                  App Roulette
+                </span>
+                <span className="text-xs text-purple-300/70">by Second City Studio</span>
+              </div>
             </div>
 
             <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-full">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium text-blue-700">{totalApps} apps</span>
+              <div className="flex items-center space-x-2 bg-purple-500/10 border border-purple-500/20 px-4 py-2 rounded-full backdrop-blur-sm">
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-purple-300">{totalApps} apps</span>
               </div>
               <Button
                 onClick={() => setShowAddForm(!showAddForm)}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-purple-400/20"
                 size="sm"
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -150,8 +172,21 @@ export default function AppRoulette() {
         </div>
       </nav>
 
+      {/* Second City Studio Link */}
+      <div className="absolute top-20 right-4 z-40">
+        <a 
+          href="https://secondcitystudio.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="group flex items-center space-x-2 bg-black/20 backdrop-blur-sm border border-purple-500/20 px-4 py-2 rounded-full text-purple-300 hover:text-white transition-all duration-300 hover:bg-purple-500/10"
+        >
+          <Globe className="w-4 h-4 group-hover:animate-spin" />
+          <span className="text-sm font-medium">Second City Studio</span>
+        </a>
+      </div>
+
       {/* Main Content */}
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 relative z-10">
         {/* Add App Form */}
         {showAddForm && (
           <div className="mb-8 animate-in slide-in-from-top-4 duration-500">
@@ -160,30 +195,60 @@ export default function AppRoulette() {
         )}
 
         {/* Roulette Card */}
-        <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden">
+        <Card className="border border-purple-500/20 shadow-2xl bg-black/20 backdrop-blur-xl rounded-3xl overflow-hidden">
           <CardContent className="p-8">
-            {currentApp && !isLoading ? (
+            {showRouletteAnimation ? (
+              <div className="py-16 text-center">
+                <div className="relative w-32 h-32 mx-auto mb-8">
+                  {/* Roulette Wheel */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 rounded-full animate-spin shadow-2xl shadow-purple-500/25"></div>
+                  <div className="absolute inset-2 bg-black rounded-full flex items-center justify-center">
+                    <Sparkles className="w-8 h-8 text-white animate-pulse" />
+                  </div>
+                  {/* Spinning Numbers */}
+                  <div className="absolute inset-0 rounded-full border-4 border-transparent animate-spin">
+                    {[...Array(8)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute w-4 h-4 bg-purple-400 rounded-full"
+                        style={{
+                          top: '50%',
+                          left: '50%',
+                          transform: `translate(-50%, -50%) rotate(${i * 45}deg) translateY(-60px)`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-4 animate-pulse">
+                  🎰 Spinning the Roulette...
+                </h3>
+                <p className="text-purple-300 text-lg">
+                  Finding your next favorite app...
+                </p>
+              </div>
+            ) : currentApp && !isLoading ? (
               <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
                 {/* App Info */}
                 <div className="text-center">
                   <div className="mb-6">
-                    <h3 className="text-3xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                    <h3 className="text-3xl font-bold text-white mb-3 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
                       {currentApp.name}
                     </h3>
-                    <p className="text-gray-600 text-lg leading-relaxed max-w-md mx-auto">
+                    <p className="text-purple-200 text-lg leading-relaxed max-w-md mx-auto">
                       {currentApp.description}
                     </p>
                   </div>
 
                   {/* URL Display */}
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 mb-6 transform hover:scale-105 transition-transform duration-300">
-                    <code className="text-sm text-blue-800 break-all font-mono">
+                  <div className="bg-purple-500/10 border border-purple-500/20 rounded-2xl p-4 mb-6 transform hover:scale-105 transition-transform duration-300 backdrop-blur-sm">
+                    <code className="text-sm text-purple-300 break-all font-mono">
                       {currentApp.mini_app_url}
                     </code>
                   </div>
 
                   {/* Date Added */}
-                  <div className="text-xs text-gray-400 mb-6">
+                  <div className="text-xs text-purple-400/70 mb-6">
                     Added {new Date(currentApp.added_at).toLocaleDateString()}
                   </div>
                 </div>
@@ -192,16 +257,16 @@ export default function AppRoulette() {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button
                     onClick={openMiniApp}
-                    className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-xl"
+                    className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-2xl border border-purple-400/20"
                   >
                     <ExternalLink className="w-5 h-5 mr-3" />
-                    Spin & Open
+                    Visit App
                   </Button>
                   <Button
                     onClick={getRandomApp}
                     disabled={isLoading}
                     variant="outline"
-                    className="flex-1 sm:flex-none h-14 px-8 bg-white border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50 text-blue-700 font-semibold transition-all duration-300 transform hover:scale-105 rounded-xl"
+                    className="flex-1 sm:flex-none h-14 px-8 bg-black/20 border-2 border-purple-500/20 hover:border-purple-400 hover:bg-purple-500/10 text-purple-300 font-semibold transition-all duration-300 transform hover:scale-105 rounded-2xl backdrop-blur-sm"
                   >
                     <Shuffle className={`w-5 h-5 mr-3 ${isSpinning ? 'animate-spin' : ''}`} />
                     Spin Again
@@ -210,17 +275,17 @@ export default function AppRoulette() {
               </div>
             ) : error ? (
               <div className="py-16 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Sparkles className="w-8 h-8 text-red-500" />
+                <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-500/20">
+                  <Sparkles className="w-8 h-8 text-red-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">Need More Apps!</h3>
-                <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                <h3 className="text-2xl font-bold text-white mb-3">Need More Apps!</h3>
+                <p className="text-purple-300 mb-8 max-w-md mx-auto">
                   We only have {totalApps} mini apps. Add your app to help grow the roulette!
                 </p>
                 {totalApps > 0 && (
                   <Button
                     onClick={getRandomApp}
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white h-14 px-8 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-xl"
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white h-14 px-8 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-2xl"
                   >
                     <Shuffle className="w-5 h-5 mr-3" />
                     Spin the Roulette
@@ -229,19 +294,19 @@ export default function AppRoulette() {
               </div>
             ) : (
               <div className="py-16 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-                <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-                  <Sparkles className="w-10 h-10 text-white" />
+                <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-purple-500/25">
+                  <Sparkles className="w-12 h-12 text-white" />
                 </div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                <h3 className="text-3xl font-bold text-white mb-4">
                   {isLoading ? "🎰 Spinning the roulette..." : "Ready to spin?"}
                 </h3>
-                <p className="text-gray-600 mb-8 text-lg">
+                <p className="text-purple-300 mb-8 text-lg">
                   {isLoading ? "Finding your next favorite app..." : "Discover amazing Farcaster mini apps"}
                 </p>
                 {!isLoading && (
                   <Button
                     onClick={getRandomApp}
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white h-16 px-10 text-xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 rounded-2xl"
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white h-16 px-10 text-xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110 rounded-2xl border border-purple-400/20"
                   >
                     <Shuffle className="w-6 h-6 mr-3" />
                     Spin the Roulette
@@ -249,8 +314,8 @@ export default function AppRoulette() {
                 )}
                 {isLoading && (
                   <div className="flex items-center justify-center space-x-2">
-                    <RefreshCw className="w-8 h-8 text-blue-600 animate-spin" />
-                    <span className="text-blue-600 font-medium">Spinning...</span>
+                    <RefreshCw className="w-8 h-8 text-purple-400 animate-spin" />
+                    <span className="text-purple-400 font-medium">Spinning...</span>
                   </div>
                 )}
               </div>

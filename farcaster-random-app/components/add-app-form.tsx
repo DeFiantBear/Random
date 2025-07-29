@@ -6,7 +6,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
-import { Plus, RefreshCw, ExternalLink, Check, X, Sparkles } from "lucide-react"
+import { Plus, RefreshCw, ExternalLink, Check, X, Sparkles, Zap } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface AddAppFormProps {
@@ -90,16 +90,16 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
   }
 
   return (
-    <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden">
+    <Card className="border border-purple-500/20 shadow-2xl bg-black/20 backdrop-blur-xl rounded-3xl overflow-hidden">
       <CardContent className="p-8">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <Sparkles className="w-8 h-8 text-white" />
+          <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-purple-500/25">
+            <Zap className="w-8 h-8 text-white" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h3 className="text-2xl font-bold text-white mb-3 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
             Add to the Roulette
           </h3>
-          <p className="text-gray-600 text-lg">Just paste your URL - that's it!</p>
+          <p className="text-purple-200 text-lg">Just paste your URL - that's it!</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -109,20 +109,20 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
               placeholder="https://farcaster.xyz/miniapps/[ID]/[app-name]"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              className={`h-14 text-base pr-12 rounded-xl border-2 transition-all duration-300 ${
+              className={`h-14 text-base pr-12 rounded-2xl border-2 transition-all duration-300 bg-black/20 backdrop-blur-sm text-white placeholder:text-purple-300/50 ${
                 url
                   ? isValidUrl(url)
-                    ? "border-green-500 focus:border-green-500 bg-green-50"
-                    : "border-red-500 focus:border-red-500 bg-red-50"
-                  : "border-blue-200 focus:border-blue-500 focus:bg-blue-50"
+                    ? "border-green-500 focus:border-green-500 bg-green-500/10"
+                    : "border-red-500 focus:border-red-500 bg-red-500/10"
+                  : "border-purple-500/20 focus:border-purple-400 focus:bg-purple-500/10"
               }`}
             />
             {url && (
               <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
                 {isValidUrl(url) ? (
-                  <Check className="w-6 h-6 text-green-500 animate-in zoom-in-50 duration-200" />
+                  <Check className="w-6 h-6 text-green-400 animate-in zoom-in-50 duration-200" />
                 ) : (
-                  <X className="w-6 h-6 text-red-500 animate-in zoom-in-50 duration-200" />
+                  <X className="w-6 h-6 text-red-400 animate-in zoom-in-50 duration-200" />
                 )}
               </div>
             )}
@@ -132,7 +132,7 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
             <Button
               type="submit"
               disabled={isSubmitting || !isValidUrl(url)}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-xl disabled:transform-none disabled:opacity-50"
+              className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-2xl border border-purple-400/20 disabled:transform-none disabled:opacity-50"
             >
               {isSubmitting ? (
                 <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
@@ -147,7 +147,7 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
                 type="button" 
                 onClick={testUrl} 
                 variant="outline" 
-                className="h-14 px-6 bg-white border-2 border-blue-200 hover:border-blue-300 hover:bg-blue-50 text-blue-700 font-semibold transition-all duration-300 transform hover:scale-105 rounded-xl"
+                className="h-14 px-6 bg-black/20 border-2 border-purple-500/20 hover:border-purple-400 hover:bg-purple-500/10 text-purple-300 font-semibold transition-all duration-300 transform hover:scale-105 rounded-2xl backdrop-blur-sm"
               >
                 <ExternalLink className="w-5 h-5" />
               </Button>
@@ -155,9 +155,9 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
           </div>
         </form>
 
-        <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-          <p className="text-sm text-blue-800 text-center font-medium">
-            Example: <code className="bg-white px-2 py-1 rounded text-blue-600">https://farcaster.xyz/miniapps/abc123/my-awesome-app</code>
+        <div className="mt-6 p-4 bg-purple-500/10 rounded-2xl border border-purple-500/20 backdrop-blur-sm">
+          <p className="text-sm text-purple-200 text-center font-medium">
+            Example: <code className="bg-black/20 px-2 py-1 rounded text-purple-300">https://farcaster.xyz/miniapps/abc123/my-awesome-app</code>
           </p>
         </div>
       </CardContent>

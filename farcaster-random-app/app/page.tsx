@@ -23,9 +23,10 @@ export default function AppRoulette() {
     try {
       const response = await fetch("/api/apps", { method: "GET" })
       const data = await response.json()
-      setTotalApps(data.total)
+      setTotalApps(data.total || 0)
     } catch (error) {
       console.error("Failed to get stats:", error)
+      setTotalApps(0)
     }
   }
 
@@ -64,7 +65,7 @@ export default function AppRoulette() {
 
       setTimeout(() => {
         setCurrentApp(randomApp)
-        setTotalApps(data.total)
+        setTotalApps(data.total || totalApps)
         setRecentlyShown((prev) => new Set([...prev, randomApp.app_id]))
         setIsSpinning(false)
         setShowRouletteAnimation(false)
@@ -97,8 +98,8 @@ export default function AppRoulette() {
     }
   }
 
-  const handleAppAdded = () => {
-    getStats()
+  const handleAppAdded = async () => {
+    await getStats()
     setShowAddForm(false)
     toast({
       title: "Success!",
@@ -113,8 +114,8 @@ export default function AppRoulette() {
   }
 
   useEffect(() => {
-    getRandomApp()
     getStats()
+    getRandomApp()
   }, [])
 
   return (

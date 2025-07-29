@@ -6,7 +6,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
-import { Plus, RefreshCw, ExternalLink, Check, X, Sparkles, Zap } from "lucide-react"
+import { Plus, RefreshCw, ExternalLink, Check, X, Sparkles, Circle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface AddAppFormProps {
@@ -94,7 +94,7 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
       <CardContent className="p-8">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-2xl shadow-blue-500/25">
-            <Zap className="w-8 h-8 text-white" />
+            <Circle className="w-8 h-8 text-white animate-spin" />
           </div>
           <h3 className="text-2xl font-bold text-white mb-3 bg-gradient-to-r from-blue-400 via-blue-300 to-blue-500 bg-clip-text text-transparent">
             Add to the Roulette

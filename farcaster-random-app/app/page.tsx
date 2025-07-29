@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Shuffle, RefreshCw, Plus, ExternalLink, Sparkles, Zap } from "lucide-react"
+import { Shuffle, RefreshCw, Plus, ExternalLink, Sparkles, Circle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import AddAppForm from "@/components/add-app-form"
 import type { FarcasterApp } from "@/types/app"
@@ -19,7 +19,6 @@ export default function AppRoulette() {
   const [showRouletteAnimation, setShowRouletteAnimation] = useState(false)
   const { toast } = useToast()
 
-  // Fetch database stats
   const getStats = async () => {
     try {
       const response = await fetch("/api/apps", { method: "GET" })
@@ -30,7 +29,6 @@ export default function AppRoulette() {
     }
   }
 
-  // Fetch a random mini app
   const getRandomApp = async () => {
     setIsLoading(true)
     setIsSpinning(true)
@@ -61,11 +59,9 @@ export default function AppRoulette() {
         return
       }
 
-      // Get a random app from the available apps
       const randomIndex = Math.floor(Math.random() * data.apps.length)
       const randomApp = data.apps[randomIndex]
 
-      // Add a longer delay for the roulette animation
       setTimeout(() => {
         setCurrentApp(randomApp)
         setTotalApps(data.total)
@@ -85,7 +81,7 @@ export default function AppRoulette() {
             description: "Starting over with a fresh selection",
           })
         }
-      }, 2000) // Longer animation time
+      }, 2000)
 
     } catch (error) {
       setError("Network error")
@@ -123,26 +119,23 @@ export default function AppRoulette() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden">
-      {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-600 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
         <div className="absolute top-40 left-40 w-80 h-80 bg-blue-700 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
 
-      {/* Grid Pattern Overlay */}
       <div className="absolute inset-0 opacity-30" style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
       }}></div>
 
-      {/* Navigation */}
       <nav className="border-b border-blue-500/20 bg-black/20 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
               <div className="relative">
                 <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                  <Zap className="w-6 h-6 text-white" />
+                  <Circle className="w-6 h-6 text-white animate-spin" />
                 </div>
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
               </div>
@@ -179,27 +172,22 @@ export default function AppRoulette() {
         </div>
       </nav>
 
-      {/* Main Content */}
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 relative z-10">
-        {/* Add App Form */}
         {showAddForm && (
           <div className="mb-8 animate-in slide-in-from-top-4 duration-500">
             <AddAppForm onAppAdded={handleAppAdded} />
           </div>
         )}
 
-        {/* Roulette Card */}
         <Card className="border border-blue-500/20 shadow-2xl bg-black/20 backdrop-blur-xl rounded-3xl overflow-hidden">
           <CardContent className="p-8">
             {showRouletteAnimation ? (
               <div className="py-16 text-center">
                 <div className="relative w-32 h-32 mx-auto mb-8">
-                  {/* Roulette Wheel */}
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700 rounded-full animate-spin shadow-2xl shadow-blue-500/25"></div>
                   <div className="absolute inset-2 bg-black rounded-full flex items-center justify-center">
                     <Sparkles className="w-8 h-8 text-white animate-pulse" />
                   </div>
-                  {/* Spinning Numbers */}
                   <div className="absolute inset-0 rounded-full border-4 border-transparent animate-spin">
                     {[...Array(8)].map((_, i) => (
                       <div
@@ -223,7 +211,6 @@ export default function AppRoulette() {
               </div>
             ) : currentApp && !isLoading ? (
               <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
-                {/* App Info */}
                 <div className="text-center">
                   <div className="mb-6">
                     <h3 className="text-3xl font-bold text-white mb-3 bg-gradient-to-r from-blue-400 via-blue-300 to-blue-500 bg-clip-text text-transparent">
@@ -234,20 +221,17 @@ export default function AppRoulette() {
                     </p>
                   </div>
 
-                  {/* URL Display */}
                   <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4 mb-6 transform hover:scale-105 transition-transform duration-300 backdrop-blur-sm">
                     <code className="text-sm text-blue-300 break-all font-mono">
                       {currentApp.mini_app_url}
                     </code>
                   </div>
 
-                  {/* Date Added */}
                   <div className="text-xs text-blue-400/70 mb-6">
                     Added {new Date(currentApp.added_at).toLocaleDateString()}
                   </div>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button
                     onClick={openMiniApp}

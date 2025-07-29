@@ -132,16 +132,16 @@ export default function AppRoulette() {
 
       <nav className="border-b border-blue-500/20 bg-black/20 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
+          <div className="flex justify-between items-center py-3 sm:py-4 lg:h-16">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
-                  <Circle className="w-6 h-6 text-white animate-spin" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                  <Circle className="w-4 h-4 sm:w-6 sm:h-6 text-white animate-spin" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
+                <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full animate-ping"></div>
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-blue-300 to-blue-500 bg-clip-text text-transparent">
+                <span className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-400 via-blue-300 to-blue-500 bg-clip-text text-transparent">
                   App Roulette
                 </span>
                 <a 
@@ -155,18 +155,19 @@ export default function AppRoulette() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2 bg-blue-500/10 border border-blue-500/20 px-4 py-2 rounded-full backdrop-blur-sm">
-                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium text-blue-300">{totalApps} apps</span>
+            <div className="flex items-center space-x-3 sm:space-x-6">
+              <div className="flex items-center space-x-1 sm:space-x-2 bg-blue-500/10 border border-blue-500/20 px-2 sm:px-4 py-1 sm:py-2 rounded-full backdrop-blur-sm">
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                <span className="text-xs sm:text-sm font-medium text-blue-300">{totalApps} apps</span>
               </div>
               <Button
                 onClick={() => setShowAddForm(!showAddForm)}
-                className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-blue-400/20"
+                className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-blue-400/20 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2 h-8 sm:h-auto"
                 size="sm"
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Add App
+                <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Add App</span>
+                <span className="sm:hidden">Add</span>
               </Button>
             </div>
           </div>

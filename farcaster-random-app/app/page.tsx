@@ -21,11 +21,9 @@ export default function RandomApp() {
   // Fetch database stats
   const getStats = async () => {
     try {
-      const response = await fetch("/api/random-app", { method: "GET" })
+      const response = await fetch("/api/apps", { method: "GET" })
       const data = await response.json()
-      if (data.success) {
-        setTotalApps(data.totalApps)
-      }
+      setTotalApps(data.total)
     } catch (error) {
       console.error("Failed to get stats:", error)
     }
@@ -37,7 +35,7 @@ export default function RandomApp() {
     setError(null)
 
     try {
-      const response = await fetch("/api/random-app", {
+      const response = await fetch("/api/apps", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,8 +47,8 @@ export default function RandomApp() {
 
       const data = await response.json()
 
-      if (!data.success) {
-        setError(data.error)
+      if (data.apps.length === 0) {
+        setError("No apps available")
         toast({
           title: "Need More Apps!",
           description: "Add your mini app to get started.",
@@ -59,19 +57,21 @@ export default function RandomApp() {
         return
       }
 
-      if (data.app) {
-        setCurrentApp(data.app)
-        setTotalApps(data.totalApps)
-        setRecentlyShown((prev) => new Set([...prev, data.app.id]))
+      // Get a random app from the available apps
+      const randomIndex = Math.floor(Math.random() * data.apps.length)
+      const randomApp = data.apps[randomIndex]
 
-        toast({
-          title: "Found something based!",
-          description: `Discovered ${data.app.name}`,
-        })
-      }
+      setCurrentApp(randomApp)
+      setTotalApps(data.total)
+      setRecentlyShown((prev) => new Set([...prev, randomApp.id]))
+
+      toast({
+        title: "Found something based!",
+        description: `Discovered ${randomApp.name}`,
+      })
 
       if (data.reset) {
-        setRecentlyShown(new Set([data.app.id]))
+        setRecentlyShown(new Set([randomApp.id]))
         toast({
           title: "All apps shown!",
           description: "Starting over with a fresh selection",

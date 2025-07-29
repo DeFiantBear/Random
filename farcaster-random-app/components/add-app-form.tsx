@@ -46,7 +46,7 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch("/api/random-app", {
+      const response = await fetch("/api/apps", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

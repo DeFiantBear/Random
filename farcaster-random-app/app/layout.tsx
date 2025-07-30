@@ -53,7 +53,6 @@ export default function RootLayout({
     version: FARCASTER_CONFIG.EMBED_CONFIG.version,
     imageUrl: FARCASTER_CONFIG.EMBED_IMAGE_URL,
     aspectRatio: FARCASTER_CONFIG.EMBED_CONFIG.aspectRatio,
-    action: FARCASTER_CONFIG.EMBED_CONFIG.action,
     button: FARCASTER_CONFIG.EMBED_CONFIG.button
   });
 

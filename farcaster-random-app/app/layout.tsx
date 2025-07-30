@@ -19,6 +19,12 @@ export const metadata: Metadata = {
   title: "App Roulette - Spin & Discover Farcaster Mini Apps",
   description: "🎰 Discover amazing Farcaster mini apps with our interactive roulette! Spin to find your next favorite app or add your own to the collection.",
   metadataBase: new URL(FARCASTER_CONFIG.BASE_URL),
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', type: 'image/x-icon' }
+    ],
+  },
   openGraph: {
     title: "App Roulette 🎰",
     description: "Spin & discover amazing Farcaster mini apps!",

@@ -70,7 +70,7 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
 
   const shareOnFarcaster = async () => {
     try {
-      const shareText = `🎰 Just added my app to App Roulette!\n\nHelp grow the Farcaster mini app ecosystem by adding your app too!\n\n#Farcaster #MiniApps #AppRoulette #BuildOnFarcaster`
+      const shareText = `🎰 Just added my app to App Roulette!\n\nHelp grow the Farcaster mini app ecosystem by adding your app too!\n\n🎰 Discover apps: https://base-app-roulette.vercel.app\n\n#Farcaster #MiniApps #AppRoulette #Base #BuildOnFarcaster`
       
       await sdk.actions.openUrl({
         url: `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`
@@ -91,24 +91,24 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
   }
 
   return (
-    <Card className="border border-blue-500/20 shadow-2xl bg-black/20 backdrop-blur-xl rounded-3xl">
+    <Card className="border border-border/30 shadow-2xl bg-card/80 backdrop-blur-xl rounded-3xl hover:shadow-3xl transition-all duration-500 animate-float">
       <CardHeader className="text-center">
-        <div className="flex items-center justify-center mb-4">
-          <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 mr-3">
-            <Circle className="w-6 h-6 text-white animate-spin" />
+        <div className="flex items-center justify-center mb-6">
+          <div className="w-12 h-12 premium-gradient rounded-xl flex items-center justify-center shadow-xl animate-glow mr-4">
+            <Circle className="w-6 h-6 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-blue-300 to-blue-500 bg-clip-text text-transparent">
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary/80 bg-clip-text text-transparent">
             Add Your Mini App
           </CardTitle>
         </div>
-        <p className="text-blue-200 text-lg">
+        <p className="text-muted-foreground text-xl font-medium">
           Help grow the Farcaster mini app ecosystem!
         </p>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="url" className="text-blue-200 font-medium">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="space-y-3">
+            <Label htmlFor="url" className="text-foreground font-semibold text-lg">
               Farcaster Mini App URL *
             </Label>
             <Input
@@ -118,32 +118,38 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
               onChange={(e) => setMiniAppUrl(e.target.value)}
               placeholder="https://farcaster.xyz/miniapps/your-app"
               required
-              className="bg-black/20 border-blue-500/20 text-white placeholder:text-blue-300/50 focus:border-blue-400 focus:ring-blue-400/20"
+              className="h-12 text-lg font-mono border-border/50 focus:border-primary focus:ring-primary/20 rounded-xl bg-background/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/50"
             />
           </div>
 
-          <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4">
-            <h4 className="text-blue-200 font-semibold mb-2">URL Requirements:</h4>
-            <div className="text-sm text-blue-300 space-y-1">
-              <div>• Must start with: https://farcaster.xyz/miniapps/</div>
-              <div>• Example: https://farcaster.xyz/miniapps/your-app-name</div>
+          <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6 hover:bg-primary/10 transition-all duration-300 shadow-lg backdrop-blur-sm">
+            <h4 className="text-primary font-semibold mb-3 text-lg">URL Requirements:</h4>
+            <div className="text-sm text-muted-foreground space-y-2 font-medium">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                Must start with: https://farcaster.xyz/miniapps/
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                Example: https://farcaster.xyz/miniapps/your-app-name
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-6">
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-2xl border border-blue-400/20"
+              className="flex-1 premium-gradient hover:shadow-2xl text-white h-16 text-xl font-bold shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl border border-white/20 group"
             >
               {isSubmitting ? (
                 <>
-                  <Circle className="w-5 h-5 mr-3 animate-spin" />
+                  <Circle className="w-6 h-6 mr-3 animate-spin" />
                   Adding...
                 </>
               ) : (
                 <>
-                  <Circle className="w-5 h-5 mr-3" />
+                  <Circle className="w-6 h-6 mr-3 group-hover:rotate-180 transition-transform duration-500" />
                   Add to Roulette
                 </>
               )}
@@ -152,9 +158,10 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
             <Button
               type="button"
               onClick={shareOnFarcaster}
-              className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white h-14 px-6 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-2xl border border-green-400/20"
+              variant="outline"
+              className="border-primary/30 hover:bg-primary/10 text-foreground h-16 px-8 text-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl backdrop-blur-sm bg-background/50 group"
             >
-              <Share2 className="w-5 h-5 mr-3" />
+              <Share2 className="w-6 h-6 mr-3 group-hover:rotate-12 transition-transform duration-300" />
               Share
             </Button>
           </div>

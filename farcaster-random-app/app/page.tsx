@@ -21,44 +21,7 @@ export default function AppRoulette() {
   const [showRouletteAnimation, setShowRouletteAnimation] = useState(false)
   const { toast } = useToast()
 
-  // Add Farcaster frame meta tags
-  useEffect(() => {
-    // Add meta tags for Farcaster frame
-    const metaTags = [
-      { property: 'fc:frame', content: 'vNext' },
-      { property: 'fc:frame:image', content: 'https://base-app-roulette.vercel.app/api/hero-image' },
-      { property: 'fc:frame:button:1', content: '🎰 Spin the Roulette' },
-      { property: 'fc:frame:post_url', content: 'https://base-app-roulette.vercel.app/api/frame' },
-      { property: 'og:title', content: 'App Roulette 🎰' },
-      { property: 'og:description', content: 'Spin & discover amazing Farcaster mini apps!' },
-      { property: 'og:image', content: 'https://base-app-roulette.vercel.app/api/hero-image' },
-      { property: 'og:url', content: 'https://base-app-roulette.vercel.app' },
-      { property: 'twitter:card', content: 'summary_large_image' },
-      { property: 'twitter:title', content: 'App Roulette 🎰' },
-      { property: 'twitter:description', content: 'Spin & discover amazing Farcaster mini apps!' },
-      { property: 'twitter:image', content: 'https://base-app-roulette.vercel.app/api/hero-image' },
-    ]
 
-    metaTags.forEach(tag => {
-      let meta = document.querySelector(`meta[property="${tag.property}"]`)
-      if (!meta) {
-        meta = document.createElement('meta')
-        meta.setAttribute('property', tag.property)
-        document.head.appendChild(meta)
-      }
-      meta.setAttribute('content', tag.content)
-    })
-
-    return () => {
-      // Cleanup meta tags on unmount
-      metaTags.forEach(tag => {
-        const meta = document.querySelector(`meta[property="${tag.property}"]`)
-        if (meta) {
-          meta.remove()
-        }
-      })
-    }
-  }, [])
 
   const getStats = async () => {
     try {

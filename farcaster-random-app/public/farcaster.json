@@ -1,7 +1,7 @@
 {
   "name": "App Roulette",
   "description": "Discover amazing Farcaster mini apps with our interactive roulette! Spin to find your next favorite app or add your own to the collection.",
-  "image": "https://via.placeholder.com/1200x800/1e3a8a/ffffff?text=App+Roulette",
+  "image": "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center",
   "external_url": "https://base-app-roulette.vercel.app",
   "app_url": "https://base-app-roulette.vercel.app",
   "category": "entertainment",

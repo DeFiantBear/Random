@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     siteName: 'App Roulette',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center',
+        url: 'https://picsum.photos/1200/800',
         width: 1200,
         height: 800,
         alt: 'App Roulette - Farcaster Mini App Discovery',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'App Roulette 🎰',
     description: 'Spin & discover amazing Farcaster mini apps!',
-    images: ['https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center'],
+    images: ['https://picsum.photos/1200/800'],
   },
 }
 
@@ -53,7 +53,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://auth.farcaster.xyz" />
         <link rel="dns-prefetch" href="https://auth.farcaster.xyz" />
         <link rel="manifest" href="/farcaster.json" />
-        <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center","button":{"title":"🎰 Spin the Roulette","action":{"type":"post","url":"https://base-app-roulette.vercel.app/frame"}}}' />
+        <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://picsum.photos/1200/800","button":{"title":"🎰 Spin the Roulette","action":{"type":"post","url":"https://base-app-roulette.vercel.app/frame"}}}' />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

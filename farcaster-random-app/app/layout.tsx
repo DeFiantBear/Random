@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     siteName: 'App Roulette',
     images: [
       {
-        url: 'https://picsum.photos/1200/800',
+        url: 'https://base-app-roulette.vercel.app/placeholder.jpg',
         width: 1200,
         height: 800,
         alt: 'App Roulette - Farcaster Mini App Discovery',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'App Roulette 🎰',
     description: 'Spin & discover amazing Farcaster mini apps!',
-    images: ['https://picsum.photos/1200/800'],
+    images: ['https://base-app-roulette.vercel.app/placeholder.jpg'],
   },
 }
 
@@ -51,7 +51,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="preconnect" href="https://auth.farcaster.xyz" />
-        <meta property="fc:miniapp" content='{"version":"1","imageUrl":"https://picsum.photos/1200/800","button":{"title":"🎰 Spin the Roulette","action":{"type":"post","url":"https://base-app-roulette.vercel.app/frame"}}}' />
+        <meta property="fc:miniapp" content='{"version":"1","imageUrl":"https://base-app-roulette.vercel.app/placeholder.jpg","button":{"title":"🎰 Spin the Roulette","action":{"type":"post","url":"https://base-app-roulette.vercel.app/frame"}}}' />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

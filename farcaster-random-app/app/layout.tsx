@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     description: 'Spin & discover amazing Farcaster mini apps!',
     images: ['https://base-app-roulette.vercel.app/api/og-image'],
   },
-      other: {
+    other: {
       'fc:miniapp': JSON.stringify({
         version: "1",
         imageUrl: "https://base-app-roulette.vercel.app/api/og-image",

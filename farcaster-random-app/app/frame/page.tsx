@@ -6,11 +6,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'App Roulette 🎰',
     description: 'Spin & discover amazing Farcaster mini apps!',
-    images: ['https://base-app-roulette.vercel.app/api/og-image'],
+    images: ['https://base-app-roulette.vercel.app/og-image.png'],
   },
   other: {
     'fc:frame': 'vNext',
-    'fc:frame:image': 'https://base-app-roulette.vercel.app/api/og-image',
+    'fc:frame:image': 'https://base-app-roulette.vercel.app/og-image.png',
     'fc:frame:button:1': '🎰 Spin the Roulette',
     'fc:frame:post_url': 'https://base-app-roulette.vercel.app/frame',
   },

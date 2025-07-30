@@ -13,8 +13,9 @@ export const FARCASTER_CONFIG = {
     button: {
       title: "🎰 Spin the Roulette",
       action: {
-        type: "post",
-        url: "https://base-app-roulette.vercel.app"
+        type: "launch_miniapp",
+        url: "https://base-app-roulette.vercel.app",
+        name: "App Roulette"
       }
     }
   }

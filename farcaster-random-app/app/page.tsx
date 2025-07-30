@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Shuffle, RefreshCw, Plus, ExternalLink, Sparkles, Circle, Share2 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/ui/use-toast"
 import AddAppForm from "@/components/add-app-form"
 import type { FarcasterApp } from "@/types/app"
 import { sdk } from '@farcaster/miniapp-sdk'

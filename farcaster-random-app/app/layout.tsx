@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     siteName: 'App Roulette',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center',
+        url: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71',
         width: 1200,
         height: 800,
         alt: 'App Roulette - Farcaster Mini App Discovery',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'App Roulette 🎰',
     description: 'Spin & discover amazing Farcaster mini apps!',
-    images: ['https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center'],
+    images: ['https://images.unsplash.com/photo-1611224923853-80b023f02d71'],
   },
 }
 
@@ -51,10 +51,10 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="preconnect" href="https://auth.farcaster.xyz" />
-        <meta property="fc:miniapp" content='{"version":"1","imageUrl":"https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center","aspectRatio":"3:2","button":{"title":"🎰 Spin the Roulette","action":{"type":"post","url":"https://base-app-roulette.vercel.app"}}}' />
+        <meta property="fc:miniapp" content='{"version":"1","imageUrl":"https://images.unsplash.com/photo-1611224923853-80b023f02d71","aspectRatio":"3:2","button":{"title":"🎰 Spin the Roulette","action":{"type":"post","url":"https://base-app-roulette.vercel.app"}}}' />
         <meta property="og:title" content="App Roulette 🎰" />
         <meta property="og:description" content="Spin & discover amazing Farcaster mini apps!" />
-        <meta property="og:image" content="https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center" />
+        <meta property="og:image" content="https://images.unsplash.com/photo-1611224923853-80b023f02d71" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="800" />
         <meta property="og:url" content="https://base-app-roulette.vercel.app" />
@@ -62,7 +62,7 @@ export default function RootLayout({
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="App Roulette 🎰" />
         <meta name="twitter:description" content="Spin & discover amazing Farcaster mini apps!" />
-        <meta name="twitter:image" content="https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center" />
+        <meta name="twitter:image" content="https://images.unsplash.com/photo-1611224923853-80b023f02d71" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

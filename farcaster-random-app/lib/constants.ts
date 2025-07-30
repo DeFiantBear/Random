@@ -1,7 +1,7 @@
 // Farcaster Mini App Configuration
 export const FARCASTER_CONFIG = {
   // Custom embed image
-  EMBED_IMAGE_URL: "https://base-app-roulette.vercel.app/Screenshot.png",
+  EMBED_IMAGE_URL: "https://base-app-roulette.vercel.app/screenshot.png",
   
   // App URLs
   BASE_URL: "https://base-app-roulette.vercel.app",
@@ -16,7 +16,7 @@ export const FARCASTER_CONFIG = {
         type: "launch_miniapp",
         url: "https://base-app-roulette.vercel.app",
         name: "App Roulette",
-        splashImageUrl: "https://base-app-roulette.vercel.app/Screenshot.png",
+        splashImageUrl: "https://base-app-roulette.vercel.app/screenshot.png",
         splashBackgroundColor: "#1e293b"
       }
     }

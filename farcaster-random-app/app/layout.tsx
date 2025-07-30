@@ -50,10 +50,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="https://picsum.photos/1200/800" />
-        <meta property="fc:frame:button:1" content="🎰 Spin the Roulette" />
-        <meta property="fc:frame:post_url" content="https://base-app-roulette.vercel.app/frame" />
         <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://picsum.photos/1200/800","button":{"title":"🎰 Spin the Roulette","action":{"type":"post","url":"https://base-app-roulette.vercel.app/frame"}}}' />
       </head>
       <body

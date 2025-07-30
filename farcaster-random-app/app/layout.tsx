@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://base-app-roulette.vercel.app'),
   openGraph: {
     title: "App Roulette 🎰",
-    description: "Spin & discover amazing Farcaster mini apps! Find your next favorite app in our curated roulette.",
+    description: "Spin & discover amazing Farcaster mini apps!",
     url: 'https://base-app-roulette.vercel.app',
     siteName: 'App Roulette',
     images: [
@@ -40,13 +40,6 @@ export const metadata: Metadata = {
     description: 'Spin & discover amazing Farcaster mini apps!',
     images: ['https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center'],
   },
-  other: {
-    'fc:miniapp': '{"version":"1","imageUrl":"https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center","button":{"title":"🎰 Spin the Roulette","action":{"type":"post","url":"https://base-app-roulette.vercel.app/frame"}}}',
-    'fc:frame': 'vNext',
-    'fc:frame:image': 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center',
-    'fc:frame:button:1': '🎰 Spin the Roulette',
-    'fc:frame:post_url': 'https://base-app-roulette.vercel.app/frame',
-  },
 }
 
 export default function RootLayout({
@@ -60,6 +53,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://auth.farcaster.xyz" />
         <link rel="dns-prefetch" href="https://auth.farcaster.xyz" />
         <link rel="manifest" href="/farcaster.json" />
+        <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center","button":{"title":"🎰 Spin the Roulette","action":{"type":"post","url":"https://base-app-roulette.vercel.app/frame"}}}' />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

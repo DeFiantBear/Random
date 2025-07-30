@@ -14,7 +14,6 @@ export default function AppRoulette() {
   const [currentApp, setCurrentApp] = useState<FarcasterApp | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [recentlyShown, setRecentlyShown] = useState<Set<string>>(new Set())
-  const [totalApps, setTotalApps] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
   const [isSpinning, setIsSpinning] = useState(false)
@@ -24,16 +23,7 @@ export default function AppRoulette() {
 
 
 
-  const getStats = async () => {
-    try {
-      const response = await fetch("/api/apps", { method: "GET" })
-      const data = await response.json()
-      setTotalApps(data.total || 0)
-    } catch (error) {
-      console.error("Failed to get stats:", error)
-      setTotalApps(0)
-    }
-  }
+
 
   const getRandomApp = async () => {
     setIsLoading(true)
@@ -104,7 +94,6 @@ export default function AppRoulette() {
   }
 
   const handleAppAdded = async () => {
-    await getStats()
     setShowAddForm(false)
     toast({
       title: "Success!",
@@ -219,17 +208,12 @@ export default function AppRoulette() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-3 sm:space-x-4">
-              <div className="flex items-center space-x-2 bg-primary/5 border border-primary/20 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
-                <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse shadow-sm"></div>
-                <span className="text-xs sm:text-sm font-semibold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">{totalApps} apps</span>
-              </div>
+            <div className="flex items-center">
               <Button
                 onClick={() => setShowAddForm(!showAddForm)}
-                className="premium-gradient hover:shadow-xl text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2 h-8 sm:h-auto rounded-xl border border-white/20"
-                size="sm"
+                className="premium-gradient hover:shadow-xl text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 h-10 sm:h-12 rounded-xl border border-white/20"
               >
-                <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 <span className="hidden sm:inline">Add App</span>
                 <span className="sm:hidden">Add</span>
               </Button>

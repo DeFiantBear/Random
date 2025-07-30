@@ -191,18 +191,14 @@ export default function AppRoulette() {
                 <span className="text-lg sm:text-xl lg:text-2xl font-semibold text-foreground bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
                   App Roulette
                 </span>
-                <div className="flex items-center gap-2">
-                  <a 
-                    href="https://linktr.ee/2ndCityStudio" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-xs text-muted-foreground hover:text-primary transition-all duration-300 cursor-pointer hover:scale-105"
-                  >
-                    by Second City Studio
-                  </a>
-                  <span className="text-xs text-muted-foreground">•</span>
-                  <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">Built on Base</span>
-                </div>
+                <a 
+                  href="https://linktr.ee/2ndCityStudio" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-xs text-muted-foreground hover:text-primary transition-all duration-300 cursor-pointer hover:scale-105"
+                >
+                  by Second City Studio
+                </a>
               </div>
             </div>
 

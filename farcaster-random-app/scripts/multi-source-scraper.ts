@@ -110,34 +110,32 @@ function generateAppFromUrl(url: string, source: string): DiscoveredApp | null {
   const appName = formatAppName(appInfo.appName)
   const category = categorizeApp(appName)
 
-  // Generate realistic descriptions based on app name
-  const descriptions = {
-    Gaming: `Play ${appName} - an interactive game on Farcaster`,
-    Finance: `${appName} - manage your crypto and DeFi activities`,
-    "Art & Creativity": `${appName} - create and share artistic content`,
-    Social: `${appName} - connect and engage with the Farcaster community`,
-    Utilities: `${appName} - a useful tool for Farcaster users`,
-    Media: `${appName} - share and discover media content`,
-    Other: `${appName} - a Farcaster mini application`,
+  const descriptions: Record<string, string> = {
+    Gaming: "An exciting gaming experience on Farcaster",
+    Finance: "Financial tools and DeFi applications",
+    "Art & Creativity": "Creative tools and artistic applications",
+    Social: "Social networking and community features",
+    Utilities: "Useful tools and productivity apps",
+    Media: "Media creation and sharing platforms",
+    Other: "Miscellaneous Farcaster mini apps",
   }
 
-  // Generate realistic creator names based on app type
-  const creators = {
-    Gaming: ["gamedev", "playmaker", "arcadebuilder", "puzzlemaster"],
-    Finance: ["defidev", "cryptobuilder", "tokenmaker", "walletdev"],
-    "Art & Creativity": ["artcreator", "nftbuilder", "designstudio", "creativecoder"],
-    Social: ["socialdev", "communitybuilder", "chatmaker", "connectdev"],
+  const creators: Record<string, string[]> = {
+    Gaming: ["gamedev", "playmaker", "funbuilder", "arcadecreator"],
+    Finance: ["defidev", "fintech", "moneyapp", "cryptobuilder"],
+    "Art & Creativity": ["artdev", "creative", "designer", "artist"],
+    Social: ["socialdev", "community", "networker", "connector"],
     Utilities: ["toolmaker", "utilitydev", "helperbot", "productbuilder"],
     Media: ["mediadev", "contentcreator", "videomaker", "photoapp"],
     Other: ["farcasterdev", "miniappdev", "builder", "creator"],
   }
 
-  const randomCreator = creators[category][Math.floor(Math.random() * creators[category].length)]
+  const randomCreator = creators[category as keyof typeof creators][Math.floor(Math.random() * creators[category as keyof typeof creators].length)]
 
   return {
     id: appInfo.appName,
     name: appName,
-    description: descriptions[category],
+    description: descriptions[category as keyof typeof descriptions],
     miniAppUrl: url,
     creator: randomCreator,
     category,

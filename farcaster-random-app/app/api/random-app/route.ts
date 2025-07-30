@@ -4,13 +4,15 @@ import type { FarcasterApp } from "@/types/app"
 // In-memory database (replace with real database later)
 const miniApps: FarcasterApp[] = [
   {
-    id: "bankr",
+    id: 1,
+    app_id: "bankr",
     name: "Bankr",
     description: "A Farcaster mini app - Bankr",
-    miniAppUrl: "https://farcaster.xyz/miniapps/e7UFI7j3sB9Q/bankr",
+    mini_app_url: "https://farcaster.xyz/miniapps/e7UFI7j3sB9Q/bankr",
     creator: "deployer",
     category: "Finance",
-    addedAt: new Date().toISOString(),
+    added_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   },
 ]
 
@@ -85,7 +87,7 @@ export async function PUT(request: NextRequest) {
     const appSlug = urlParts[urlParts.length - 1] || urlParts[urlParts.length - 2]
 
     // Check for duplicates
-    const existingApp = miniApps.find((app) => app.miniAppUrl === url)
+    const existingApp = miniApps.find((app) => app.mini_app_url === url)
     if (existingApp) {
       return NextResponse.json({ success: false, error: "This app is already in the directory" }, { status: 400 })
     }
@@ -93,18 +95,20 @@ export async function PUT(request: NextRequest) {
     // Create app name from slug
     const appName = appSlug
       .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ")
 
     // Create new app
     const newApp: FarcasterApp = {
-      id: appSlug,
+      id: miniApps.length + 1,
+      app_id: appSlug,
       name: appName,
       description: `A Farcaster mini app - ${appName}`,
-      miniAppUrl: url,
+      mini_app_url: url,
       creator: "unknown",
       category: "Other",
-      addedAt: new Date().toISOString(),
+      added_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     }
 
     // Add to database

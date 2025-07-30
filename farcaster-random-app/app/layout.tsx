@@ -40,19 +40,7 @@ export const metadata: Metadata = {
     description: 'Spin & discover amazing Farcaster mini apps!',
     images: ['https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center'],
   },
-    other: {
-      'fc:miniapp': JSON.stringify({
-        version: "1",
-        imageUrl: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center",
-        button: {
-          title: "🎰 Spin the Roulette",
-          action: {
-            type: "post",
-            url: "https://base-app-roulette.vercel.app/frame"
-          }
-        }
-      }),
-    },
+
 }
 
 export default function RootLayout({
@@ -66,6 +54,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://auth.farcaster.xyz" />
         <link rel="dns-prefetch" href="https://auth.farcaster.xyz" />
         <link rel="manifest" href="/farcaster.json" />
+        <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center","button":{"title":"🎰 Spin the Roulette","action":{"type":"post","url":"https://base-app-roulette.vercel.app/frame"}}}' />
+        <meta name="fc:frame" content="vNext" />
+        <meta name="fc:frame:image" content="https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center" />
+        <meta name="fc:frame:button:1" content="🎰 Spin the Roulette" />
+        <meta name="fc:frame:post_url" content="https://base-app-roulette.vercel.app/frame" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

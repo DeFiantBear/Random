@@ -60,7 +60,6 @@ export default function AppRoulette() {
 
       setTimeout(() => {
         setCurrentApp(randomApp)
-        setTotalApps(data.total || totalApps)
         setRecentlyShown((prev) => new Set([...prev, randomApp.app_id]))
         setIsSpinning(false)
         setShowRouletteAnimation(false)
@@ -350,9 +349,9 @@ export default function AppRoulette() {
                 </div>
                 <h3 className="text-3xl font-bold text-foreground mb-4 bg-gradient-to-r from-destructive to-destructive/80 bg-clip-text text-transparent">Need More Apps!</h3>
                 <p className="text-muted-foreground mb-10 max-w-md mx-auto text-lg font-medium">
-                  We only have {totalApps} mini apps. Add your app to help grow the roulette!
+                  We need more mini apps! Add your app to help grow the roulette!
                 </p>
-                {totalApps > 0 && (
+                {(
                   <Button
                     onClick={getRandomApp}
                     className="premium-gradient hover:shadow-2xl text-white h-14 px-8 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl border border-white/20 group"

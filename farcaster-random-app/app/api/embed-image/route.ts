@@ -3,7 +3,7 @@ import { FARCASTER_CONFIG } from '@/lib/constants';
 
 export async function GET() {
   try {
-    // Fetch the image from Unsplash
+    // Fetch the custom image from our own domain
     const response = await fetch(FARCASTER_CONFIG.EMBED_IMAGE_URL);
     
     if (!response.ok) {
@@ -15,7 +15,7 @@ export async function GET() {
     // Return the image with proper headers for Farcaster embed
     return new NextResponse(imageBuffer, {
       headers: {
-        'Content-Type': 'image/jpeg',
+        'Content-Type': 'image/png',
         'Cache-Control': 'public, max-age=31536000, immutable',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, OPTIONS',

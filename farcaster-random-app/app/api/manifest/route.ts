@@ -24,7 +24,6 @@ export async function GET() {
     permissions: [
       "read"
     ],
-    // Farcaster specific fields
     fc: {
       version: "1",
       name: "App Roulette",

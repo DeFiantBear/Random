@@ -50,9 +50,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="preconnect" href="https://auth.farcaster.xyz" />
-        <link rel="dns-prefetch" href="https://auth.farcaster.xyz" />
-        <link rel="manifest" href="/farcaster.json" />
+        <meta property="fc:frame" content="vNext" />
+        <meta property="fc:frame:image" content="https://picsum.photos/1200/800" />
+        <meta property="fc:frame:button:1" content="🎰 Spin the Roulette" />
+        <meta property="fc:frame:post_url" content="https://base-app-roulette.vercel.app/frame" />
         <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://picsum.photos/1200/800","button":{"title":"🎰 Spin the Roulette","action":{"type":"post","url":"https://base-app-roulette.vercel.app/frame"}}}' />
       </head>
       <body

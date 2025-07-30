@@ -6,7 +6,6 @@ export async function GET() {
     description: "Discover amazing Farcaster mini apps with our interactive roulette! Spin to find your next favorite app or add your own to the collection.",
     image: "https://base-app-roulette.vercel.app/placeholder.jpg",
     external_url: "https://base-app-roulette.vercel.app",
-    frame_url: "https://base-app-roulette.vercel.app/frame.html",
     app_url: "https://base-app-roulette.vercel.app",
     category: "entertainment",
     tags: ["farcaster", "mini-apps", "discovery", "roulette", "apps"],
@@ -19,7 +18,7 @@ export async function GET() {
       "Random app discovery",
       "App submission", 
       "Interactive roulette",
-      "Farcaster frame integration"
+      "Farcaster mini app integration"
     ],
     permissions: [
       "read"

@@ -24,19 +24,6 @@ export async function GET() {
     permissions: [
       "read"
     ],
-    fc: {
-      version: "1",
-      name: "App Roulette",
-      description: "Spin & discover amazing Farcaster mini apps!",
-      image: "https://base-app-roulette.vercel.app/placeholder.jpg",
-      button: {
-        title: "🎰 Spin the Roulette",
-        action: {
-          type: "post",
-          url: "https://base-app-roulette.vercel.app/api/frame"
-        }
-      }
-    },
     accountAssociation: {
       header: "eyJmaWQiOjEwNzcyMzQsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHg3NTZBZWI4MzExMjVmNzgyQzJhM0FCNjQ2NWU4NWVFMDMyMkI5N2UzIn0",
       payload: "eyJkb21haW4iOiJiYXNlLWFwcC1yb3VsZXR0ZS52ZXJjZWwuYXBwIn0",

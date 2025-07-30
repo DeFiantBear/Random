@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     siteName: 'App Roulette',
     images: [
       {
-        url: 'https://base-app-roulette.vercel.app/api/og-image',
+        url: 'https://base-app-roulette.vercel.app/og-image.png',
         width: 1200,
         height: 630,
         alt: 'App Roulette - Farcaster Mini App Discovery',
@@ -38,12 +38,12 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'App Roulette 🎰',
     description: 'Spin & discover amazing Farcaster mini apps!',
-    images: ['https://base-app-roulette.vercel.app/api/og-image'],
+    images: ['https://base-app-roulette.vercel.app/og-image.png'],
   },
   other: {
     'fc:miniapp': JSON.stringify({
       version: "1",
-      imageUrl: "https://base-app-roulette.vercel.app/api/og-image",
+      imageUrl: "https://base-app-roulette.vercel.app/og-image.png",
       button: {
         title: "🎰 Spin the Roulette",
         action: {

@@ -24,6 +24,7 @@ This is a **Farcaster Mini App** (not a Frame) that:
 - `app/api/apps/route.ts` - Database CRUD operations
 - `app/api/random-app/route.ts` - Random app selection
 - `app/api/manifest/route.ts` - Farcaster manifest
+- `app/api/embed-image/route.ts` - Embed image serving
 - `public/farcaster.json` - Static manifest
 
 ## 🚀 Quick Start
@@ -67,13 +68,14 @@ Create a `mini_apps` table in Supabase with these columns:
 ### Farcaster Mini App Setup
 The app uses these meta tags in `app/layout.tsx`:
 ```html
-<meta property="fc:miniapp" content='{"version":"1","imageUrl":"...","aspectRatio":"3:2","button":{"title":"🎰 Spin the Roulette","action":{"type":"post","url":"..."}}}' />
+<meta property="fc:miniapp" content='{"version":"1","imageUrl":"https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&h=800&fit=crop&crop=center","aspectRatio":"3:2","button":{"title":"🎰 Spin the Roulette","action":{"type":"link","url":"https://base-app-roulette.vercel.app"}}}' />
 ```
 
 ### Manifest
 - `/.well-known/farcaster.json` - Redirects to `/api/manifest`
 - `public/farcaster.json` - Static manifest file
 - `app/api/manifest/route.ts` - Dynamic manifest API
+- `app/api/embed-image/route.ts` - Embed image serving
 
 ## 🎨 Design
 
@@ -84,9 +86,10 @@ The app uses these meta tags in `app/layout.tsx`:
 - **Animations**: Smooth roulette spinning effects
 
 ### Images
-- Uses Unsplash for reliable embed images
+- Uses Unsplash for reliable embed images with proper sizing
 - 3:2 aspect ratio (1200x800) for Farcaster compatibility
 - Consistent across all meta tags and manifests
+- Proper query parameters for consistent dimensions
 
 ## 📊 Database
 
@@ -114,6 +117,8 @@ CREATE TABLE mini_apps (
 - [x] Test Mini App functionality
 - [x] Verify Farcaster embed
 - [x] Test sharing on Farcaster
+- [x] Fix embed image configuration
+- [x] Add embed image API route
 
 ## 🔗 Useful Links
 
@@ -128,18 +133,20 @@ CREATE TABLE mini_apps (
 3. **Farcaster Native**: Built specifically for Farcaster ecosystem
 4. **Easy Sharing**: One-click sharing on Farcaster
 5. **Responsive**: Works on mobile and desktop
+6. **Proper Embed**: Correctly configured for Farcaster embeds
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
 1. **Embed not showing**: Check Farcaster manifest and meta tags
 2. **Database errors**: Verify Supabase credentials
-3. **Image not loading**: Ensure image URL is accessible
+3. **Image not loading**: Ensure image URL is accessible with proper sizing
 
 ### Debug
 - Check browser console for errors
 - Verify all environment variables are set
 - Test database connection
+- Use Farcaster embed tool to validate configuration
 
 ---
 

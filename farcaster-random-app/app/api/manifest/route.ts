@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
+import { FARCASTER_CONFIG } from '@/lib/constants';
 
 export async function GET() {
   const manifest = {
     name: "App Roulette",
     description: "Discover amazing Farcaster mini apps with our interactive roulette! Spin to find your next favorite app or add your own to the collection.",
-    image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71",
-    external_url: "https://base-app-roulette.vercel.app",
-    app_url: "https://base-app-roulette.vercel.app",
+    image: FARCASTER_CONFIG.EMBED_IMAGE_URL,
+    external_url: FARCASTER_CONFIG.BASE_URL,
+    app_url: FARCASTER_CONFIG.BASE_URL,
     category: "entertainment",
     tags: ["farcaster", "mini-apps", "discovery", "roulette", "apps"],
     author: {

@@ -4,7 +4,7 @@ export async function GET() {
   const manifest = {
     name: "App Roulette",
     description: "Discover amazing Farcaster mini apps with our interactive roulette! Spin to find your next favorite app or add your own to the collection.",
-    image: "https://base-app-roulette.vercel.app/og-image.svg",
+    image: "https://base-app-roulette.vercel.app/api/og-image",
     external_url: "https://base-app-roulette.vercel.app",
     frame_url: "https://base-app-roulette.vercel.app/frame",
     app_url: "https://base-app-roulette.vercel.app",
@@ -29,7 +29,7 @@ export async function GET() {
       version: "1",
       name: "App Roulette",
       description: "Spin & discover amazing Farcaster mini apps!",
-      image: "https://base-app-roulette.vercel.app/og-image.svg",
+      image: "https://base-app-roulette.vercel.app/api/og-image",
       button: {
         title: "🎰 Spin the Roulette",
         action: {

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+
 import { Circle, Share2 } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { sdk } from '@farcaster/miniapp-sdk'
@@ -15,14 +15,23 @@ interface AddAppFormProps {
 }
 
 export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
   const [miniAppUrl, setMiniAppUrl] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate URL starts with required prefix
+    if (!miniAppUrl.startsWith("https://farcaster.xyz/miniapps/")) {
+      toast({
+        title: "Invalid URL",
+        description: "URL must start with https://farcaster.xyz/miniapps/",
+        variant: "destructive",
+      })
+      return
+    }
+    
     setIsSubmitting(true)
 
     try {
@@ -32,9 +41,7 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
-          description,
-          mini_app_url: miniAppUrl,
+          url: miniAppUrl,
         }),
       })
 
@@ -44,8 +51,6 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
           description: "Your app has been successfully added to the collection.",
         })
         
-        setName("")
-        setDescription("")
         setMiniAppUrl("")
         onAppAdded()
       } else {
@@ -103,56 +108,25 @@ export default function AddAppForm({ onAppAdded }: AddAppFormProps) {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-blue-200 font-medium">
-              App Name *
-            </Label>
-            <Input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your app name"
-              required
-              className="bg-black/20 border-blue-500/20 text-white placeholder:text-blue-300/50 focus:border-blue-400 focus:ring-blue-400/20"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-blue-200 font-medium">
-              Description *
-            </Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe what your app does..."
-              required
-              rows={3}
-              className="bg-black/20 border-blue-500/20 text-white placeholder:text-blue-300/50 focus:border-blue-400 focus:ring-blue-400/20 resize-none"
-            />
-          </div>
-
-          <div className="space-y-2">
             <Label htmlFor="url" className="text-blue-200 font-medium">
-              Mini App URL *
+              Farcaster Mini App URL *
             </Label>
             <Input
               id="url"
               type="url"
               value={miniAppUrl}
               onChange={(e) => setMiniAppUrl(e.target.value)}
-              placeholder="https://your-app.vercel.app"
+              placeholder="https://farcaster.xyz/miniapps/your-app"
               required
               className="bg-black/20 border-blue-500/20 text-white placeholder:text-blue-300/50 focus:border-blue-400 focus:ring-blue-400/20"
             />
           </div>
 
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4">
-            <h4 className="text-blue-200 font-semibold mb-2">Example URLs:</h4>
+            <h4 className="text-blue-200 font-semibold mb-2">URL Requirements:</h4>
             <div className="text-sm text-blue-300 space-y-1">
-              <div>• https://my-app.vercel.app</div>
-              <div>• https://my-app.netlify.app</div>
-              <div>• https://my-app.pages.dev</div>
+              <div>• Must start with: https://farcaster.xyz/miniapps/</div>
+              <div>• Example: https://farcaster.xyz/miniapps/your-app-name</div>
             </div>
           </div>
 

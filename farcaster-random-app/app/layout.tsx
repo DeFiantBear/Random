@@ -51,7 +51,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="preconnect" href="https://auth.farcaster.xyz" />
-        <meta property="fc:miniapp" content='{"version":"1","imageUrl":"https://via.placeholder.com/1200x800/1e3a8a/ffffff?text=App+Roulette","button":{"title":"🎰 Spin the Roulette","action":{"type":"post","url":"https://base-app-roulette.vercel.app"}}}' />
+        <meta property="fc:miniapp" content='{"version":"1","imageUrl":"https://via.placeholder.com/1200x800/1e3a8a/ffffff?text=App+Roulette","aspectRatio":"3:2","button":{"title":"🎰 Spin the Roulette","action":{"type":"post","url":"https://base-app-roulette.vercel.app"}}}' />
         <meta property="og:title" content="App Roulette 🎰" />
         <meta property="og:description" content="Spin & discover amazing Farcaster mini apps!" />
         <meta property="og:image" content="https://via.placeholder.com/1200x800/1e3a8a/ffffff?text=App+Roulette" />

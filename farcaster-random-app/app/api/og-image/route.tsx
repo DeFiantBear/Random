@@ -7,15 +7,14 @@ export async function GET() {
     (
       <div
         style={{
-          height: '100%',
-          width: '100%',
+          width: '1200px',
+          height: '800px',
+          background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#1e3a8a',
-          backgroundImage: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
-          padding: '40px',
+          position: 'relative',
         }}
       >
         {/* Main content */}
@@ -24,77 +23,92 @@ export async function GET() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            textAlign: 'center',
-            color: 'white',
+            gap: '40px',
+            zIndex: 1,
           }}
         >
-          {/* Logo */}
+          {/* App icon */}
           <div
             style={{
-              fontSize: '80px',
-              marginBottom: '20px',
+              width: '120px',
+              height: '120px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '4px solid #3b82f6',
+              boxShadow: '0 20px 40px rgba(30, 58, 138, 0.3)',
             }}
           >
-            🎰
+            <div
+              style={{
+                fontSize: '60px',
+                color: '#1e3a8a',
+              }}
+            >
+              🎰
+            </div>
           </div>
-
+          
           {/* Title */}
           <div
             style={{
-              fontSize: '48px',
+              fontSize: '72px',
               fontWeight: 'bold',
-              color: 'white',
-              marginBottom: '16px',
+              color: '#ffffff',
+              textAlign: 'center',
+              textShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
             }}
           >
             App Roulette
           </div>
-
+          
           {/* Subtitle */}
           <div
             style={{
-              fontSize: '24px',
+              fontSize: '32px',
               color: '#e2e8f0',
-              marginBottom: '32px',
-              maxWidth: '500px',
-              lineHeight: 1.3,
+              textAlign: 'center',
+              maxWidth: '800px',
+              lineHeight: 1.4,
             }}
           >
-            Discover amazing Farcaster mini apps
+            Spin & discover amazing Farcaster mini apps!
           </div>
-
-          {/* CTA Button */}
+          
+          {/* CTA */}
           <div
             style={{
-              background: 'rgba(255, 255, 255, 0.2)',
-              border: '2px solid rgba(255, 255, 255, 0.3)',
-              borderRadius: '12px',
-              padding: '16px 32px',
-              fontSize: '20px',
-              fontWeight: 'bold',
-              color: 'white',
+              fontSize: '24px',
+              color: '#3b82f6',
+              fontWeight: '600',
+              textAlign: 'center',
+              marginTop: '20px',
             }}
           >
-            Spin & Discover
+            🎯 Find your next favorite app
           </div>
-
-          {/* Author */}
-          <div
-            style={{
-              fontSize: '16px',
-              color: '#cbd5e1',
-              marginTop: '24px',
-            }}
-          >
-            by Second City Studio
-          </div>
+        </div>
+        
+        {/* Bottom attribution */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '40px',
+            right: '40px',
+            fontSize: '20px',
+            color: '#94a3b8',
+            fontWeight: '500',
+          }}
+        >
+          by Second City Studio
         </div>
       </div>
     ),
     {
       width: 1200,
-      height: 630,
-      format: 'png',
+      height: 800,
     }
   )
 } 

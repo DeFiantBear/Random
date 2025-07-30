@@ -1,32 +1,47 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'App Roulette 🎰',
-  description: 'Spin & discover amazing Farcaster mini apps!',
+  title: 'App Roulette - Spin & Discover',
+  description: 'Spin the roulette to discover amazing Farcaster mini apps!',
   openGraph: {
     title: 'App Roulette 🎰',
     description: 'Spin & discover amazing Farcaster mini apps!',
-    images: ['https://base-app-roulette.vercel.app/api/hero-image'],
+    images: ['https://base-app-roulette.vercel.app/api/og-image'],
   },
   other: {
     'fc:frame': 'vNext',
-    'fc:frame:image': 'https://base-app-roulette.vercel.app/api/hero-image',
+    'fc:frame:image': 'https://base-app-roulette.vercel.app/api/og-image',
     'fc:frame:button:1': '🎰 Spin the Roulette',
-    'fc:frame:button:2': '➕ Add Your App',
-    'fc:frame:post_url': 'https://base-app-roulette.vercel.app/api/frame',
+    'fc:frame:post_url': 'https://base-app-roulette.vercel.app/frame',
   },
 }
 
 export default function FramePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
-      <div className="text-center text-white">
-        <h1 className="text-4xl font-bold mb-4">🎰 App Roulette</h1>
-        <p className="text-xl mb-8">Spin & discover amazing Farcaster mini apps!</p>
-        <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-6">
-          <p className="text-lg">Ready to spin?</p>
-          <p className="text-sm text-blue-300 mt-2">Click the buttons below to get started!</p>
-        </div>
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
+      color: 'white',
+      fontFamily: 'system-ui, sans-serif',
+      textAlign: 'center',
+      padding: '20px'
+    }}>
+      <div style={{ fontSize: '48px', marginBottom: '20px' }}>🎰</div>
+      <h1 style={{ fontSize: '32px', marginBottom: '16px' }}>App Roulette</h1>
+      <p style={{ fontSize: '18px', marginBottom: '32px' }}>
+        Spin & discover amazing Farcaster mini apps!
+      </p>
+      <div style={{ 
+        background: 'rgba(255, 255, 255, 0.1)', 
+        padding: '16px 32px', 
+        borderRadius: '12px',
+        border: '1px solid rgba(255, 255, 255, 0.2)'
+      }}>
+        <p style={{ margin: 0 }}>Click the button above to spin the roulette!</p>
       </div>
     </div>
   )

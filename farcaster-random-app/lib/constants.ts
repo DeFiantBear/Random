@@ -11,13 +11,13 @@ export const FARCASTER_CONFIG = {
     version: "1",
     aspectRatio: "3:2",
     action: {
-      type: "link",
+      type: "post",
       url: "https://base-app-roulette.vercel.app"
     },
     button: {
       title: "🎰 Spin the Roulette",
       action: {
-        type: "link",
+        type: "post",
         url: "https://base-app-roulette.vercel.app"
       }
     }

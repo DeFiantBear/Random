@@ -1,0 +1,30 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Main content -->
+  <g transform="translate(600,315)">
+    <!-- Logo -->
+    <text x="0" y="-100" font-family="Arial, sans-serif" font-size="80" fill="white" text-anchor="middle">🎰</text>
+    
+    <!-- Title -->
+    <text x="0" y="-20" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">App Roulette</text>
+    
+    <!-- Subtitle -->
+    <text x="0" y="20" font-family="Arial, sans-serif" font-size="24" fill="#e2e8f0" text-anchor="middle">Discover amazing Farcaster mini apps</text>
+    
+    <!-- CTA Button -->
+    <rect x="-100" y="50" width="200" height="50" rx="12" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+    <text x="0" y="80" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">Spin & Discover</text>
+    
+    <!-- Author -->
+    <text x="0" y="120" font-family="Arial, sans-serif" font-size="16" fill="#cbd5e1" text-anchor="middle">by Second City Studio</text>
+  </g>
+</svg> 

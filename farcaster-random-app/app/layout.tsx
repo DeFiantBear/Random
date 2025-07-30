@@ -41,10 +41,6 @@ export const metadata: Metadata = {
     images: ['https://base-app-roulette.vercel.app/api/hero-image'],
   },
   other: {
-    'fc:frame': 'vNext',
-    'fc:frame:image': 'https://base-app-roulette.vercel.app/api/hero-image',
-    'fc:frame:button:1': '🎰 Spin the Roulette',
-    'fc:frame:post_url': 'https://base-app-roulette.vercel.app/api/frame',
     'fc:miniapp': JSON.stringify({
       version: "1",
       imageUrl: "https://base-app-roulette.vercel.app/api/hero-image",

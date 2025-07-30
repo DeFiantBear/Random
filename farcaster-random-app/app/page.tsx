@@ -152,7 +152,6 @@ export default function AppRoulette() {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        await getStats()
         await getRandomApp()
         
         // Tell Farcaster the app is ready to display

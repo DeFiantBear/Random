@@ -23,7 +23,21 @@ export async function GET() {
     ],
     permissions: [
       "read"
-    ]
+    ],
+    // Farcaster specific fields
+    fc: {
+      version: "1",
+      name: "App Roulette",
+      description: "Spin & discover amazing Farcaster mini apps!",
+      image: "https://base-app-roulette.vercel.app/api/hero-image",
+      button: {
+        title: "🎰 Spin the Roulette",
+        action: {
+          type: "post",
+          url: "https://base-app-roulette.vercel.app"
+        }
+      }
+    }
   }
 
   return NextResponse.json(manifest, {

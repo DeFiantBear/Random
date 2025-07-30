@@ -65,6 +65,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://auth.farcaster.xyz" />
         <link rel="dns-prefetch" href="https://auth.farcaster.xyz" />
+        <link rel="manifest" href="/farcaster.json" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

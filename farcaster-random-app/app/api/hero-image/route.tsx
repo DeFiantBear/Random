@@ -13,35 +13,19 @@ export async function GET() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#0f172a',
-          backgroundImage: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0f172a 100%)',
-          padding: '60px',
-          position: 'relative',
+          backgroundColor: '#1e3a8a',
+          padding: '40px',
         }}
       >
-        {/* Background elements */}
+        {/* Simple background */}
         <div
           style={{
             position: 'absolute',
-            top: '-100px',
-            right: '-100px',
-            width: '300px',
-            height: '300px',
-            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%)',
-            borderRadius: '50%',
-            filter: 'blur(40px)',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '-100px',
-            left: '-100px',
-            width: '300px',
-            height: '300px',
-            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%)',
-            borderRadius: '50%',
-            filter: 'blur(40px)',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
           }}
         />
 
@@ -53,14 +37,14 @@ export async function GET() {
             alignItems: 'center',
             textAlign: 'center',
             zIndex: 1,
+            color: 'white',
           }}
         >
           {/* Logo */}
           <div
             style={{
-              fontSize: '120px',
+              fontSize: '80px',
               marginBottom: '20px',
-              filter: 'drop-shadow(0 0 20px rgba(59, 130, 246, 0.5))',
             }}
           >
             🎰
@@ -69,13 +53,10 @@ export async function GET() {
           {/* Title */}
           <div
             style={{
-              fontSize: '72px',
+              fontSize: '48px',
               fontWeight: 'bold',
-              background: 'linear-gradient(45deg, #3b82f6, #60a5fa, #93c5fd)',
-              backgroundClip: 'text',
-              color: 'transparent',
-              marginBottom: '20px',
-              textShadow: '0 0 30px rgba(59, 130, 246, 0.3)',
+              color: 'white',
+              marginBottom: '16px',
             }}
           >
             App Roulette
@@ -84,44 +65,37 @@ export async function GET() {
           {/* Subtitle */}
           <div
             style={{
-              fontSize: '28px',
-              color: '#cbd5e1',
-              marginBottom: '40px',
-              maxWidth: '600px',
-              lineHeight: 1.4,
+              fontSize: '24px',
+              color: '#e2e8f0',
+              marginBottom: '32px',
+              maxWidth: '500px',
+              lineHeight: 1.3,
             }}
           >
             Discover amazing Farcaster mini apps
           </div>
 
-          {/* Stats box */}
+          {/* CTA Button */}
           <div
             style={{
-              background: 'rgba(59, 130, 246, 0.1)',
-              border: '2px solid rgba(59, 130, 246, 0.3)',
-              borderRadius: '20px',
-              padding: '20px 40px',
-              marginBottom: '30px',
-              backdropFilter: 'blur(10px)',
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              borderRadius: '12px',
+              padding: '16px 32px',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              color: 'white',
             }}
           >
-            <div
-              style={{
-                fontSize: '24px',
-                color: '#60a5fa',
-                fontWeight: 'bold',
-              }}
-            >
-              Spin & Discover
-            </div>
+            Spin & Discover
           </div>
 
           {/* Author */}
           <div
             style={{
-              fontSize: '18px',
-              color: '#64748b',
-              marginTop: '20px',
+              fontSize: '16px',
+              color: '#cbd5e1',
+              marginTop: '24px',
             }}
           >
             by Second City Studio
@@ -132,6 +106,7 @@ export async function GET() {
     {
       width: 1200,
       height: 630,
+      format: 'png',
     }
   )
 } 

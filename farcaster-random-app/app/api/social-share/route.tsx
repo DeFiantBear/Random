@@ -13,35 +13,19 @@ export async function GET() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#0f172a',
-          backgroundImage: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0f172a 100%)',
+          backgroundColor: '#1e3a8a',
           padding: '40px',
-          position: 'relative',
         }}
       >
-        {/* Background elements */}
+        {/* Simple background */}
         <div
           style={{
             position: 'absolute',
-            top: '-50px',
-            right: '-50px',
-            width: '200px',
-            height: '200px',
-            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%)',
-            borderRadius: '50%',
-            filter: 'blur(30px)',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '-50px',
-            left: '-50px',
-            width: '200px',
-            height: '200px',
-            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%)',
-            borderRadius: '50%',
-            filter: 'blur(30px)',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
           }}
         />
 
@@ -53,14 +37,14 @@ export async function GET() {
             alignItems: 'center',
             textAlign: 'center',
             zIndex: 1,
+            color: 'white',
           }}
         >
           {/* Logo */}
           <div
             style={{
-              fontSize: '80px',
-              marginBottom: '15px',
-              filter: 'drop-shadow(0 0 15px rgba(59, 130, 246, 0.4))',
+              fontSize: '60px',
+              marginBottom: '16px',
             }}
           >
             🎰
@@ -69,13 +53,10 @@ export async function GET() {
           {/* Title */}
           <div
             style={{
-              fontSize: '48px',
+              fontSize: '36px',
               fontWeight: 'bold',
-              background: 'linear-gradient(45deg, #3b82f6, #60a5fa, #93c5fd)',
-              backgroundClip: 'text',
-              color: 'transparent',
-              marginBottom: '15px',
-              textShadow: '0 0 20px rgba(59, 130, 246, 0.3)',
+              color: 'white',
+              marginBottom: '12px',
             }}
           >
             App Roulette
@@ -84,11 +65,11 @@ export async function GET() {
           {/* Description */}
           <div
             style={{
-              fontSize: '20px',
-              color: '#cbd5e1',
-              marginBottom: '25px',
-              maxWidth: '500px',
-              lineHeight: 1.4,
+              fontSize: '18px',
+              color: '#e2e8f0',
+              marginBottom: '24px',
+              maxWidth: '400px',
+              lineHeight: 1.3,
             }}
           >
             Spin & discover amazing Farcaster mini apps!
@@ -98,20 +79,20 @@ export async function GET() {
           <div
             style={{
               display: 'flex',
-              gap: '20px',
-              marginBottom: '25px',
+              gap: '16px',
+              marginBottom: '24px',
               flexWrap: 'wrap',
               justifyContent: 'center',
             }}
           >
             <div
               style={{
-                background: 'rgba(59, 130, 246, 0.1)',
-                border: '1px solid rgba(59, 130, 246, 0.3)',
-                borderRadius: '12px',
-                padding: '8px 16px',
-                fontSize: '14px',
-                color: '#60a5fa',
+                background: 'rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                borderRadius: '8px',
+                padding: '6px 12px',
+                fontSize: '12px',
+                color: 'white',
                 fontWeight: '500',
               }}
             >
@@ -119,12 +100,12 @@ export async function GET() {
             </div>
             <div
               style={{
-                background: 'rgba(59, 130, 246, 0.1)',
-                border: '1px solid rgba(59, 130, 246, 0.3)',
-                borderRadius: '12px',
-                padding: '8px 16px',
-                fontSize: '14px',
-                color: '#60a5fa',
+                background: 'rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                borderRadius: '8px',
+                padding: '6px 12px',
+                fontSize: '12px',
+                color: 'white',
                 fontWeight: '500',
               }}
             >
@@ -132,12 +113,12 @@ export async function GET() {
             </div>
             <div
               style={{
-                background: 'rgba(59, 130, 246, 0.1)',
-                border: '1px solid rgba(59, 130, 246, 0.3)',
-                borderRadius: '12px',
-                padding: '8px 16px',
-                fontSize: '14px',
-                color: '#60a5fa',
+                background: 'rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                borderRadius: '8px',
+                padding: '6px 12px',
+                fontSize: '12px',
+                color: 'white',
                 fontWeight: '500',
               }}
             >
@@ -148,13 +129,13 @@ export async function GET() {
           {/* CTA */}
           <div
             style={{
-              background: 'linear-gradient(45deg, #3b82f6, #60a5fa)',
-              borderRadius: '16px',
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              borderRadius: '12px',
               padding: '12px 24px',
-              fontSize: '18px',
+              fontSize: '16px',
               color: 'white',
               fontWeight: 'bold',
-              boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)',
             }}
           >
             Try App Roulette Now!
@@ -164,7 +145,7 @@ export async function GET() {
           <div
             style={{
               fontSize: '14px',
-              color: '#64748b',
+              color: '#cbd5e1',
               marginTop: '20px',
             }}
           >
@@ -173,9 +154,10 @@ export async function GET() {
         </div>
       </div>
     ),
-    {
-      width: 1200,
+    { 
+      width: 1200, 
       height: 630,
+      format: 'png',
     }
   )
 } 

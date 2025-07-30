@@ -129,7 +129,7 @@ export default function AppRoulette() {
     if (!currentApp) return
 
     try {
-      const shareText = `🎰 Just discovered "${currentApp.name}" on App Roulette!\n\n${currentApp.description}\n\n🎰 Discover more apps: https://base-app-roulette.vercel.app`
+      const shareText = `🎰 JACKPOT! Just discovered "${currentApp.name}" on App Roulette!\n\n${currentApp.description}\n\n🔥 This is INSANE! You need to try this app!\n\n🎰 Ready to discover your next favorite app? Spin the roulette: https://base-app-roulette.vercel.app/`
       
       await sdk.actions.openUrl({
         url: `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`

@@ -433,41 +433,37 @@ export default function AppRoulette() {
                     </code>
                   </div>
 
-                  <div className="inline-flex items-center gap-2 text-xs text-muted-foreground mb-8 bg-background/50 px-3 py-2 rounded-full border border-border/50">
-                    <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></div>
-                    Added {new Date(currentApp.added_at).toLocaleDateString()}
-                  </div>
-                </div>
+                                   </div>
 
-                <div className="flex flex-col sm:flex-row gap-6">
-                  <Button
-                    onClick={openMiniApp}
-                    className="flex-1 premium-gradient hover:shadow-2xl text-white h-14 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl border border-white/20 group"
-                  >
-                    <ExternalLink className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" />
-                    Visit App
-                  </Button>
-                  <Button
-                    onClick={shareOnFarcaster}
-                    variant="outline"
-                    className="flex-1 border-primary/30 hover:bg-primary/10 text-foreground h-14 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl backdrop-blur-sm bg-background/50 group"
-                  >
-                    <Share2 className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" />
-                    Share on Farcaster
-                  </Button>
-                </div>
-
-                <div className="flex justify-center">
-                  <Button
-                    onClick={getRandomApp}
-                    disabled={isLoading}
-                    variant="outline"
-                    className="border-primary/30 hover:bg-primary/5 text-foreground font-semibold transition-all duration-300 hover:scale-105 rounded-2xl px-8 py-3 shadow-lg hover:shadow-xl backdrop-blur-sm bg-background/50 group"
-                  >
-                    <Shuffle className={`w-5 h-5 mr-3 ${isSpinning ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-300`} />
-                    Spin Again
-                  </Button>
-                </div>
+                 <div className="flex flex-col gap-4">
+                   <Button
+                     onClick={getRandomApp}
+                     disabled={isLoading}
+                     className="premium-gradient hover:shadow-2xl text-white h-14 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl border border-white/20 group"
+                   >
+                     <Shuffle className={`w-5 h-5 mr-3 ${isSpinning ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-300`} />
+                     Spin Again
+                   </Button>
+                   
+                   <div className="flex flex-col sm:flex-row gap-4">
+                     <Button
+                       onClick={openMiniApp}
+                       variant="outline"
+                       className="flex-1 border-primary/30 hover:bg-primary/10 text-foreground h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl backdrop-blur-sm bg-background/50 group"
+                     >
+                       <ExternalLink className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
+                       Visit App
+                     </Button>
+                     <Button
+                       onClick={shareOnFarcaster}
+                       variant="outline"
+                       className="flex-1 border-primary/30 hover:bg-primary/10 text-foreground h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl backdrop-blur-sm bg-background/50 group"
+                     >
+                       <Share2 className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
+                       Share on Farcaster
+                     </Button>
+                   </div>
+                 </div>
               </div>
             ) : error ? (
               <div className="py-20 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">

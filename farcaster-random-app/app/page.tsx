@@ -33,121 +33,55 @@ export default function AppRoulette() {
   
   const { toast } = useToast()
 
-  // Get user info from Farcaster context
-  const [userInfo, setUserInfo] = useState<{
-    fid: string
-    walletAddress: string
-  } | null>(null)
-  
-  // Manual input for testing
-  const [showManualInput, setShowManualInput] = useState(false)
-  const [manualFid, setManualFid] = useState("")
-  
-  // Farcaster wallet connect state
+  // Quick Auth user state
+  const [user, setUser] = useState<{ fid: number; primaryAddress?: string } | null>(null)
   const [isConnecting, setIsConnecting] = useState(false)
   const [showWalletConnect, setShowWalletConnect] = useState(false)
-  const [isWalletConnected, setIsWalletConnected] = useState(false)
 
-  // Connect to Farcaster wallet
-  const connectFarcasterWallet = async () => {
+  // Connect wallet using Quick Auth
+  const connectWallet = async () => {
     setIsConnecting(true)
     try {
-      console.log("Connecting to Farcaster wallet...")
+      console.log("Connecting wallet with Quick Auth...")
       
-      // Call sdk.actions.ready() first
-      await sdk.actions.ready()
-      console.log("SDK ready")
+      // Get Quick Auth token and fetch user data
+      const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
       
-      // Try to get user context
-      const context = await sdk.context
-      console.log("Farcaster context:", context)
-      
-      if (context && context.user && context.user.fid) {
-        const fid = context.user.fid.toString()
-        console.log("Found FID:", fid)
-        
-        // Try to get wallet address
-        let walletAddress = "0x1234567890123456789012345678901234567890" // Default fallback
-        
-        try {
-          // Try to get wallet from context - note: walletAddress may not be available in all contexts
-          console.log("Context user object:", context.user)
-          // For now, use default wallet address as Farcaster context doesn't always provide wallet
-          console.log("Using default wallet address for now")
-        } catch (walletError) {
-          console.error("Error getting wallet:", walletError)
-        }
-        
-        const userData = {
-          fid: fid,
-          walletAddress: walletAddress
-        }
-        
-        console.log("Setting user data:", userData)
-        localStorage.setItem('farcaster_user_data', JSON.stringify(userData))
-        setUserInfo(userData)
-        setIsWalletConnected(true)
+      if (response.ok) {
+        const userData = await response.json()
+        console.log("User data from Quick Auth:", userData)
+        setUser(userData)
         setShowWalletConnect(false)
         
-        // Log the login
-        await logUserLogin(userData)
-        
-        // Check eligibility
-        const response = await fetch("/api/check-eligibility", {
+        // Check eligibility with the FID
+        const eligibilityResponse = await fetch("/api/check-eligibility", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ farcaster_id: userData.fid })
+          body: JSON.stringify({ farcaster_id: userData.fid.toString() })
         })
         
-        if (response.ok) {
-          const data = await response.json()
-          console.log("Eligibility data:", data)
-          setUserEligibility(data)
+        if (eligibilityResponse.ok) {
+          const eligibilityData = await eligibilityResponse.json()
+          console.log("Eligibility data:", eligibilityData)
+          setUserEligibility(eligibilityData)
         }
         
         toast({
           title: "🎉 Wallet Connected!",
-          description: `Welcome, FID: ${fid}`,
+          description: `Welcome, FID: ${userData.fid}`,
         })
       } else {
-        throw new Error("No user data found in Farcaster context")
+        throw new Error("Failed to authenticate with Quick Auth")
       }
     } catch (error) {
-      console.error("Error connecting to Farcaster wallet:", error)
+      console.error("Error connecting wallet:", error)
       toast({
         title: "Connection Failed",
-        description: "Could not connect to Farcaster wallet. Please try again.",
+        description: "Could not connect wallet. Please try again.",
         variant: "destructive",
       })
-      // Fallback to manual input
-      setShowManualInput(true)
     } finally {
       setIsConnecting(false)
-    }
-  }
-
-  // Log user login
-  const logUserLogin = async (userData: { fid: string, walletAddress: string }) => {
-    try {
-      console.log("Logging user login:", userData)
-      
-      const response = await fetch("/api/log-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          farcaster_id: userData.fid,
-          wallet_address: userData.walletAddress,
-          login_method: "farcaster_wallet"
-        })
-      })
-      
-      if (response.ok) {
-        console.log("Login logged successfully")
-      } else {
-        console.error("Failed to log login")
-      }
-    } catch (error) {
-      console.error("Error logging login:", error)
     }
   }
 
@@ -156,7 +90,7 @@ export default function AppRoulette() {
     try {
       console.log("Checking eligibility...")
       
-      if (!userInfo?.fid) {
+      if (!user?.fid) {
         console.log("No user data, showing wallet connect")
         setShowWalletConnect(true)
         return
@@ -165,7 +99,7 @@ export default function AppRoulette() {
       const response = await fetch("/api/check-eligibility", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ farcaster_id: userInfo.fid })
+        body: JSON.stringify({ farcaster_id: user.fid.toString() })
       })
       
       if (response.ok) {
@@ -183,20 +117,20 @@ export default function AppRoulette() {
   // Update eligibility when user performs actions
   const updateEligibility = async (action: 'spin' | 'share') => {
     console.log(`Updating eligibility for action: ${action}`)
-    console.log("Current userInfo:", userInfo)
+    console.log("Current user:", user)
     
-    if (!userInfo?.fid) {
+    if (!user?.fid) {
       console.error("No user FID available")
       toast({
         title: "Wallet Required",
-        description: "Please connect your Farcaster wallet to participate in the airdrop.",
+        description: "Please connect your wallet to participate in the airdrop.",
         variant: "destructive",
       })
       setShowWalletConnect(true)
       return
     }
     
-    console.log(`Using FID: ${userInfo.fid} for ${action}`)
+    console.log(`Using FID: ${user.fid} for ${action}`)
     
     try {
       // Update eligibility in database
@@ -204,7 +138,7 @@ export default function AppRoulette() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          farcaster_id: userInfo.fid,
+          farcaster_id: user.fid.toString(),
           action: action 
         })
       })
@@ -244,7 +178,7 @@ export default function AppRoulette() {
 
   // Claim tokens
   const claimTokens = async () => {
-    if (!userEligibility?.can_claim || !userInfo?.fid || !userInfo?.walletAddress) {
+    if (!userEligibility?.can_claim || !user?.fid || !user?.primaryAddress) {
       toast({
         title: "Cannot Claim",
         description: "Missing user information. Please connect your wallet.",
@@ -261,8 +195,8 @@ export default function AppRoulette() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          farcaster_id: userInfo.fid,
-          wallet_address: userInfo.walletAddress
+          farcaster_id: user.fid.toString(),
+          wallet_address: user.primaryAddress
         })
       })
       
@@ -400,42 +334,6 @@ export default function AppRoulette() {
     }
   }
 
-  const handleManualInput = async () => {
-    if (!manualFid.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a valid Farcaster ID",
-        variant: "destructive",
-      })
-      return
-    }
-    
-    const userData = {
-      fid: manualFid.trim(),
-      walletAddress: "0x1234567890123456789012345678901234567890"
-    }
-    
-    localStorage.setItem('farcaster_user_data', JSON.stringify(userData))
-    setUserInfo(userData)
-    setShowManualInput(false)
-    
-    // Log the manual login
-    await logUserLogin(userData)
-    
-    // Check eligibility with manual FID
-    const response = await fetch("/api/check-eligibility", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ farcaster_id: userData.fid })
-    })
-    
-    if (response.ok) {
-      const data = await response.json()
-      console.log("Eligibility data:", data)
-      setUserEligibility(data)
-    }
-  }
-
   const shareOnFarcaster = async () => {
     if (!currentApp) return
 
@@ -473,50 +371,39 @@ export default function AppRoulette() {
         await sdk.actions.ready()
         console.log("sdk.actions.ready() completed")
         
-        // Check localStorage for existing user data
-        const storedUserData = localStorage.getItem('farcaster_user_data')
-        if (storedUserData) {
-          try {
-            const parsedData = JSON.parse(storedUserData)
-            if (parsedData.fid) {
-              console.log("Found stored user data:", parsedData)
-              setUserInfo(parsedData)
-              setIsWalletConnected(true)
-              setShowWalletConnect(false)
-              
-              // Check eligibility with stored FID
-              const response = await fetch("/api/check-eligibility", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ farcaster_id: parsedData.fid })
-              })
-              
-              if (response.ok) {
-                const data = await response.json()
-                console.log("Eligibility data:", data)
-                setUserEligibility(data)
-              }
-            } else {
-              console.log("No FID in stored data, showing wallet connect")
-              setShowWalletConnect(true)
-              setIsWalletConnected(false)
+        // Try to get user data with Quick Auth
+        try {
+          const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
+          if (response.ok) {
+            const userData = await response.json()
+            console.log("User data from Quick Auth:", userData)
+            setUser(userData)
+            
+            // Check eligibility with the FID
+            const eligibilityResponse = await fetch("/api/check-eligibility", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ farcaster_id: userData.fid.toString() })
+            })
+            
+            if (eligibilityResponse.ok) {
+              const eligibilityData = await eligibilityResponse.json()
+              console.log("Eligibility data:", eligibilityData)
+              setUserEligibility(eligibilityData)
             }
-          } catch (e) {
-            console.error("Failed to parse localStorage data:", e)
+          } else {
+            console.log("No authenticated user, showing wallet connect")
             setShowWalletConnect(true)
-            setIsWalletConnected(false)
           }
-        } else {
-          console.log("No stored user data, showing wallet connect")
+        } catch (authError) {
+          console.log("Quick Auth failed, showing wallet connect")
           setShowWalletConnect(true)
-          setIsWalletConnected(false)
         }
         
         console.log("App initialized successfully")
       } catch (error) {
         console.error("Error initializing app:", error)
         setShowWalletConnect(true)
-        setIsWalletConnected(false)
       }
     }
 
@@ -560,10 +447,10 @@ export default function AppRoulette() {
             </div>
 
             <div className="flex items-center space-x-3">
-              {isWalletConnected && userInfo && (
+              {user && (
                 <div className="hidden sm:flex items-center space-x-2 text-sm text-muted-foreground">
                   <Wallet className="w-4 h-4" />
-                  <span>FID: {userInfo.fid}</span>
+                  <span>FID: {user.fid}</span>
                 </div>
               )}
               <Button
@@ -592,7 +479,7 @@ export default function AppRoulette() {
             <p className="text-muted-foreground mb-4">Connect your Farcaster wallet to participate in the $CITY token airdrop:</p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Button 
-                onClick={connectFarcasterWallet}
+                onClick={connectWallet}
                 disabled={isConnecting}
                 className="flex-1 premium-gradient hover:shadow-2xl text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105"
               >
@@ -607,40 +494,6 @@ export default function AppRoulette() {
                     Connect Wallet
                   </>
                 )}
-              </Button>
-            </div>
-            <div className="mt-4 pt-4 border-t border-border/30">
-              <p className="text-sm text-muted-foreground mb-2">Or enter your FID manually for testing:</p>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={manualFid}
-                  onChange={(e) => setManualFid(e.target.value)}
-                  placeholder="Enter your FID (e.g., 12345)"
-                  className="flex-1 px-3 py-2 border border-border/50 rounded-lg bg-background/50 text-foreground"
-                />
-                <Button onClick={handleManualInput} className="px-4 py-2">
-                  Submit
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {showManualInput && (
-          <div className="mb-8 p-6 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Enter Your Farcaster ID</h3>
-            <p className="text-muted-foreground mb-4">For testing purposes, please enter your Farcaster ID manually:</p>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={manualFid}
-                onChange={(e) => setManualFid(e.target.value)}
-                placeholder="Enter your FID (e.g., 12345)"
-                className="flex-1 px-3 py-2 border border-border/50 rounded-lg bg-background/50 text-foreground"
-              />
-              <Button onClick={handleManualInput} className="px-4 py-2">
-                Submit
               </Button>
             </div>
           </div>

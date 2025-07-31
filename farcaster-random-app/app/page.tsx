@@ -32,52 +32,9 @@ export default function AppRoulette() {
   
   // User authentication state
   const [user, setUser] = useState<{ fid: number; primaryAddress?: string } | null>(null)
-  const [showConnectButton, setShowConnectButton] = useState(false)
-  const [isConnecting, setIsConnecting] = useState(false)
+  const [isInitializing, setIsInitializing] = useState(true)
   
   const { toast } = useToast()
-
-  // Connect to Farcaster
-  const connectToFarcaster = async () => {
-    setIsConnecting(true)
-    try {
-      console.log("Attempting to connect to Farcaster...")
-      
-      // Try Quick Auth first
-      const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
-      if (response.ok) {
-        const userData = await response.json()
-        console.log("User data from Quick Auth:", userData)
-        setUser(userData)
-        setShowConnectButton(false)
-        
-        // Check eligibility
-        await checkEligibility(userData.fid.toString())
-        return
-      }
-      
-      // If Quick Auth fails, try to open Warpcast
-      console.log("Quick Auth failed, opening Warpcast...")
-      await sdk.actions.openUrl({
-        url: "https://warpcast.com"
-      })
-      
-      toast({
-        title: "Connect to Farcaster",
-        description: "Please connect your wallet in Warpcast and return here",
-      })
-      
-    } catch (error) {
-      console.error("Error connecting to Farcaster:", error)
-      toast({
-        title: "Connection Failed",
-        description: "Could not connect to Farcaster. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsConnecting(false)
-    }
-  }
 
   // Check eligibility for a user
   const checkEligibility = async (farcasterId: string) => {
@@ -324,30 +281,53 @@ export default function AppRoulette() {
         await sdk.actions.ready()
         console.log("SDK ready")
         
-        // Try Quick Auth first
+        // Try to get user context from Farcaster
         try {
-          const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
-          if (response.ok) {
-            const userData = await response.json()
-            console.log("User data from Quick Auth:", userData)
-            setUser(userData)
-            setShowConnectButton(false)
+          const context = await sdk.context
+          console.log("Farcaster context:", context)
+          
+          if (context?.user?.fid) {
+            console.log("User found in context:", context.user)
             
-            // Check eligibility
-            await checkEligibility(userData.fid.toString())
+            // Get user data from API to get wallet address
+            const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
+            if (response.ok) {
+              const userData = await response.json()
+              console.log("User data from API:", userData)
+              setUser(userData)
+              
+              // Check eligibility
+              await checkEligibility(userData.fid.toString())
+            } else {
+              // Fallback to just FID
+              setUser({ fid: context.user.fid })
+              await checkEligibility(context.user.fid.toString())
+            }
           } else {
-            console.log("No authenticated user, showing connect button")
-            setShowConnectButton(true)
+            console.log("No user in context, trying Quick Auth...")
+            
+            // Try Quick Auth as fallback
+            const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
+            if (response.ok) {
+              const userData = await response.json()
+              console.log("User data from Quick Auth:", userData)
+              setUser(userData)
+              
+              // Check eligibility
+              await checkEligibility(userData.fid.toString())
+            } else {
+              console.log("No authenticated user found")
+            }
           }
         } catch (authError) {
-          console.log("Quick Auth not available, showing connect button")
-          setShowConnectButton(true)
+          console.log("Authentication error:", authError)
         }
         
         console.log("App initialized")
       } catch (error) {
         console.error("Error initializing app:", error)
-        setShowConnectButton(true)
+      } finally {
+        setIsInitializing(false)
       }
     }
 
@@ -417,47 +397,25 @@ export default function AppRoulette() {
           </div>
         )}
 
-        {/* Connect to Farcaster Button */}
-        {showConnectButton && !user && (
-          <div className="mb-8 animate-in slide-in-from-top-4 duration-500">
-            <Card className="border border-primary/30 shadow-xl bg-card/80 backdrop-blur-xl rounded-2xl overflow-hidden">
-              <CardContent className="p-6 text-center">
-                <div className="mb-4">
-                  <div className="inline-flex items-center justify-center w-16 h-16 premium-gradient rounded-2xl mb-4 shadow-xl">
-                    <Wallet className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-foreground mb-2">
-                    Connect to Farcaster
-                  </h3>
-                  <p className="text-muted-foreground mb-6">
-                    Connect your Farcaster account to participate in the $CITY token airdrop!
-                  </p>
-                </div>
-                <Button
-                  onClick={connectToFarcaster}
-                  disabled={isConnecting}
-                  className="premium-gradient hover:shadow-2xl text-white h-14 px-8 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl border border-white/20"
-                >
-                  {isConnecting ? (
-                    <>
-                      <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
-                      Connecting...
-                    </>
-                  ) : (
-                    <>
-                      <Wallet className="w-5 h-5 mr-3" />
-                      Connect to Farcaster
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
         <Card className="border border-border/30 shadow-2xl bg-card/80 backdrop-blur-xl rounded-3xl overflow-hidden hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] animate-float">
           <CardContent className="p-8 sm:p-10 relative">
-            {showRouletteAnimation ? (
+            {isInitializing ? (
+              <div className="py-20 text-center">
+                <div className="relative w-32 h-32 mx-auto mb-10">
+                  <div className="absolute inset-0 rounded-full animate-glow bg-primary/20 blur-md"></div>
+                  <div className="absolute inset-2 border-4 border-border/30 border-t-primary rounded-full animate-spin shadow-lg"></div>
+                  <div className="absolute inset-4 premium-gradient rounded-full flex items-center justify-center shadow-xl">
+                    <Sparkles className="w-8 h-8 text-white animate-pulse drop-shadow-lg" />
+                  </div>
+                </div>
+                <h3 className="text-3xl font-bold text-foreground mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                  🔗 Connecting to Farcaster...
+                </h3>
+                <p className="text-muted-foreground text-xl font-medium">
+                  Getting your wallet address securely
+                </p>
+              </div>
+            ) : showRouletteAnimation ? (
               <div className="py-20 text-center">
                 <div className="relative w-32 h-32 mx-auto mb-10">
                   {/* Outer glowing ring */}

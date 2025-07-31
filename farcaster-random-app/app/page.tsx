@@ -45,20 +45,50 @@ export default function AppRoulette() {
     try {
       console.log("Getting user info from Farcaster context...")
       
-      // For now, use demo mode to test the functionality
-      // In production, you would get real Farcaster user data
-      const mockUserData = {
-        fid: "demo_fid_123",
-        walletAddress: "0x1234567890123456789012345678901234567890"
+      // Try to get real Farcaster user data first
+      let userData = null
+      
+      try {
+        // Try to get context from Farcaster SDK
+        const context = await sdk.context
+        console.log("Farcaster context:", context)
+        
+        if (context && context.user && context.user.fid) {
+          const fid = context.user.fid.toString()
+          console.log("Found FID from context:", fid)
+          
+          // Get user info from our API (which fetches from Farcaster API)
+          const userInfoResponse = await fetch("/api/get-user-info", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fid: fid })
+          })
+          
+          if (userInfoResponse.ok) {
+            userData = await userInfoResponse.json()
+            console.log("Real user data from Farcaster API:", userData)
+          }
+        }
+      } catch (contextError) {
+        console.log("Could not get Farcaster context:", contextError)
       }
-      console.log("Using demo user data:", mockUserData)
-      setUserInfo(mockUserData)
+      
+      // Fallback to demo mode if no real data
+      if (!userData) {
+        console.log("Using demo user data")
+        userData = {
+          fid: "demo_fid_123",
+          walletAddress: "0x1234567890123456789012345678901234567890"
+        }
+      }
+      
+      setUserInfo(userData)
       
       // Check eligibility from database
       const response = await fetch("/api/check-eligibility", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ farcaster_id: mockUserData.fid })
+        body: JSON.stringify({ farcaster_id: userData.fid })
       })
       
       if (response.ok) {
@@ -75,9 +105,60 @@ export default function AppRoulette() {
 
   // Update eligibility when user performs actions
   const updateEligibility = async (action: 'spin' | 'share') => {
-    if (!userInfo?.fid) {
-      console.log("No user FID available, using demo mode")
-      // Fallback to demo mode
+    console.log(`Updating eligibility for action: ${action}`)
+    console.log("Current userInfo:", userInfo)
+    
+    // Always try to use the API first, even with demo data
+    try {
+      const fid = userInfo?.fid || "demo_fid_123"
+      console.log(`Using FID: ${fid} for ${action}`)
+      
+      // Update eligibility in database
+      const response = await fetch("/api/update-eligibility", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          farcaster_id: fid,
+          action: action 
+        })
+      })
+      
+      console.log(`API response status: ${response.status}`)
+      
+      if (response.ok) {
+        const data = await response.json()
+        console.log("Eligibility updated:", data)
+        setUserEligibility(data)
+        
+        // Show eligibility notification if newly eligible
+        if (action === 'share' && data.is_eligible && !data.has_claimed) {
+          toast({
+            title: "🎉 You're eligible for $CITY airdrop!",
+            description: "You've spun and shared! Claim your 100 $CITY tokens now!",
+          })
+        }
+      } else {
+        console.error("API call failed:", response.status)
+        // Fallback to local state update
+        setUserEligibility(prev => {
+          const newState = {
+            has_spun: action === 'spin' ? true : (prev?.has_spun || false),
+            has_shared: action === 'share' ? true : (prev?.has_shared || false),
+            is_eligible: false,
+            has_claimed: prev?.has_claimed || false,
+            can_claim: false,
+            tokens_claimed: prev?.tokens_claimed || 0
+          }
+          
+          newState.is_eligible = newState.has_spun && newState.has_shared
+          newState.can_claim = newState.is_eligible && !newState.has_claimed
+          
+          return newState
+        })
+      }
+    } catch (error) {
+      console.error("Error updating eligibility:", error)
+      // Fallback to local state update
       setUserEligibility(prev => {
         const newState = {
           has_spun: action === 'spin' ? true : (prev?.has_spun || false),
@@ -93,35 +174,6 @@ export default function AppRoulette() {
         
         return newState
       })
-      return
-    }
-
-    try {
-      // Update eligibility in database
-      const response = await fetch("/api/update-eligibility", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          farcaster_id: userInfo.fid,
-          action: action 
-        })
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        setUserEligibility(data)
-        
-        // Show eligibility notification if newly eligible
-        if (action === 'share' && data.is_eligible && !data.has_claimed) {
-          toast({
-            title: "🎉 You're eligible for $CITY airdrop!",
-            description: "You've spun and shared! Claim your 100 $CITY tokens now!",
-          })
-        }
-      }
-    } catch (error) {
-      console.error("Error updating eligibility:", error)
-      // Fallback to local state update
     }
   }
 

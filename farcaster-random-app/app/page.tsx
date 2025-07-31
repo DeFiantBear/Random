@@ -499,15 +499,25 @@ export default function AppRoulette() {
   useEffect(() => {
     const initializeApp = async () => {
       try {
+        console.log("Initializing app...")
+        
         // Tell Farcaster the app is ready to display
+        console.log("Calling sdk.actions.ready()...")
         await sdk.actions.ready()
+        console.log("sdk.actions.ready() completed")
         
         // Check user eligibility
+        console.log("Checking eligibility...")
         await checkEligibility()
+        console.log("Eligibility check completed")
       } catch (error) {
         console.error("Error initializing app:", error)
         // Still call ready() even if there's an error
-        await sdk.actions.ready()
+        try {
+          await sdk.actions.ready()
+        } catch (readyError) {
+          console.error("Error calling ready():", readyError)
+        }
       }
     }
 

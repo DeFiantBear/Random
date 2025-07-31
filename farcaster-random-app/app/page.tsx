@@ -34,17 +34,17 @@ export default function AppRoulette() {
   
   const { toast } = useToast()
 
-  // Check user eligibility (simplified for now)
+  // Check user eligibility
   const checkEligibility = async () => {
-    // For now, we'll use a placeholder approach
-    // In a real implementation, you'd get the user's FID from the Farcaster context
-    console.log("Checking eligibility - would need user FID")
+    // For now, we'll use a demo approach since Farcaster SDK user methods aren't available
+    // In production, you'd get the user's FID from the Farcaster context
+    console.log("Checking eligibility - would need user FID from Farcaster context")
   }
 
   // Update eligibility when user performs actions
   const updateEligibility = async (action: 'spin' | 'share') => {
     // For now, we'll track locally and show the UI
-    // In a real implementation, you'd send the user's FID to the API
+    // In production, you'd send the user's FID to the API
     console.log(`Updating eligibility for action: ${action}`)
     
     // Simulate eligibility update for demo purposes
@@ -81,7 +81,12 @@ export default function AppRoulette() {
     setIsClaiming(true)
     try {
       // For demo purposes, we'll simulate a successful claim
-      // In a real implementation, you'd send the user's FID and wallet address
+      // In production, you would:
+      // 1. Get the user's wallet address from Farcaster
+      // 2. Send claim request to API with FID and wallet address
+      // 3. API would handle the actual token transfer
+      
+      // Simulate API call
       setTimeout(() => {
         setUserEligibility(prev => ({
           ...prev!,

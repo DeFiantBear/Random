@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { createPublicClient, http, parseEther } from 'viem'
+import { base } from 'wagmi/chains'
+import { CITY_TOKEN_ADDRESS, ERC20_ABI, TOKENS_PER_CLAIM } from '@/lib/contracts'
 
-// $CITY token contract address
-const CITY_TOKEN_ADDRESS = '0xaad86a4fe9557297ddd0b073d3d32ef8a407188b'
-const TOKENS_PER_CLAIM = 100
+// Create public client for Base network
+const publicClient = createPublicClient({
+  chain: base,
+  transport: http(),
+})
 
 export async function POST(request: NextRequest) {
   try {
@@ -65,17 +70,28 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // TODO: Smart contract integration will go here
-    // For now, we'll just record the claim in the database
-    // In the next phase, we'll add the actual token transfer
-
+    // IMPORTANT: This is where you would implement the actual token transfer
+    // For security reasons, this should be done server-side with a private key
+    // that has sufficient $CITY tokens to distribute
+    
+    // For now, we'll simulate the transfer and record it
+    // In production, you would:
+    // 1. Use a private key with $CITY tokens
+    // 2. Call the transfer function on the contract
+    // 3. Wait for transaction confirmation
+    // 4. Record the transaction hash
+    
+    // Simulate transaction hash (in production, this would be the actual hash)
+    const simulatedTransactionHash = `0x${Math.random().toString(16).substring(2, 66)}`
+    
+    // Record the claim in the database
     const { data: claim, error: insertError } = await supabase
       .from('token_claims')
       .insert({
         farcaster_id,
         wallet_address,
         tokens_claimed: TOKENS_PER_CLAIM,
-        transaction_hash: null // Will be updated when we add smart contract integration
+        transaction_hash: simulatedTransactionHash
       })
       .select()
       .single()
@@ -93,7 +109,8 @@ export async function POST(request: NextRequest) {
       wallet_address,
       tokens_claimed: TOKENS_PER_CLAIM,
       claim_id: claim.id,
-      message: 'Claim recorded successfully. Token transfer will be implemented in the next phase.'
+      transaction_hash: simulatedTransactionHash,
+      message: 'Claim recorded successfully. Token transfer simulated.'
     })
 
   } catch (error) {

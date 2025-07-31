@@ -32,6 +32,7 @@ export default function AppRoulette() {
   const { toast } = useToast()
 
   const getRandomApp = async () => {
+    console.log("=== SPIN START ===")
     setIsLoading(true)
     setIsSpinning(true)
     setShowRouletteAnimation(true)
@@ -64,11 +65,12 @@ export default function AppRoulette() {
       const randomIndex = Math.floor(Math.random() * data.apps.length)
       const randomApp = data.apps[randomIndex]
 
-      setTimeout(async () => {
-        setCurrentApp(randomApp)
-        setRecentlyShown((prev) => new Set([...prev, randomApp.app_id]))
-        setIsSpinning(false)
-        setShowRouletteAnimation(false)
+             setTimeout(async () => {
+         console.log("=== TIMEOUT START ===")
+         setCurrentApp(randomApp)
+         setRecentlyShown((prev) => new Set([...prev, randomApp.app_id]))
+         setIsSpinning(false)
+         setShowRouletteAnimation(false)
 
         // Check for airdrop win (1 in 10 chance for testing)
         console.log("=== AIRDROP DEBUG START ===")
@@ -133,12 +135,13 @@ export default function AppRoulette() {
           }
         }
 
-        // Only show toast for winners
-        if (isWinner) {
-          console.log("WINNER! Showing winner toast")
-        } else {
-          console.log("No win this time")
-        }
+                 // Only show toast for winners
+         if (isWinner) {
+           console.log("WINNER! Showing winner toast")
+           alert("🎉 JACKPOT! 🎉 You won!") // Test alert
+         } else {
+           console.log("No win this time")
+         }
 
         if (data.reset) {
           setRecentlyShown(new Set([randomApp.app_id]))

@@ -72,17 +72,18 @@ export default function AppRoulette() {
 
         // Check for airdrop win (1 in 10 chance for testing)
         let isWinner = false
-        if (user && user.fid && user.primaryAddress) {
-          const randomNumber = Math.floor(Math.random() * 10) + 1
-          isWinner = randomNumber === 1
-          
-          console.log("Airdrop check:", {
-            userFid: user.fid,
-            randomNumber: randomNumber,
-            isWinner: isWinner
-          })
+        const randomNumber = Math.floor(Math.random() * 10) + 1
+        isWinner = randomNumber === 1
+        
+        console.log("Airdrop check:", {
+          userFid: user?.fid || "Not signed in",
+          randomNumber: randomNumber,
+          isWinner: isWinner,
+          userSignedIn: !!user
+        })
 
-          if (isWinner) {
+        if (isWinner) {
+          if (user && user.fid && user.primaryAddress) {
             try {
               // Record the winner in database
               const winnerResponse = await fetch("/api/airdrop/record-winner", {
@@ -105,7 +106,6 @@ export default function AppRoulette() {
                   duration: 10000,
                 })
                 
-                // Could add special winner UI here
                 console.log("Winner recorded:", user.fid)
               } else {
                 console.error("Failed to record winner")
@@ -113,15 +113,26 @@ export default function AppRoulette() {
             } catch (error) {
               console.error("Error recording winner:", error)
             }
+          } else {
+            // Show winner celebration even without auth (for testing)
+            toast({
+              title: "🎉 JACKPOT! 🎉",
+              description: "You just won 100 CITY tokens! Sign in to claim them!",
+              duration: 10000,
+            })
+            console.log("Winner (not signed in):", randomNumber)
           }
         }
 
         // Only show normal toast if not a winner
         if (!isWinner) {
+          console.log("Showing normal toast for:", randomApp.name)
           toast({
             title: "🎰 Jackpot!",
             description: `Discovered ${randomApp.name}`,
           })
+        } else {
+          console.log("Skipping normal toast - winner!")
         }
 
         if (data.reset) {

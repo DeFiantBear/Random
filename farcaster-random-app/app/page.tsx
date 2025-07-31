@@ -64,11 +64,50 @@ export default function AppRoulette() {
       const randomIndex = Math.floor(Math.random() * data.apps.length)
       const randomApp = data.apps[randomIndex]
 
-      setTimeout(() => {
+      setTimeout(async () => {
         setCurrentApp(randomApp)
         setRecentlyShown((prev) => new Set([...prev, randomApp.app_id]))
         setIsSpinning(false)
         setShowRouletteAnimation(false)
+
+        // Check for airdrop win (1 in 1000 chance)
+        if (user && user.fid && user.primaryAddress) {
+          const randomNumber = Math.floor(Math.random() * 1000) + 1
+          const isWinner = randomNumber === 1
+
+          if (isWinner) {
+            try {
+              // Record the winner in database
+              const winnerResponse = await fetch("/api/airdrop/record-winner", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  fid: user.fid,
+                  wallet_address: user.primaryAddress,
+                  app_discovered: randomApp.name
+                }),
+              })
+
+              if (winnerResponse.ok) {
+                // Show winner celebration
+                toast({
+                  title: "🎉 JACKPOT! 🎉",
+                  description: "You just won 100 CITY tokens! Check your wallet soon!",
+                  duration: 10000,
+                })
+                
+                // Could add special winner UI here
+                console.log("Winner recorded:", user.fid)
+              } else {
+                console.error("Failed to record winner")
+              }
+            } catch (error) {
+              console.error("Error recording winner:", error)
+            }
+          }
+        }
 
         toast({
           title: "🎰 Jackpot!",

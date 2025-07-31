@@ -84,9 +84,9 @@ export default function AppRoulette() {
           timestamp: new Date().toISOString()
         })
         
-        // Force a win every 5th spin for testing
+        // Force a win every 3rd spin for testing
         const spinCount = (recentlyShown.size + 1)
-        if (spinCount % 5 === 0) {
+        if (spinCount % 3 === 0) {
           isWinner = true
           console.log("FORCED WIN on spin", spinCount)
         }
@@ -133,26 +133,12 @@ export default function AppRoulette() {
           }
         }
 
-        // Only show normal toast if not a winner
-        if (!isWinner) {
-          console.log("Showing normal toast for:", randomApp.name)
-          toast({
-            title: "🎰 Jackpot!",
-            description: `Discovered ${randomApp.name}`,
-          })
+        // Only show toast for winners
+        if (isWinner) {
+          console.log("WINNER! Showing winner toast")
         } else {
-          console.log("Skipping normal toast - winner!")
+          console.log("No win this time")
         }
-        
-        // Test toast system
-        console.log("=== TOAST TEST ===")
-        setTimeout(() => {
-          toast({
-            title: "Debug Test",
-            description: `Spin ${recentlyShown.size + 1} completed at ${new Date().toLocaleTimeString()}`,
-            duration: 3000,
-          })
-        }, 1000)
 
         if (data.reset) {
           setRecentlyShown(new Set([randomApp.app_id]))

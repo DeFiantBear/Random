@@ -39,36 +39,81 @@ export default function AppRoulette() {
     fid: string
     walletAddress: string
   } | null>(null)
+  
+  // Manual input for testing
+  const [showManualInput, setShowManualInput] = useState(false)
+  const [manualFid, setManualFid] = useState("")
 
   // Check user eligibility
   const checkEligibility = async () => {
     try {
       console.log("Getting user info from Farcaster context...")
       
-      // Get real Farcaster user data - no fallbacks
-      const context = await sdk.context
-      console.log("Farcaster context:", context)
+      // Try multiple ways to get user data
+      let userData = null
       
-      if (!context || !context.user || !context.user.fid) {
-        console.error("No Farcaster user context available")
+      // Method 1: Try sdk.context
+      try {
+        console.log("Trying sdk.context...")
+        const context = await sdk.context
+        console.log("Farcaster context:", context)
+        
+        if (context && context.user && context.user.fid) {
+          const fid = context.user.fid.toString()
+          console.log("Found FID from context:", fid)
+          
+          userData = {
+            fid: fid,
+            walletAddress: "0x1234567890123456789012345678901234567890"
+          }
+          console.log("Using real Farcaster user data:", userData)
+        }
+      } catch (contextError) {
+        console.error("sdk.context failed:", contextError)
+      }
+      
+      // Method 2: Try URL parameters (some mini apps pass user data via URL)
+      if (!userData) {
+        console.log("Trying URL parameters...")
+        const urlParams = new URLSearchParams(window.location.search)
+        const fidFromUrl = urlParams.get('fid') || urlParams.get('user_id')
+        if (fidFromUrl) {
+          console.log("Found FID from URL:", fidFromUrl)
+          userData = {
+            fid: fidFromUrl,
+            walletAddress: "0x1234567890123456789012345678901234567890"
+          }
+        }
+      }
+      
+      // Method 3: Try localStorage (if user data was stored before)
+      if (!userData) {
+        console.log("Trying localStorage...")
+        const storedUserData = localStorage.getItem('farcaster_user_data')
+        if (storedUserData) {
+          try {
+            userData = JSON.parse(storedUserData)
+            console.log("Found user data in localStorage:", userData)
+          } catch (e) {
+            console.error("Failed to parse localStorage data:", e)
+          }
+        }
+      }
+      
+      // If still no user data, show manual input option
+      if (!userData) {
+        console.error("No user data found from any source")
+        setShowManualInput(true)
         toast({
-          title: "Error",
-          description: "Could not get Farcaster user data. Please try again.",
+          title: "Manual Input Required",
+          description: "Please enter your Farcaster ID manually for testing.",
           variant: "destructive",
         })
         return
       }
       
-      const fid = context.user.fid.toString()
-      console.log("Found FID from context:", fid)
-      
-      // For now, use a mock wallet address since we can't get it from context
-      const userData = {
-        fid: fid,
-        walletAddress: "0x1234567890123456789012345678901234567890" // We'll need to get this from user input or another source
-      }
-      console.log("Using real Farcaster user data:", userData)
-      
+      // Store user data for future use
+      localStorage.setItem('farcaster_user_data', JSON.stringify(userData))
       setUserInfo(userData)
       
       // Check eligibility from database
@@ -319,6 +364,39 @@ export default function AppRoulette() {
     }
   }
 
+  const handleManualInput = async () => {
+    if (!manualFid.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid Farcaster ID",
+        variant: "destructive",
+      })
+      return
+    }
+    
+    const userData = {
+      fid: manualFid.trim(),
+      walletAddress: "0x1234567890123456789012345678901234567890"
+    }
+    
+    localStorage.setItem('farcaster_user_data', JSON.stringify(userData))
+    setUserInfo(userData)
+    setShowManualInput(false)
+    
+    // Check eligibility with manual FID
+    const response = await fetch("/api/check-eligibility", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ farcaster_id: userData.fid })
+    })
+    
+    if (response.ok) {
+      const data = await response.json()
+      console.log("Eligibility data:", data)
+      setUserEligibility(data)
+    }
+  }
+
   const shareOnFarcaster = async () => {
     if (!currentApp) return
 
@@ -414,12 +492,31 @@ export default function AppRoulette() {
         </div>
       </nav>
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 relative z-10">
-        {showAddForm && (
-          <div className="mb-8 animate-in slide-in-from-top-4 duration-500">
-            <AddAppForm onAppAdded={handleAppAdded} />
-          </div>
-        )}
+             <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 relative z-10">
+         {showAddForm && (
+           <div className="mb-8 animate-in slide-in-from-top-4 duration-500">
+             <AddAppForm onAppAdded={handleAppAdded} />
+           </div>
+         )}
+         
+         {showManualInput && (
+           <div className="mb-8 p-6 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30">
+             <h3 className="text-lg font-semibold text-foreground mb-4">Enter Your Farcaster ID</h3>
+             <p className="text-muted-foreground mb-4">For testing purposes, please enter your Farcaster ID manually:</p>
+             <div className="flex gap-2">
+               <input
+                 type="text"
+                 value={manualFid}
+                 onChange={(e) => setManualFid(e.target.value)}
+                 placeholder="Enter your FID (e.g., 12345)"
+                 className="flex-1 px-3 py-2 border border-border/50 rounded-lg bg-background/50 text-foreground"
+               />
+               <Button onClick={handleManualInput} className="px-4 py-2">
+                 Submit
+               </Button>
+             </div>
+           </div>
+         )}
 
         <Card className="border border-border/30 shadow-2xl bg-card/80 backdrop-blur-xl rounded-3xl overflow-hidden hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] animate-float">
           <CardContent className="p-8 sm:p-10 relative">

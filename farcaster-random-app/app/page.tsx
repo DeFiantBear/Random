@@ -156,12 +156,18 @@ export default function AppRoulette() {
         setIsAuthenticating(true)
         
         // Use Quick Auth to get authenticated user data
+        console.log("Attempting Quick Auth...")
         const res = await sdk.quickAuth.fetch(`${window.location.origin}/api/auth`)
+        console.log("Quick Auth response status:", res.status)
+        console.log("Quick Auth response ok:", res.ok)
+        
         if (res.ok) {
           const userData = await res.json()
           console.log("Authenticated user data:", userData)
           setUser(userData)
         } else {
+          const errorText = await res.text()
+          console.log("Quick Auth failed:", errorText)
           console.log("No authenticated user found - app will work without tracking")
         }
         
@@ -170,6 +176,7 @@ export default function AppRoulette() {
         console.log("App initialized")
       } catch (error) {
         console.error("Error initializing app:", error)
+        console.error("Error details:", error)
       } finally {
         setIsAuthenticating(false)
       }

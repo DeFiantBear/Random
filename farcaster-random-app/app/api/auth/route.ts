@@ -44,8 +44,12 @@ async function resolveUser(fid: number) {
 
 export async function GET(request: NextRequest) {
   try {
+    console.log("Auth endpoint called")
     const authorization = request.headers.get('Authorization')
+    console.log("Authorization header:", authorization ? "Present" : "Missing")
+    
     if (!authorization || !authorization.startsWith('Bearer ')) {
+      console.log("No valid authorization header found")
       return NextResponse.json(
         { error: 'Missing token' },
         { status: 401 }

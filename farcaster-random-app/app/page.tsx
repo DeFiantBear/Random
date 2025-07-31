@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Shuffle, RefreshCw, Plus, ExternalLink, Sparkles, Circle, Share2, Copy, Check, Wallet } from "lucide-react"
+import { Shuffle, Plus, ExternalLink, Sparkles, Circle, Share2, Copy, Check } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import AddAppForm from "@/components/add-app-form"
 import type { FarcasterApp } from "@/types/app"
@@ -19,135 +19,7 @@ export default function AppRoulette() {
   const [showRouletteAnimation, setShowRouletteAnimation] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   
-  // Airdrop eligibility state
-  const [userEligibility, setUserEligibility] = useState<{
-    has_spun: boolean
-    has_shared: boolean
-    is_eligible: boolean
-    has_claimed: boolean
-    can_claim: boolean
-    tokens_claimed: number
-  } | null>(null)
-  const [isClaiming, setIsClaiming] = useState(false)
-  
-  // User authentication state
-  const [user, setUser] = useState<{ fid: number; primaryAddress?: string } | null>(null)
-  const [isInitializing, setIsInitializing] = useState(true)
-  
   const { toast } = useToast()
-
-  // Check eligibility for a user
-  const checkEligibility = async (farcasterId: string) => {
-    try {
-      console.log("Checking eligibility for FID:", farcasterId)
-      const response = await fetch("/api/check-eligibility", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ farcaster_id: farcasterId })
-      })
-      
-      if (response.ok) {
-        const eligibilityData = await response.json()
-        console.log("Eligibility data received:", eligibilityData)
-        setUserEligibility(eligibilityData)
-      } else {
-        console.error("Failed to check eligibility:", response.status)
-      }
-    } catch (error) {
-      console.error("Error checking eligibility:", error)
-    }
-  }
-
-  // Update eligibility when user performs actions
-  const updateEligibility = async (action: 'spin' | 'share') => {
-    if (!user?.fid) {
-      console.log("No user FID, skipping eligibility update")
-      return
-    }
-    
-    console.log(`Updating eligibility for FID: ${user.fid}, action: ${action}`)
-    
-    try {
-      const response = await fetch("/api/update-eligibility", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          farcaster_id: user.fid.toString(),
-          action: action 
-        })
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        console.log("Eligibility updated successfully:", data)
-        setUserEligibility(data)
-        
-        if (action === 'share' && data.is_eligible && !data.has_claimed) {
-          toast({
-            title: "🎉 You're eligible for $CITY airdrop!",
-            description: "You've spun and shared! Claim your 100 $CITY tokens now!",
-          })
-        }
-      } else {
-        console.error("Failed to update eligibility:", response.status)
-        const errorText = await response.text()
-        console.error("Error response:", errorText)
-      }
-    } catch (error) {
-      console.error("Error updating eligibility:", error)
-    }
-  }
-
-  // Claim tokens
-  const claimTokens = async () => {
-    if (!userEligibility?.can_claim || !user?.fid || !user?.primaryAddress) {
-      toast({
-        title: "Cannot Claim",
-        description: "Missing user information or not eligible.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setIsClaiming(true)
-    try {
-      const response = await fetch("/api/claim-tokens", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          farcaster_id: user.fid.toString(),
-          wallet_address: user.primaryAddress
-        })
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        setUserEligibility(prev => ({
-          ...prev!,
-          has_claimed: true,
-          can_claim: false,
-          tokens_claimed: data.tokens_claimed || 100
-        }))
-        
-        toast({
-          title: "🎉 Tokens Claimed!",
-          description: `Successfully claimed ${data.tokens_claimed || 100} $CITY tokens!`,
-        })
-      } else {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Claim failed")
-      }
-    } catch (error) {
-      console.error("Error claiming tokens:", error)
-      toast({
-        title: "Claim Failed",
-        description: error instanceof Error ? error.message : "An error occurred while claiming tokens",
-        variant: "destructive",
-      })
-    } finally {
-      setIsClaiming(false)
-    }
-  }
 
   const getRandomApp = async () => {
     setIsLoading(true)
@@ -187,9 +59,6 @@ export default function AppRoulette() {
         setRecentlyShown((prev) => new Set([...prev, randomApp.app_id]))
         setIsSpinning(false)
         setShowRouletteAnimation(false)
-
-        // Track that user has spun
-        updateEligibility('spin')
 
         toast({
           title: "🎰 Jackpot!",
@@ -262,9 +131,6 @@ export default function AppRoulette() {
         url: `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`
       })
       
-      // Track that user has shared
-      updateEligibility('share')
-      
       toast({
         title: "Shared on Farcaster!",
         description: "Your discovery has been shared with the community",
@@ -283,27 +149,10 @@ export default function AppRoulette() {
     const initializeApp = async () => {
       try {
         console.log("Initializing app...")
-        
-        // Use Quick Auth to get authenticated user data
-        const res = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
-        if (res.ok) {
-          const userData = await res.json()
-          console.log("Authenticated user data:", userData)
-          setUser(userData)
-          
-          // Check eligibility
-          await checkEligibility(userData.fid.toString())
-        } else {
-          console.log("No authenticated user found")
-        }
-        
-        // Signal that the app is ready
         await sdk.actions.ready()
         console.log("App initialized")
       } catch (error) {
         console.error("Error initializing app:", error)
-      } finally {
-        setIsInitializing(false)
       }
     }
 
@@ -347,12 +196,6 @@ export default function AppRoulette() {
             </div>
 
             <div className="flex items-center space-x-3">
-              {user && (
-                <div className="hidden sm:flex items-center space-x-2 text-sm text-muted-foreground">
-                  <Wallet className="w-4 h-4" />
-                  <span>FID: {user.fid}</span>
-                </div>
-              )}
               <Button
                 onClick={() => setShowAddForm(!showAddForm)}
                 className="premium-gradient hover:shadow-xl text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 h-10 sm:h-12 rounded-xl border border-white/20"
@@ -375,23 +218,7 @@ export default function AppRoulette() {
 
         <Card className="border border-border/30 shadow-2xl bg-card/80 backdrop-blur-xl rounded-3xl overflow-hidden hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] animate-float">
           <CardContent className="p-8 sm:p-10 relative">
-            {isInitializing ? (
-              <div className="py-20 text-center">
-                <div className="relative w-32 h-32 mx-auto mb-10">
-                  <div className="absolute inset-0 rounded-full animate-glow bg-primary/20 blur-md"></div>
-                  <div className="absolute inset-2 border-4 border-border/30 border-t-primary rounded-full animate-spin shadow-lg"></div>
-                  <div className="absolute inset-4 premium-gradient rounded-full flex items-center justify-center shadow-xl">
-                    <Sparkles className="w-8 h-8 text-white animate-pulse drop-shadow-lg" />
-                  </div>
-                </div>
-                <h3 className="text-3xl font-bold text-foreground mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                  🔗 Connecting to Farcaster...
-                </h3>
-                <p className="text-muted-foreground text-xl font-medium">
-                  Getting your wallet address securely
-                </p>
-              </div>
-            ) : showRouletteAnimation ? (
+            {showRouletteAnimation ? (
               <div className="py-20 text-center">
                 <div className="relative w-32 h-32 mx-auto mb-10">
                   {/* Outer glowing ring */}
@@ -488,65 +315,17 @@ export default function AppRoulette() {
                   </Button>
                 </div>
 
-                {/* Airdrop Eligibility Status */}
-                {user && (
-                  <div className="mt-6 p-4 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-lg font-semibold text-foreground">🎁 $CITY Token Airdrop</h4>
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-3 h-3 rounded-full ${userEligibility?.is_eligible ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
-                        <span className="text-sm font-medium">
-                          {userEligibility?.is_eligible ? 'Eligible' : 'In Progress'}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4 mb-3">
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${userEligibility?.has_spun ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                        <span className="text-sm text-muted-foreground">Spin the roulette</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${userEligibility?.has_shared ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                        <span className="text-sm text-muted-foreground">Share on Farcaster</span>
-                      </div>
-                    </div>
-
-                    {userEligibility?.can_claim && (
-                      <Button
-                        onClick={claimTokens}
-                        disabled={isClaiming}
-                        className="w-full premium-gradient hover:shadow-2xl text-white h-12 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-xl border border-white/20 group"
-                      >
-                        {isClaiming ? (
-                          <>
-                            <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
-                            Claiming...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-5 h-5 mr-3" />
-                            Claim 100 $CITY Tokens
-                          </>
-                        )}
-                      </Button>
-                    )}
-
-                    {userEligibility?.has_claimed && (
-                      <div className="text-center py-3">
-                        <div className="flex items-center justify-center space-x-2 text-green-600">
-                          <Check className="w-5 h-5" />
-                          <span className="font-semibold">Claimed {userEligibility.tokens_claimed} $CITY tokens!</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
                 <div className="flex justify-center">
-
-
-                              </div>
+                  <Button
+                    onClick={getRandomApp}
+                    disabled={isLoading}
+                    variant="outline"
+                    className="border-primary/30 hover:bg-primary/5 text-foreground font-semibold transition-all duration-300 hover:scale-105 rounded-2xl px-8 py-3 shadow-lg hover:shadow-xl backdrop-blur-sm bg-background/50 group"
+                  >
+                    <Shuffle className={`w-5 h-5 mr-3 ${isSpinning ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-300`} />
+                    Spin Again
+                  </Button>
+                </div>
               </div>
             ) : error ? (
               <div className="py-20 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
@@ -572,61 +351,6 @@ export default function AppRoulette() {
               </div>
             ) : (
               <div className="py-20 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-                {/* Airdrop Eligibility Status - Centered */}
-                {user && (
-                  <div className="mb-8 p-6 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30 max-w-md mx-auto">
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="text-xl font-semibold text-foreground">🎁 $CITY Token Airdrop</h4>
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-3 h-3 rounded-full ${userEligibility?.is_eligible ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
-                        <span className="text-sm font-medium">
-                          {userEligibility?.is_eligible ? 'Eligible' : 'In Progress'}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${userEligibility?.has_spun ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                        <span className="text-sm text-muted-foreground">Spin the roulette</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${userEligibility?.has_shared ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                        <span className="text-sm text-muted-foreground">Share on Farcaster</span>
-                      </div>
-                    </div>
-
-                    {userEligibility?.can_claim && (
-                      <Button
-                        onClick={claimTokens}
-                        disabled={isClaiming}
-                        className="w-full premium-gradient hover:shadow-2xl text-white h-12 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-xl border border-white/20 group"
-                      >
-                        {isClaiming ? (
-                          <>
-                            <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
-                            Claiming...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-5 h-5 mr-3" />
-                            Claim 100 $CITY Tokens
-                          </>
-                        )}
-                      </Button>
-                    )}
-
-                    {userEligibility?.has_claimed && (
-                      <div className="text-center py-3">
-                        <div className="flex items-center justify-center space-x-2 text-green-600">
-                          <Check className="w-5 h-5" />
-                          <span className="font-semibold">Claimed {userEligibility.tokens_claimed} $CITY tokens!</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
                 <h3 className="text-4xl font-bold text-foreground mb-6 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                   Ready to spin?
                 </h3>

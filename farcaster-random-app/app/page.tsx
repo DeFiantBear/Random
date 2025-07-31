@@ -75,9 +75,33 @@ export default function AppRoulette() {
          // Check for airdrop win (1 in 100 chance)
          if (user && user.fid && user.primaryAddress) {
            const randomNumber = Math.floor(Math.random() * 100) + 1
-           const isWinner = randomNumber === 1
+           let isWinner = randomNumber === 1
            
-           console.log("Airdrop check:", { randomNumber, isWinner, userFid: user.fid })
+           // FOR TESTING: Force a win every 10th spin to verify system works
+           const spinCount = recentlyShown.size + 1
+           if (spinCount % 10 === 0) {
+             isWinner = true
+             console.log("🧪 FORCED WIN for testing on spin", spinCount)
+           }
+           
+           console.log("=== AIRDROP DEBUG ===")
+           console.log("User signed in:", !!user)
+           console.log("User FID:", user.fid)
+           console.log("User wallet:", user.primaryAddress)
+           console.log("Random number:", randomNumber)
+           console.log("Is winner:", isWinner)
+           console.log("Timestamp:", new Date().toISOString())
+           console.log("=====================")
+
+           // Test notification to verify user is signed in
+           if (recentlyShown.size === 0) {
+             console.log("🧪 Testing notification system...")
+             toast({
+               title: "🧪 Test",
+               description: "Notification system working!",
+               duration: 2000,
+             })
+           }
 
            if (isWinner) {
              try {

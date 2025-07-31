@@ -28,4 +28,38 @@ export interface MiniAppInsert {
   mini_app_url: string
   creator?: string
   category?: string
+}
+
+// Airdrop system types
+export interface UserEligibility {
+  id: number
+  farcaster_id: string
+  has_spun: boolean
+  has_shared: boolean
+  is_eligible: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface UserEligibilityInsert {
+  farcaster_id: string
+  has_spun?: boolean
+  has_shared?: boolean
+  is_eligible?: boolean
+}
+
+export interface TokenClaim {
+  id: number
+  farcaster_id: string
+  wallet_address: string
+  tokens_claimed: number
+  transaction_hash: string | null
+  claimed_at: string
+}
+
+export interface TokenClaimInsert {
+  farcaster_id: string
+  wallet_address: string
+  tokens_claimed?: number
+  transaction_hash?: string
 } 

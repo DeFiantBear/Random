@@ -19,11 +19,94 @@ export default function AppRoulette() {
   const [isSpinning, setIsSpinning] = useState(false)
   const [showRouletteAnimation, setShowRouletteAnimation] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
+  
+  // Airdrop eligibility state
+  const [userEligibility, setUserEligibility] = useState<{
+    has_spun: boolean
+    has_shared: boolean
+    is_eligible: boolean
+    has_claimed: boolean
+    can_claim: boolean
+    tokens_claimed: number
+  } | null>(null)
+  const [isCheckingEligibility, setIsCheckingEligibility] = useState(false)
+  const [isClaiming, setIsClaiming] = useState(false)
+  
   const { toast } = useToast()
 
+  // Check user eligibility (simplified for now)
+  const checkEligibility = async () => {
+    // For now, we'll use a placeholder approach
+    // In a real implementation, you'd get the user's FID from the Farcaster context
+    console.log("Checking eligibility - would need user FID")
+  }
 
+  // Update eligibility when user performs actions
+  const updateEligibility = async (action: 'spin' | 'share') => {
+    // For now, we'll track locally and show the UI
+    // In a real implementation, you'd send the user's FID to the API
+    console.log(`Updating eligibility for action: ${action}`)
+    
+    // Simulate eligibility update for demo purposes
+    setUserEligibility(prev => {
+      const newState = {
+        has_spun: action === 'spin' ? true : (prev?.has_spun || false),
+        has_shared: action === 'share' ? true : (prev?.has_shared || false),
+        is_eligible: false,
+        has_claimed: prev?.has_claimed || false,
+        can_claim: false,
+        tokens_claimed: prev?.tokens_claimed || 0
+      }
+      
+      // Check if user is now eligible (has both spun and shared)
+      newState.is_eligible = newState.has_spun && newState.has_shared
+      newState.can_claim = newState.is_eligible && !newState.has_claimed
+      
+      return newState
+    })
 
+    // Show eligibility notification if newly eligible
+    if (action === 'share' && userEligibility?.has_spun) {
+      toast({
+        title: "🎉 You're eligible for $CITY airdrop!",
+        description: "You've spun and shared! Claim your 100 $CITY tokens now!",
+      })
+    }
+  }
 
+  // Claim tokens
+  const claimTokens = async () => {
+    if (!userEligibility?.can_claim) return
+
+    setIsClaiming(true)
+    try {
+      // For demo purposes, we'll simulate a successful claim
+      // In a real implementation, you'd send the user's FID and wallet address
+      setTimeout(() => {
+        setUserEligibility(prev => ({
+          ...prev!,
+          has_claimed: true,
+          can_claim: false,
+          tokens_claimed: 100
+        }))
+        
+        toast({
+          title: "🎉 Tokens Claimed!",
+          description: "Successfully claimed 100 $CITY tokens! (Demo mode)",
+        })
+        setIsClaiming(false)
+      }, 2000)
+      
+    } catch (error) {
+      console.error("Error claiming tokens:", error)
+      toast({
+        title: "Claim Failed",
+        description: "An error occurred while claiming tokens",
+        variant: "destructive",
+      })
+      setIsClaiming(false)
+    }
+  }
 
   const getRandomApp = async () => {
     setIsLoading(true)
@@ -63,6 +146,9 @@ export default function AppRoulette() {
         setRecentlyShown((prev) => new Set([...prev, randomApp.app_id]))
         setIsSpinning(false)
         setShowRouletteAnimation(false)
+
+        // Track that user has spun
+        updateEligibility('spin')
 
         toast({
           title: "🎰 Jackpot!",
@@ -134,6 +220,9 @@ export default function AppRoulette() {
       await sdk.actions.openUrl({
         url: `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`
       })
+      
+      // Track that user has shared
+      updateEligibility('share')
       
       toast({
         title: "Shared on Farcaster!",
@@ -321,6 +410,61 @@ export default function AppRoulette() {
                     Share on Farcaster
                   </Button>
                 </div>
+
+                {/* Airdrop Eligibility Status */}
+                {userEligibility && (
+                  <div className="mt-6 p-4 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-lg font-semibold text-foreground">🎁 $CITY Token Airdrop</h4>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-3 h-3 rounded-full ${userEligibility.is_eligible ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
+                        <span className="text-sm font-medium">
+                          {userEligibility.is_eligible ? 'Eligible' : 'In Progress'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 rounded-full ${userEligibility.has_spun ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                        <span className="text-sm text-muted-foreground">Spin the roulette</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 rounded-full ${userEligibility.has_shared ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                        <span className="text-sm text-muted-foreground">Share on Farcaster</span>
+                      </div>
+                    </div>
+
+                    {userEligibility.can_claim && (
+                      <Button
+                        onClick={claimTokens}
+                        disabled={isClaiming}
+                        className="w-full premium-gradient hover:shadow-2xl text-white h-12 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-xl border border-white/20 group"
+                      >
+                        {isClaiming ? (
+                          <>
+                            <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
+                            Claiming...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-5 h-5 mr-3" />
+                            Claim 100 $CITY Tokens
+                          </>
+                        )}
+                      </Button>
+                    )}
+
+                    {userEligibility.has_claimed && (
+                      <div className="text-center py-3">
+                        <div className="flex items-center justify-center space-x-2 text-green-600">
+                          <Check className="w-5 h-5" />
+                          <span className="font-semibold">Claimed {userEligibility.tokens_claimed} $CITY tokens!</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="flex justify-center">
                   <Button

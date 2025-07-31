@@ -20,13 +20,36 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user exists in eligibility table
-    const { data: eligibility, error: eligibilityError } = await supabase
+    let { data: eligibility, error: eligibilityError } = await supabase
       .from('user_eligibility')
       .select('*')
       .eq('farcaster_id', farcaster_id)
       .single()
 
-    if (eligibilityError && eligibilityError.code !== 'PGRST116') {
+    // If user doesn't exist, create them
+    if (eligibilityError && eligibilityError.code === 'PGRST116') {
+      const { data: newEligibility, error: createError } = await supabase
+        .from('user_eligibility')
+        .insert({
+          farcaster_id,
+          has_spun: false,
+          has_shared: false,
+          is_eligible: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single()
+
+      if (createError) {
+        return NextResponse.json(
+          { error: 'Failed to create user record', details: createError.message },
+          { status: 500 }
+        )
+      }
+
+      eligibility = newEligibility
+    } else if (eligibilityError) {
       return NextResponse.json(
         { error: 'Database error', details: eligibilityError.message },
         { status: 500 }

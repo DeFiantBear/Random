@@ -45,37 +45,29 @@ export default function AppRoulette() {
     try {
       console.log("Getting user info from Farcaster context...")
       
-      let userData = null
+      // Get real Farcaster user data - no fallbacks
+      const context = await sdk.context
+      console.log("Farcaster context:", context)
       
-      // Try to get real Farcaster user data
-      try {
-        // Get context from Farcaster SDK
-        const context = await sdk.context
-        console.log("Farcaster context:", context)
-        
-        if (context && context.user && context.user.fid) {
-          const fid = context.user.fid.toString()
-          console.log("Found FID from context:", fid)
-          
-          // For now, use a mock wallet address since we can't get it from context
-          userData = {
-            fid: fid,
-            walletAddress: "0x1234567890123456789012345678901234567890" // We'll need to get this from user input or another source
-          }
-          console.log("Using real Farcaster user data:", userData)
-        }
-      } catch (contextError) {
-        console.log("Could not get Farcaster context:", contextError)
+      if (!context || !context.user || !context.user.fid) {
+        console.error("No Farcaster user context available")
+        toast({
+          title: "Error",
+          description: "Could not get Farcaster user data. Please try again.",
+          variant: "destructive",
+        })
+        return
       }
       
-      // Fallback to demo data if no real data
-      if (!userData) {
-        console.log("Using demo user data")
-        userData = {
-          fid: "demo_fid_123",
-          walletAddress: "0x1234567890123456789012345678901234567890"
-        }
+      const fid = context.user.fid.toString()
+      console.log("Found FID from context:", fid)
+      
+      // For now, use a mock wallet address since we can't get it from context
+      const userData = {
+        fid: fid,
+        walletAddress: "0x1234567890123456789012345678901234567890" // We'll need to get this from user input or another source
       }
+      console.log("Using real Farcaster user data:", userData)
       
       setUserInfo(userData)
       
@@ -92,18 +84,19 @@ export default function AppRoulette() {
         setUserEligibility(data)
       } else {
         console.error("Failed to check eligibility:", response.status)
-        // Initialize with empty eligibility if no record exists
-        setUserEligibility({
-          has_spun: false,
-          has_shared: false,
-          is_eligible: false,
-          has_claimed: false,
-          can_claim: false,
-          tokens_claimed: 0
+        toast({
+          title: "Error",
+          description: "Could not check eligibility. Please try again.",
+          variant: "destructive",
         })
       }
     } catch (error) {
       console.error("Error getting user info:", error)
+      toast({
+        title: "Error",
+        description: "Could not get user data. Please try again.",
+        variant: "destructive",
+      })
     }
   }
 
@@ -112,9 +105,19 @@ export default function AppRoulette() {
     console.log(`Updating eligibility for action: ${action}`)
     console.log("Current userInfo:", userInfo)
     
-    // Always try to use the API first, even with demo data
+    // Use real user data only
     try {
-      const fid = userInfo?.fid || "demo_fid_123"
+      if (!userInfo?.fid) {
+        console.error("No user FID available")
+        toast({
+          title: "Error",
+          description: "No user data available. Please refresh and try again.",
+          variant: "destructive",
+        })
+        return
+      }
+      
+      const fid = userInfo.fid
       console.log(`Using FID: ${fid} for ${action}`)
       
       // Update eligibility in database
@@ -141,44 +144,22 @@ export default function AppRoulette() {
             description: "You've spun and shared! Claim your 100 $CITY tokens now!",
           })
         }
-      } else {
-        console.error("API call failed:", response.status)
-        // Fallback to local state update
-        setUserEligibility(prev => {
-          const newState = {
-            has_spun: action === 'spin' ? true : (prev?.has_spun || false),
-            has_shared: action === 'share' ? true : (prev?.has_shared || false),
-            is_eligible: false,
-            has_claimed: prev?.has_claimed || false,
-            can_claim: false,
-            tokens_claimed: prev?.tokens_claimed || 0
-          }
-          
-          newState.is_eligible = newState.has_spun && newState.has_shared
-          newState.can_claim = newState.is_eligible && !newState.has_claimed
-          
-          return newState
-        })
-      }
-    } catch (error) {
-      console.error("Error updating eligibility:", error)
-      // Fallback to local state update
-      setUserEligibility(prev => {
-        const newState = {
-          has_spun: action === 'spin' ? true : (prev?.has_spun || false),
-          has_shared: action === 'share' ? true : (prev?.has_shared || false),
-          is_eligible: false,
-          has_claimed: prev?.has_claimed || false,
-          can_claim: false,
-          tokens_claimed: prev?.tokens_claimed || 0
-        }
-        
-        newState.is_eligible = newState.has_spun && newState.has_shared
-        newState.can_claim = newState.is_eligible && !newState.has_claimed
-        
-        return newState
-      })
-    }
+             } else {
+         console.error("API call failed:", response.status)
+         toast({
+           title: "Error",
+           description: "Could not update eligibility. Please try again.",
+           variant: "destructive",
+         })
+       }
+     } catch (error) {
+       console.error("Error updating eligibility:", error)
+       toast({
+         title: "Error",
+         description: "Could not update eligibility. Please try again.",
+         variant: "destructive",
+       })
+     }
   }
 
   // Claim tokens

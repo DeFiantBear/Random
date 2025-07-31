@@ -15,8 +15,8 @@ export async function GET(request: NextRequest) {
     // Extract the token
     const token = authHeader.substring(7)
     
-    // For now, we'll return a mock response to test the flow
-    // In a real implementation, you would validate the token with Farcaster
+    // For now, return a mock response to test the flow
+    // In production, you would validate the token with Farcaster's API
     return NextResponse.json({
       fid: 12345, // Mock FID for testing
       primaryAddress: "0x1234567890123456789012345678901234567890",

@@ -159,16 +159,19 @@ export default function AppRoulette() {
     try {
       setIsAuthenticating(true)
       
-      // Use the proper Farcaster authentication method
-      const userData = await sdk.quickAuth.getUserData()
+      // Use the standard Farcaster authentication flow
+      const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/auth`)
       
-      if (userData && userData.fid) {
+      if (response.ok) {
+        const userData = await response.json()
         setUser(userData)
         toast({
           title: "Welcome!",
           description: `Signed in as FID: ${userData.fid}`,
         })
       } else {
+        const errorData = await response.json().catch(() => ({}))
+        console.error("Auth response error:", errorData)
         toast({
           title: "Sign In Failed",
           description: "Couldn't sign in with Farcaster. Please try again.",

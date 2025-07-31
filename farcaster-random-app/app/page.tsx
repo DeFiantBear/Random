@@ -30,10 +30,73 @@ export default function AppRoulette() {
   } | null>(null)
   const [isClaiming, setIsClaiming] = useState(false)
   
+  // User authentication state
+  const [user, setUser] = useState<{ fid: number; primaryAddress?: string } | null>(null)
+  const [showConnectButton, setShowConnectButton] = useState(false)
+  const [isConnecting, setIsConnecting] = useState(false)
+  
   const { toast } = useToast()
 
-  // Simple user state from Quick Auth
-  const [user, setUser] = useState<{ fid: number; primaryAddress?: string } | null>(null)
+  // Connect to Farcaster
+  const connectToFarcaster = async () => {
+    setIsConnecting(true)
+    try {
+      console.log("Attempting to connect to Farcaster...")
+      
+      // Try Quick Auth first
+      const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
+      if (response.ok) {
+        const userData = await response.json()
+        console.log("User data from Quick Auth:", userData)
+        setUser(userData)
+        setShowConnectButton(false)
+        
+        // Check eligibility
+        await checkEligibility(userData.fid.toString())
+        return
+      }
+      
+      // If Quick Auth fails, try to open Warpcast
+      console.log("Quick Auth failed, opening Warpcast...")
+      await sdk.actions.openUrl({
+        url: "https://warpcast.com"
+      })
+      
+      toast({
+        title: "Connect to Farcaster",
+        description: "Please connect your wallet in Warpcast and return here",
+      })
+      
+    } catch (error) {
+      console.error("Error connecting to Farcaster:", error)
+      toast({
+        title: "Connection Failed",
+        description: "Could not connect to Farcaster. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsConnecting(false)
+    }
+  }
+
+  // Check eligibility for a user
+  const checkEligibility = async (farcasterId: string) => {
+    try {
+      const response = await fetch("/api/check-eligibility", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ farcaster_id: farcasterId })
+      })
+      
+      if (response.ok) {
+        const eligibilityData = await response.json()
+        console.log("Eligibility data:", eligibilityData)
+        setUserEligibility(eligibilityData)
+      }
+    } catch (error) {
+      console.error("Error checking eligibility:", error)
+    }
+  }
 
   // Update eligibility when user performs actions
   const updateEligibility = async (action: 'spin' | 'share') => {
@@ -261,36 +324,30 @@ export default function AppRoulette() {
         await sdk.actions.ready()
         console.log("SDK ready")
         
-        // Simple Quick Auth - just get user data
+        // Try Quick Auth first
         try {
           const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
           if (response.ok) {
             const userData = await response.json()
             console.log("User data from Quick Auth:", userData)
             setUser(userData)
+            setShowConnectButton(false)
             
             // Check eligibility
-            const eligibilityResponse = await fetch("/api/check-eligibility", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ farcaster_id: userData.fid.toString() })
-            })
-            
-            if (eligibilityResponse.ok) {
-              const eligibilityData = await eligibilityResponse.json()
-              console.log("Eligibility data:", eligibilityData)
-              setUserEligibility(eligibilityData)
-            }
+            await checkEligibility(userData.fid.toString())
           } else {
-            console.log("No authenticated user")
+            console.log("No authenticated user, showing connect button")
+            setShowConnectButton(true)
           }
         } catch (authError) {
-          console.log("Quick Auth not available")
+          console.log("Quick Auth not available, showing connect button")
+          setShowConnectButton(true)
         }
         
         console.log("App initialized")
       } catch (error) {
         console.error("Error initializing app:", error)
+        setShowConnectButton(true)
       }
     }
 
@@ -357,6 +414,44 @@ export default function AppRoulette() {
         {showAddForm && (
           <div className="mb-8 animate-in slide-in-from-top-4 duration-500">
             <AddAppForm onAppAdded={handleAppAdded} />
+          </div>
+        )}
+
+        {/* Connect to Farcaster Button */}
+        {showConnectButton && !user && (
+          <div className="mb-8 animate-in slide-in-from-top-4 duration-500">
+            <Card className="border border-primary/30 shadow-xl bg-card/80 backdrop-blur-xl rounded-2xl overflow-hidden">
+              <CardContent className="p-6 text-center">
+                <div className="mb-4">
+                  <div className="inline-flex items-center justify-center w-16 h-16 premium-gradient rounded-2xl mb-4 shadow-xl">
+                    <Wallet className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-foreground mb-2">
+                    Connect to Farcaster
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
+                    Connect your Farcaster account to participate in the $CITY token airdrop!
+                  </p>
+                </div>
+                <Button
+                  onClick={connectToFarcaster}
+                  disabled={isConnecting}
+                  className="premium-gradient hover:shadow-2xl text-white h-14 px-8 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl border border-white/20"
+                >
+                  {isConnecting ? (
+                    <>
+                      <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
+                      Connecting...
+                    </>
+                  ) : (
+                    <>
+                      <Wallet className="w-5 h-5 mr-3" />
+                      Connect to Farcaster
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         )}
 
@@ -460,57 +555,59 @@ export default function AppRoulette() {
                 </div>
 
                 {/* Airdrop Eligibility Status */}
-                <div className="mt-6 p-4 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-lg font-semibold text-foreground">🎁 $CITY Token Airdrop</h4>
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-3 h-3 rounded-full ${userEligibility?.is_eligible ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
-                      <span className="text-sm font-medium">
-                        {userEligibility?.is_eligible ? 'Eligible' : 'In Progress'}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 mb-3">
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-2 h-2 rounded-full ${userEligibility?.has_spun ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                      <span className="text-sm text-muted-foreground">Spin the roulette</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-2 h-2 rounded-full ${userEligibility?.has_shared ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                      <span className="text-sm text-muted-foreground">Share on Farcaster</span>
-                    </div>
-                  </div>
-
-                  {userEligibility?.can_claim && (
-                    <Button
-                      onClick={claimTokens}
-                      disabled={isClaiming}
-                      className="w-full premium-gradient hover:shadow-2xl text-white h-12 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-xl border border-white/20 group"
-                    >
-                      {isClaiming ? (
-                        <>
-                          <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
-                          Claiming...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-5 h-5 mr-3" />
-                          Claim 100 $CITY Tokens
-                        </>
-                      )}
-                    </Button>
-                  )}
-
-                  {userEligibility?.has_claimed && (
-                    <div className="text-center py-3">
-                      <div className="flex items-center justify-center space-x-2 text-green-600">
-                        <Check className="w-5 h-5" />
-                        <span className="font-semibold">Claimed {userEligibility.tokens_claimed} $CITY tokens!</span>
+                {user && (
+                  <div className="mt-6 p-4 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-lg font-semibold text-foreground">🎁 $CITY Token Airdrop</h4>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-3 h-3 rounded-full ${userEligibility?.is_eligible ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
+                        <span className="text-sm font-medium">
+                          {userEligibility?.is_eligible ? 'Eligible' : 'In Progress'}
+                        </span>
                       </div>
                     </div>
-                  )}
-                </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-3">
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 rounded-full ${userEligibility?.has_spun ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                        <span className="text-sm text-muted-foreground">Spin the roulette</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 rounded-full ${userEligibility?.has_shared ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                        <span className="text-sm text-muted-foreground">Share on Farcaster</span>
+                      </div>
+                    </div>
+
+                    {userEligibility?.can_claim && (
+                      <Button
+                        onClick={claimTokens}
+                        disabled={isClaiming}
+                        className="w-full premium-gradient hover:shadow-2xl text-white h-12 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-xl border border-white/20 group"
+                      >
+                        {isClaiming ? (
+                          <>
+                            <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
+                            Claiming...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-5 h-5 mr-3" />
+                            Claim 100 $CITY Tokens
+                          </>
+                        )}
+                      </Button>
+                    )}
+
+                    {userEligibility?.has_claimed && (
+                      <div className="text-center py-3">
+                        <div className="flex items-center justify-center space-x-2 text-green-600">
+                          <Check className="w-5 h-5" />
+                          <span className="font-semibold">Claimed {userEligibility.tokens_claimed} $CITY tokens!</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="flex justify-center">
                   <Button
@@ -549,57 +646,59 @@ export default function AppRoulette() {
             ) : (
               <div className="py-20 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
                 {/* Airdrop Eligibility Status - Centered */}
-                <div className="mb-8 p-6 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30 max-w-md mx-auto">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-xl font-semibold text-foreground">🎁 $CITY Token Airdrop</h4>
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-3 h-3 rounded-full ${userEligibility?.is_eligible ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
-                      <span className="text-sm font-medium">
-                        {userEligibility?.is_eligible ? 'Eligible' : 'In Progress'}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-2 h-2 rounded-full ${userEligibility?.has_spun ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                      <span className="text-sm text-muted-foreground">Spin the roulette</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-2 h-2 rounded-full ${userEligibility?.has_shared ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                      <span className="text-sm text-muted-foreground">Share on Farcaster</span>
-                    </div>
-                  </div>
-
-                  {userEligibility?.can_claim && (
-                    <Button
-                      onClick={claimTokens}
-                      disabled={isClaiming}
-                      className="w-full premium-gradient hover:shadow-2xl text-white h-12 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-xl border border-white/20 group"
-                    >
-                      {isClaiming ? (
-                        <>
-                          <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
-                          Claiming...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-5 h-5 mr-3" />
-                          Claim 100 $CITY Tokens
-                        </>
-                      )}
-                    </Button>
-                  )}
-
-                  {userEligibility?.has_claimed && (
-                    <div className="text-center py-3">
-                      <div className="flex items-center justify-center space-x-2 text-green-600">
-                        <Check className="w-5 h-5" />
-                        <span className="font-semibold">Claimed {userEligibility.tokens_claimed} $CITY tokens!</span>
+                {user && (
+                  <div className="mb-8 p-6 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30 max-w-md mx-auto">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-xl font-semibold text-foreground">🎁 $CITY Token Airdrop</h4>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-3 h-3 rounded-full ${userEligibility?.is_eligible ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
+                        <span className="text-sm font-medium">
+                          {userEligibility?.is_eligible ? 'Eligible' : 'In Progress'}
+                        </span>
                       </div>
                     </div>
-                  )}
-                </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 rounded-full ${userEligibility?.has_spun ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                        <span className="text-sm text-muted-foreground">Spin the roulette</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 rounded-full ${userEligibility?.has_shared ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                        <span className="text-sm text-muted-foreground">Share on Farcaster</span>
+                      </div>
+                    </div>
+
+                    {userEligibility?.can_claim && (
+                      <Button
+                        onClick={claimTokens}
+                        disabled={isClaiming}
+                        className="w-full premium-gradient hover:shadow-2xl text-white h-12 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-xl border border-white/20 group"
+                      >
+                        {isClaiming ? (
+                          <>
+                            <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
+                            Claiming...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-5 h-5 mr-3" />
+                            Claim 100 $CITY Tokens
+                          </>
+                        )}
+                      </Button>
+                    )}
+
+                    {userEligibility?.has_claimed && (
+                      <div className="text-center py-3">
+                        <div className="flex items-center justify-center space-x-2 text-green-600">
+                          <Check className="w-5 h-5" />
+                          <span className="font-semibold">Claimed {userEligibility.tokens_claimed} $CITY tokens!</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <h3 className="text-4xl font-bold text-foreground mb-6 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                   Ready to spin?

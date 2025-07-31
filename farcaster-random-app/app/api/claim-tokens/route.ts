@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { createPublicClient, http, parseEther } from 'viem'
-import { base } from 'wagmi/chains'
-import { CITY_TOKEN_ADDRESS, ERC20_ABI, TOKENS_PER_CLAIM } from '@/lib/contracts'
-
-// Create public client for Base network
-const publicClient = createPublicClient({
-  chain: base,
-  transport: http(),
-})
+import { TOKENS_PER_CLAIM } from '@/lib/contracts'
+import { transferCityTokens, getAirdropWalletBalance } from '@/lib/token-transfer'
 
 export async function POST(request: NextRequest) {
   try {
@@ -93,28 +86,43 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // IMPORTANT: This is where you would implement the actual token transfer
-    // For security reasons, this should be done server-side with a private key
-    // that has sufficient $CITY tokens to distribute
-    
-    // For now, we'll simulate the transfer and record it
-    // In production, you would:
-    // 1. Use a private key with $CITY tokens
-    // 2. Call the transfer function on the contract
-    // 3. Wait for transaction confirmation
-    // 4. Record the transaction hash
-    
-    // Simulate transaction hash (in production, this would be the actual hash)
-    const simulatedTransactionHash = `0x${Math.random().toString(16).substring(2, 66)}`
-    
-    // Record the claim in the database
+    // Check airdrop wallet balance before proceeding
+    try {
+      const balance = await getAirdropWalletBalance()
+      const requiredAmount = BigInt(TOKENS_PER_CLAIM) * BigInt(10 ** 18) // Convert to wei
+      
+      if (balance < requiredAmount) {
+        return NextResponse.json(
+          { error: 'Insufficient airdrop wallet balance' },
+          { status: 503 }
+        )
+      }
+    } catch (error) {
+      console.error('Error checking airdrop wallet balance:', error)
+      return NextResponse.json(
+        { error: 'Unable to verify airdrop wallet balance' },
+        { status: 500 }
+      )
+    }
+
+    // Execute the actual token transfer
+    const transferResult = await transferCityTokens(wallet_address)
+
+    if (!transferResult.success) {
+      return NextResponse.json(
+        { error: 'Token transfer failed', details: transferResult.error },
+        { status: 500 }
+      )
+    }
+
+    // Record the claim in the database with real transaction hash
     const { data: claim, error: insertError } = await supabase
       .from('token_claims')
       .insert({
         farcaster_id,
         wallet_address,
         tokens_claimed: TOKENS_PER_CLAIM,
-        transaction_hash: simulatedTransactionHash
+        transaction_hash: transferResult.transactionHash
       })
       .select()
       .single()
@@ -132,8 +140,9 @@ export async function POST(request: NextRequest) {
       wallet_address,
       tokens_claimed: TOKENS_PER_CLAIM,
       claim_id: claim.id,
-      transaction_hash: simulatedTransactionHash,
-      message: 'Claim recorded successfully. Token transfer simulated.'
+      transaction_hash: transferResult.transactionHash,
+      gas_used: transferResult.gasUsed?.toString(),
+      message: 'Tokens successfully transferred and claim recorded.'
     })
 
   } catch (error) {

@@ -70,10 +70,10 @@ export default function AppRoulette() {
         setIsSpinning(false)
         setShowRouletteAnimation(false)
 
-        // Check for airdrop win (1 in 1000 chance)
+        // Check for airdrop win (1 in 10 chance for testing)
         let isWinner = false
         if (user && user.fid && user.primaryAddress) {
-          const randomNumber = Math.floor(Math.random() * 1000) + 1
+          const randomNumber = Math.floor(Math.random() * 10) + 1
           isWinner = randomNumber === 1
           
           console.log("Airdrop check:", {

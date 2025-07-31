@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
       })
 
       console.log('Token payload:', payload)
-
+      
       const user = await resolveUser(payload.sub)
       console.log('Authenticated user:', user)
       

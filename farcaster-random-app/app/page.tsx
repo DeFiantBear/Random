@@ -278,51 +278,22 @@ export default function AppRoulette() {
     const initializeApp = async () => {
       try {
         console.log("Initializing app...")
-        await sdk.actions.ready()
-        console.log("SDK ready")
         
-        // Try to get user context from Farcaster
-        try {
-          const context = await sdk.context
-          console.log("Farcaster context:", context)
+        // Use Quick Auth to get authenticated user data
+        const res = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
+        if (res.ok) {
+          const userData = await res.json()
+          console.log("Authenticated user data:", userData)
+          setUser(userData)
           
-          if (context?.user?.fid) {
-            console.log("User found in context:", context.user)
-            
-            // Get user data from API to get wallet address
-            const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
-            if (response.ok) {
-              const userData = await response.json()
-              console.log("User data from API:", userData)
-              setUser(userData)
-              
-              // Check eligibility
-              await checkEligibility(userData.fid.toString())
-            } else {
-              // Fallback to just FID
-              setUser({ fid: context.user.fid })
-              await checkEligibility(context.user.fid.toString())
-            }
-          } else {
-            console.log("No user in context, trying Quick Auth...")
-            
-            // Try Quick Auth as fallback
-            const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
-            if (response.ok) {
-              const userData = await response.json()
-              console.log("User data from Quick Auth:", userData)
-              setUser(userData)
-              
-              // Check eligibility
-              await checkEligibility(userData.fid.toString())
-            } else {
-              console.log("No authenticated user found")
-            }
-          }
-        } catch (authError) {
-          console.log("Authentication error:", authError)
+          // Check eligibility
+          await checkEligibility(userData.fid.toString())
+        } else {
+          console.log("No authenticated user found")
         }
         
+        // Signal that the app is ready
+        await sdk.actions.ready()
         console.log("App initialized")
       } catch (error) {
         console.error("Error initializing app:", error)

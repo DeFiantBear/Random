@@ -21,6 +21,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // SECURITY: Validate wallet address format
+    if (!wallet_address.match(/^0x[a-fA-F0-9]{40}$/)) {
+      return NextResponse.json(
+        { error: 'Invalid wallet address format' },
+        { status: 400 }
+      )
+    }
+
+    // SECURITY: Rate limiting - check recent claims from this FID
+    const recentClaims = await supabase
+      .from('token_claims')
+      .select('claimed_at')
+      .eq('farcaster_id', farcaster_id)
+      .gte('claimed_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()) // Last 24 hours
+      .limit(1)
+
+    if (recentClaims.data && recentClaims.data.length > 0) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please wait before claiming again.' },
+        { status: 429 }
+      )
+    }
+
     if (!supabase) {
       return NextResponse.json(
         { error: 'Database connection not available' },

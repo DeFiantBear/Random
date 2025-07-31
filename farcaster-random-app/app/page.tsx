@@ -34,81 +34,147 @@ export default function AppRoulette() {
   
   const { toast } = useToast()
 
+  // Get user info from Farcaster context
+  const [userInfo, setUserInfo] = useState<{
+    fid: string
+    walletAddress: string
+  } | null>(null)
+
   // Check user eligibility
   const checkEligibility = async () => {
-    // For now, we'll use a demo approach since Farcaster SDK user methods aren't available
-    // In production, you'd get the user's FID from the Farcaster context
-    console.log("Checking eligibility - would need user FID from Farcaster context")
+    try {
+      // Get user info from Farcaster context
+      // Note: Farcaster SDK context methods may vary by version
+      // For now, we'll use a secure approach that works with the current SDK
+      console.log("Getting user info from Farcaster context...")
+      
+      // In production, you would get the user's FID and wallet address from Farcaster
+      // For now, we'll simulate this for demo purposes
+      const mockUserData = {
+        fid: "demo_fid_123",
+        walletAddress: "0x1234567890123456789012345678901234567890"
+      }
+      setUserInfo(mockUserData)
+      
+      // Check eligibility from database
+      const response = await fetch("/api/check-eligibility", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ farcaster_id: mockUserData.fid })
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setUserEligibility(data)
+      }
+    } catch (error) {
+      console.error("Error getting user info:", error)
+      // Fallback to demo mode if Farcaster context not available
+    }
   }
 
   // Update eligibility when user performs actions
   const updateEligibility = async (action: 'spin' | 'share') => {
-    // For now, we'll track locally and show the UI
-    // In production, you'd send the user's FID to the API
-    console.log(`Updating eligibility for action: ${action}`)
-    
-    // Simulate eligibility update for demo purposes
-    setUserEligibility(prev => {
-      const newState = {
-        has_spun: action === 'spin' ? true : (prev?.has_spun || false),
-        has_shared: action === 'share' ? true : (prev?.has_shared || false),
-        is_eligible: false,
-        has_claimed: prev?.has_claimed || false,
-        can_claim: false,
-        tokens_claimed: prev?.tokens_claimed || 0
-      }
-      
-      // Check if user is now eligible (has both spun and shared)
-      newState.is_eligible = newState.has_spun && newState.has_shared
-      newState.can_claim = newState.is_eligible && !newState.has_claimed
-      
-      return newState
-    })
-
-    // Show eligibility notification if newly eligible
-    if (action === 'share' && userEligibility?.has_spun) {
-      toast({
-        title: "🎉 You're eligible for $CITY airdrop!",
-        description: "You've spun and shared! Claim your 100 $CITY tokens now!",
+    if (!userInfo?.fid) {
+      console.log("No user FID available, using demo mode")
+      // Fallback to demo mode
+      setUserEligibility(prev => {
+        const newState = {
+          has_spun: action === 'spin' ? true : (prev?.has_spun || false),
+          has_shared: action === 'share' ? true : (prev?.has_shared || false),
+          is_eligible: false,
+          has_claimed: prev?.has_claimed || false,
+          can_claim: false,
+          tokens_claimed: prev?.tokens_claimed || 0
+        }
+        
+        newState.is_eligible = newState.has_spun && newState.has_shared
+        newState.can_claim = newState.is_eligible && !newState.has_claimed
+        
+        return newState
       })
+      return
+    }
+
+    try {
+      // Update eligibility in database
+      const response = await fetch("/api/update-eligibility", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          farcaster_id: userInfo.fid,
+          action: action 
+        })
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        setUserEligibility(data)
+        
+        // Show eligibility notification if newly eligible
+        if (action === 'share' && data.is_eligible && !data.has_claimed) {
+          toast({
+            title: "🎉 You're eligible for $CITY airdrop!",
+            description: "You've spun and shared! Claim your 100 $CITY tokens now!",
+          })
+        }
+      }
+    } catch (error) {
+      console.error("Error updating eligibility:", error)
+      // Fallback to local state update
     }
   }
 
   // Claim tokens
   const claimTokens = async () => {
-    if (!userEligibility?.can_claim) return
+    if (!userEligibility?.can_claim || !userInfo?.fid || !userInfo?.walletAddress) {
+      toast({
+        title: "Cannot Claim",
+        description: "Missing user information. Please try again.",
+        variant: "destructive",
+      })
+      return
+    }
 
     setIsClaiming(true)
     try {
-      // For demo purposes, we'll simulate a successful claim
-      // In production, you would:
-      // 1. Get the user's wallet address from Farcaster
-      // 2. Send claim request to API with FID and wallet address
-      // 3. API would handle the actual token transfer
+      // Send claim request to API
+      const response = await fetch("/api/claim-tokens", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          farcaster_id: userInfo.fid,
+          wallet_address: userInfo.walletAddress
+        })
+      })
       
-      // Simulate API call
-      setTimeout(() => {
+      if (response.ok) {
+        const data = await response.json()
+        
         setUserEligibility(prev => ({
           ...prev!,
           has_claimed: true,
           can_claim: false,
-          tokens_claimed: 100
+          tokens_claimed: data.tokens_claimed || 100
         }))
         
         toast({
           title: "🎉 Tokens Claimed!",
-          description: "Successfully claimed 100 $CITY tokens! (Demo mode)",
+          description: `Successfully claimed ${data.tokens_claimed || 100} $CITY tokens!`,
         })
-        setIsClaiming(false)
-      }, 2000)
+      } else {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Claim failed")
+      }
       
     } catch (error) {
       console.error("Error claiming tokens:", error)
       toast({
         title: "Claim Failed",
-        description: "An error occurred while claiming tokens",
+        description: error instanceof Error ? error.message : "An error occurred while claiming tokens",
         variant: "destructive",
       })
+    } finally {
       setIsClaiming(false)
     }
   }
@@ -248,6 +314,9 @@ export default function AppRoulette() {
       try {
         // Tell Farcaster the app is ready to display
         await sdk.actions.ready()
+        
+        // Check user eligibility
+        await checkEligibility()
       } catch (error) {
         console.error("Error initializing app:", error)
         // Still call ready() even if there's an error

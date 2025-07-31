@@ -50,96 +50,16 @@ export default function AppRoulette() {
   // Check user eligibility
   const checkEligibility = async () => {
     try {
-      console.log("Getting user info from Farcaster context...")
+      console.log("Checking eligibility...")
       
-      // Try multiple ways to get user data
-      let userData = null
+      // For now, just show manual input to avoid SDK issues
+      console.log("Showing manual input for testing...")
+      setShowManualInput(true)
       
-      // Method 1: Try sdk.context
-      try {
-        console.log("Trying sdk.context...")
-        const context = await sdk.context
-        console.log("Farcaster context:", context)
-        
-        if (context && context.user && context.user.fid) {
-          const fid = context.user.fid.toString()
-          console.log("Found FID from context:", fid)
-          
-          userData = {
-            fid: fid,
-            walletAddress: "0x1234567890123456789012345678901234567890"
-          }
-          console.log("Using real Farcaster user data:", userData)
-        }
-      } catch (contextError) {
-        console.error("sdk.context failed:", contextError)
-      }
-      
-      // Method 2: Try URL parameters (some mini apps pass user data via URL)
-      if (!userData) {
-        console.log("Trying URL parameters...")
-        const urlParams = new URLSearchParams(window.location.search)
-        const fidFromUrl = urlParams.get('fid') || urlParams.get('user_id')
-        if (fidFromUrl) {
-          console.log("Found FID from URL:", fidFromUrl)
-          userData = {
-            fid: fidFromUrl,
-            walletAddress: "0x1234567890123456789012345678901234567890"
-          }
-        }
-      }
-      
-      // Method 3: Try localStorage (if user data was stored before)
-      if (!userData) {
-        console.log("Trying localStorage...")
-        const storedUserData = localStorage.getItem('farcaster_user_data')
-        if (storedUserData) {
-          try {
-            userData = JSON.parse(storedUserData)
-            console.log("Found user data in localStorage:", userData)
-          } catch (e) {
-            console.error("Failed to parse localStorage data:", e)
-          }
-        }
-      }
-      
-      // If still no user data, show login prompt
-      if (!userData) {
-        console.error("No user data found from any source")
-        setShowLoginPrompt(true)
-        return
-      }
-      
-      // Store user data for future use
-      localStorage.setItem('farcaster_user_data', JSON.stringify(userData))
-      setUserInfo(userData)
-      
-      // Check eligibility from database
-      const response = await fetch("/api/check-eligibility", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ farcaster_id: userData.fid })
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        console.log("Eligibility data:", data)
-        setUserEligibility(data)
-      } else {
-        console.error("Failed to check eligibility:", response.status)
-        toast({
-          title: "Error",
-          description: "Could not check eligibility. Please try again.",
-          variant: "destructive",
-        })
-      }
     } catch (error) {
-      console.error("Error getting user info:", error)
-      toast({
-        title: "Error",
-        description: "Could not get user data. Please try again.",
-        variant: "destructive",
-      })
+      console.error("Error checking eligibility:", error)
+      // Show manual input as fallback
+      setShowManualInput(true)
     }
   }
 
@@ -409,7 +329,7 @@ export default function AppRoulette() {
         
         const userData = {
           fid: fid,
-          walletAddress: context.user.walletAddress || "0x1234567890123456789012345678901234567890"
+          walletAddress: "0x1234567890123456789012345678901234567890" // Default wallet address
         }
         
         localStorage.setItem('farcaster_user_data', JSON.stringify(userData))
@@ -501,23 +421,16 @@ export default function AppRoulette() {
       try {
         console.log("Initializing app...")
         
-        // Tell Farcaster the app is ready to display
-        console.log("Calling sdk.actions.ready()...")
-        await sdk.actions.ready()
-        console.log("sdk.actions.ready() completed")
+        // Skip Farcaster SDK for now and show manual input immediately
+        console.log("Showing manual input for testing...")
+        setShowManualInput(true)
         
-        // Check user eligibility
-        console.log("Checking eligibility...")
-        await checkEligibility()
-        console.log("Eligibility check completed")
+        // Don't call sdk.actions.ready() to avoid errors
+        console.log("App initialized successfully")
       } catch (error) {
         console.error("Error initializing app:", error)
-        // Still call ready() even if there's an error
-        try {
-          await sdk.actions.ready()
-        } catch (readyError) {
-          console.error("Error calling ready():", readyError)
-        }
+        // Show manual input as fallback
+        setShowManualInput(true)
       }
     }
 

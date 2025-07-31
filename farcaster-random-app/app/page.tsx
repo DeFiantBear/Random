@@ -42,6 +42,10 @@ export default function AppRoulette() {
   // Manual input for testing
   const [showManualInput, setShowManualInput] = useState(false)
   const [manualFid, setManualFid] = useState("")
+  
+  // Farcaster login state
+  const [isConnecting, setIsConnecting] = useState(false)
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
 
   // Check user eligibility
   const checkEligibility = async () => {
@@ -99,15 +103,10 @@ export default function AppRoulette() {
         }
       }
       
-      // If still no user data, show manual input option
+      // If still no user data, show login prompt
       if (!userData) {
         console.error("No user data found from any source")
-        setShowManualInput(true)
-        toast({
-          title: "Manual Input Required",
-          description: "Please enter your Farcaster ID manually for testing.",
-          variant: "destructive",
-        })
+        setShowLoginPrompt(true)
         return
       }
       
@@ -396,6 +395,80 @@ export default function AppRoulette() {
     }
   }
 
+  // Connect to Farcaster
+  const connectToFarcaster = async () => {
+    setIsConnecting(true)
+    try {
+      // Try to get user data from Farcaster
+      const context = await sdk.context
+      console.log("Farcaster context:", context)
+      
+      if (context && context.user && context.user.fid) {
+        const fid = context.user.fid.toString()
+        console.log("Found FID from context:", fid)
+        
+        const userData = {
+          fid: fid,
+          walletAddress: context.user.walletAddress || "0x1234567890123456789012345678901234567890"
+        }
+        
+        localStorage.setItem('farcaster_user_data', JSON.stringify(userData))
+        setUserInfo(userData)
+        setShowLoginPrompt(false)
+        
+        // Check eligibility
+        const response = await fetch("/api/check-eligibility", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ farcaster_id: userData.fid })
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          console.log("Eligibility data:", data)
+          setUserEligibility(data)
+        }
+        
+        toast({
+          title: "Connected to Farcaster!",
+          description: `Welcome, FID: ${fid}`,
+        })
+      } else {
+        throw new Error("No user data found in Farcaster context")
+      }
+    } catch (error) {
+      console.error("Error connecting to Farcaster:", error)
+      toast({
+        title: "Connection Failed",
+        description: "Could not connect to Farcaster. Please try again or use manual input.",
+        variant: "destructive",
+      })
+      // Fallback to manual input
+      setShowManualInput(true)
+    } finally {
+      setIsConnecting(false)
+    }
+  }
+
+  // Open Farcaster login
+  const openFarcasterLogin = async () => {
+    try {
+      // Try to open Farcaster login
+      await sdk.actions.openUrl({
+        url: "https://warpcast.com/~/auth"
+      })
+      
+      // Wait a bit and then try to get context
+      setTimeout(async () => {
+        await connectToFarcaster()
+      }, 2000)
+    } catch (error) {
+      console.error("Error opening Farcaster login:", error)
+      // Fallback to manual input
+      setShowManualInput(true)
+    }
+  }
+
   const shareOnFarcaster = async () => {
     if (!currentApp) return
 
@@ -498,7 +571,56 @@ export default function AppRoulette() {
           </div>
         )}
         
-        {showManualInput && (
+        {showLoginPrompt && (
+          <div className="mb-8 p-6 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30">
+            <h3 className="text-lg font-semibold text-foreground mb-4">Connect to Farcaster</h3>
+            <p className="text-muted-foreground mb-4">To participate in the airdrop, you need to connect your Farcaster account:</p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button 
+                onClick={connectToFarcaster}
+                disabled={isConnecting}
+                className="flex-1 premium-gradient hover:shadow-2xl text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                {isConnecting ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Connecting...
+                  </>
+                ) : (
+                  <>
+                    <Circle className="w-4 h-4 mr-2" />
+                    Connect Wallet
+                  </>
+                )}
+              </Button>
+              <Button 
+                onClick={openFarcasterLogin}
+                variant="outline"
+                className="flex-1 border-primary/30 hover:bg-primary/10 text-foreground"
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Open Farcaster
+              </Button>
+            </div>
+            <div className="mt-4 pt-4 border-t border-border/30">
+              <p className="text-sm text-muted-foreground mb-2">Or enter your FID manually:</p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={manualFid}
+                  onChange={(e) => setManualFid(e.target.value)}
+                  placeholder="Enter your FID (e.g., 12345)"
+                  className="flex-1 px-3 py-2 border border-border/50 rounded-lg bg-background/50 text-foreground"
+                />
+                <Button onClick={handleManualInput} className="px-4 py-2">
+                  Submit
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {showManualInput && !showLoginPrompt && (
           <div className="mb-8 p-6 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30">
             <h3 className="text-lg font-semibold text-foreground mb-4">Enter Your Farcaster ID</h3>
             <p className="text-muted-foreground mb-4">For testing purposes, please enter your Farcaster ID manually:</p>

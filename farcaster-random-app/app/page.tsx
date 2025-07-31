@@ -65,33 +65,38 @@ export default function AppRoulette() {
       const randomIndex = Math.floor(Math.random() * data.apps.length)
       const randomApp = data.apps[randomIndex]
 
-             setTimeout(async () => {
+                    setTimeout(async () => {
          console.log("=== TIMEOUT START ===")
+         
+         // Calculate spin count BEFORE updating state
+         const currentSpinCount = recentlyShown.size + 1
+         console.log("Current spin count:", currentSpinCount)
+         
          setCurrentApp(randomApp)
          setRecentlyShown((prev) => new Set([...prev, randomApp.app_id]))
          setIsSpinning(false)
          setShowRouletteAnimation(false)
 
-        // Check for airdrop win (1 in 10 chance for testing)
-        console.log("=== AIRDROP DEBUG START ===")
-        let isWinner = false
-        const randomNumber = Math.floor(Math.random() * 10) + 1
-        isWinner = randomNumber === 1
-        
-        console.log("Airdrop check:", {
-          userFid: user?.fid || "Not signed in",
-          randomNumber: randomNumber,
-          isWinner: isWinner,
-          userSignedIn: !!user,
-          timestamp: new Date().toISOString()
-        })
-        
-        // Force a win every 3rd spin for testing
-        const spinCount = (recentlyShown.size + 1)
-        if (spinCount % 3 === 0) {
-          isWinner = true
-          console.log("FORCED WIN on spin", spinCount)
-        }
+         // Check for airdrop win (1 in 10 chance for testing)
+         console.log("=== AIRDROP DEBUG START ===")
+         let isWinner = false
+         const randomNumber = Math.floor(Math.random() * 10) + 1
+         isWinner = randomNumber === 1
+         
+         console.log("Airdrop check:", {
+           userFid: user?.fid || "Not signed in",
+           randomNumber: randomNumber,
+           isWinner: isWinner,
+           userSignedIn: !!user,
+           timestamp: new Date().toISOString(),
+           spinCount: currentSpinCount
+         })
+         
+         // Force a win every 3rd spin for testing
+         if (currentSpinCount % 3 === 0) {
+           isWinner = true
+           console.log("FORCED WIN on spin", currentSpinCount)
+         }
 
         if (isWinner) {
           if (user && user.fid && user.primaryAddress) {

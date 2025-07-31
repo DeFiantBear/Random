@@ -28,117 +28,23 @@ export default function AppRoulette() {
     can_claim: boolean
     tokens_claimed: number
   } | null>(null)
-  const [isCheckingEligibility, setIsCheckingEligibility] = useState(false)
   const [isClaiming, setIsClaiming] = useState(false)
   
   const { toast } = useToast()
 
-  // Quick Auth user state
+  // Simple user state from Quick Auth
   const [user, setUser] = useState<{ fid: number; primaryAddress?: string } | null>(null)
-  const [isConnecting, setIsConnecting] = useState(false)
-  const [showWalletConnect, setShowWalletConnect] = useState(false)
-
-  // Connect wallet using Quick Auth
-  const connectWallet = async () => {
-    setIsConnecting(true)
-    try {
-      console.log("Connecting wallet with Quick Auth...")
-      
-      // Get Quick Auth token and fetch user data
-      const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
-      console.log("Quick Auth response status:", response.status)
-      
-      if (response.ok) {
-        const userData = await response.json()
-        console.log("User data from Quick Auth:", userData)
-        setUser(userData)
-        setShowWalletConnect(false)
-        
-        // Check eligibility with the FID
-        const eligibilityResponse = await fetch("/api/check-eligibility", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ farcaster_id: userData.fid.toString() })
-        })
-        
-        if (eligibilityResponse.ok) {
-          const eligibilityData = await eligibilityResponse.json()
-          console.log("Eligibility data:", eligibilityData)
-          setUserEligibility(eligibilityData)
-        } else {
-          console.error("Failed to check eligibility:", eligibilityResponse.status)
-        }
-        
-        toast({
-          title: "🎉 Wallet Connected!",
-          description: `Welcome, FID: ${userData.fid}`,
-        })
-      } else {
-        const errorData = await response.json().catch(() => ({}))
-        console.error("Quick Auth failed:", response.status, errorData)
-        throw new Error("Failed to authenticate with Quick Auth")
-      }
-    } catch (error) {
-      console.error("Error connecting wallet:", error)
-      toast({
-        title: "Connection Failed",
-        description: "Could not connect wallet. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsConnecting(false)
-    }
-  }
-
-  // Check user eligibility
-  const checkEligibility = async () => {
-    try {
-      console.log("Checking eligibility...")
-      
-      if (!user?.fid) {
-        console.log("No user data, showing wallet connect")
-        setShowWalletConnect(true)
-        return
-      }
-      
-      const response = await fetch("/api/check-eligibility", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ farcaster_id: user.fid.toString() })
-      })
-      
-      if (response.ok) {
-        const data = await response.json()
-        console.log("Eligibility data:", data)
-        setUserEligibility(data)
-      }
-      
-    } catch (error) {
-      console.error("Error checking eligibility:", error)
-      setShowWalletConnect(true)
-    }
-  }
 
   // Update eligibility when user performs actions
   const updateEligibility = async (action: 'spin' | 'share') => {
-    console.log(`Updating eligibility for action: ${action}`)
-    console.log("Current user:", user)
-    
     if (!user?.fid) {
-      console.error("No user FID available")
-      toast({
-        title: "Wallet Required",
-        description: "Please connect your wallet to participate in the airdrop.",
-        variant: "destructive",
-      })
-      setShowWalletConnect(true)
+      console.log("No user FID, skipping eligibility update")
       return
     }
     
-    console.log(`Using FID: ${user.fid} for ${action}`)
+    console.log(`Updating eligibility for FID: ${user.fid}, action: ${action}`)
     
     try {
-      // Update eligibility in database
       const response = await fetch("/api/update-eligibility", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -148,14 +54,11 @@ export default function AppRoulette() {
         })
       })
       
-      console.log(`API response status: ${response.status}`)
-      
       if (response.ok) {
         const data = await response.json()
         console.log("Eligibility updated:", data)
         setUserEligibility(data)
         
-        // Show eligibility notification if newly eligible
         if (action === 'share' && data.is_eligible && !data.has_claimed) {
           toast({
             title: "🎉 You're eligible for $CITY airdrop!",
@@ -163,21 +66,10 @@ export default function AppRoulette() {
           })
         }
       } else {
-        const errorText = await response.text()
-        console.error("API call failed:", response.status, errorText)
-        toast({
-          title: "Error",
-          description: "Could not update eligibility. Please try again.",
-          variant: "destructive",
-        })
+        console.error("Failed to update eligibility:", response.status)
       }
     } catch (error) {
       console.error("Error updating eligibility:", error)
-      toast({
-        title: "Error",
-        description: "Could not update eligibility. Please try again.",
-        variant: "destructive",
-      })
     }
   }
 
@@ -186,16 +78,14 @@ export default function AppRoulette() {
     if (!userEligibility?.can_claim || !user?.fid || !user?.primaryAddress) {
       toast({
         title: "Cannot Claim",
-        description: "Missing user information. Please connect your wallet.",
+        description: "Missing user information or not eligible.",
         variant: "destructive",
       })
-      setShowWalletConnect(true)
       return
     }
 
     setIsClaiming(true)
     try {
-      // Send claim request to API
       const response = await fetch("/api/claim-tokens", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -207,7 +97,6 @@ export default function AppRoulette() {
       
       if (response.ok) {
         const data = await response.json()
-        
         setUserEligibility(prev => ({
           ...prev!,
           has_claimed: true,
@@ -223,7 +112,6 @@ export default function AppRoulette() {
         const errorData = await response.json()
         throw new Error(errorData.error || "Claim failed")
       }
-      
     } catch (error) {
       console.error("Error claiming tokens:", error)
       toast({
@@ -370,25 +258,18 @@ export default function AppRoulette() {
     const initializeApp = async () => {
       try {
         console.log("Initializing app...")
-        
-        // Always call sdk.actions.ready() first for Farcaster Mini Apps
-        console.log("Calling sdk.actions.ready()...")
         await sdk.actions.ready()
-        console.log("sdk.actions.ready() completed")
+        console.log("SDK ready")
         
-        // Try to get user data with Quick Auth
+        // Simple Quick Auth - just get user data
         try {
-          console.log("Attempting Quick Auth...")
           const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
-          console.log("Quick Auth response status:", response.status)
-          
           if (response.ok) {
             const userData = await response.json()
             console.log("User data from Quick Auth:", userData)
             setUser(userData)
-            setShowWalletConnect(false) // Hide wallet connect when user is authenticated
             
-            // Check eligibility with the FID
+            // Check eligibility
             const eligibilityResponse = await fetch("/api/check-eligibility", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -399,22 +280,17 @@ export default function AppRoulette() {
               const eligibilityData = await eligibilityResponse.json()
               console.log("Eligibility data:", eligibilityData)
               setUserEligibility(eligibilityData)
-            } else {
-              console.error("Failed to check eligibility:", eligibilityResponse.status)
             }
           } else {
-            console.log("No authenticated user, showing wallet connect")
-            setShowWalletConnect(true)
+            console.log("No authenticated user")
           }
         } catch (authError) {
-          console.error("Quick Auth failed:", authError)
-          setShowWalletConnect(true)
+          console.log("Quick Auth not available")
         }
         
-        console.log("App initialized successfully")
+        console.log("App initialized")
       } catch (error) {
         console.error("Error initializing app:", error)
-        setShowWalletConnect(true)
       }
     }
 
@@ -481,32 +357,6 @@ export default function AppRoulette() {
         {showAddForm && (
           <div className="mb-8 animate-in slide-in-from-top-4 duration-500">
             <AddAppForm onAppAdded={handleAppAdded} />
-          </div>
-        )}
-        
-        {showWalletConnect && (
-          <div className="mb-8 p-6 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Connect Farcaster Wallet</h3>
-            <p className="text-muted-foreground mb-4">Connect your Farcaster wallet to participate in the $CITY token airdrop:</p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button 
-                onClick={connectWallet}
-                disabled={isConnecting}
-                className="flex-1 premium-gradient hover:shadow-2xl text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105"
-              >
-                {isConnecting ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    Connecting...
-                  </>
-                ) : (
-                  <>
-                    <Wallet className="w-4 h-4 mr-2" />
-                    Connect Wallet
-                  </>
-                )}
-              </Button>
-            </div>
           </div>
         )}
 

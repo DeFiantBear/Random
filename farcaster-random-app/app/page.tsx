@@ -71,6 +71,7 @@ export default function AppRoulette() {
         setShowRouletteAnimation(false)
 
         // Check for airdrop win (1 in 10 chance for testing)
+        console.log("=== AIRDROP DEBUG START ===")
         let isWinner = false
         const randomNumber = Math.floor(Math.random() * 10) + 1
         isWinner = randomNumber === 1
@@ -79,8 +80,16 @@ export default function AppRoulette() {
           userFid: user?.fid || "Not signed in",
           randomNumber: randomNumber,
           isWinner: isWinner,
-          userSignedIn: !!user
+          userSignedIn: !!user,
+          timestamp: new Date().toISOString()
         })
+        
+        // Force a win every 5th spin for testing
+        const spinCount = (recentlyShown.size + 1)
+        if (spinCount % 5 === 0) {
+          isWinner = true
+          console.log("FORCED WIN on spin", spinCount)
+        }
 
         if (isWinner) {
           if (user && user.fid && user.primaryAddress) {
@@ -134,6 +143,16 @@ export default function AppRoulette() {
         } else {
           console.log("Skipping normal toast - winner!")
         }
+        
+        // Test toast system
+        console.log("=== TOAST TEST ===")
+        setTimeout(() => {
+          toast({
+            title: "Debug Test",
+            description: `Spin ${recentlyShown.size + 1} completed at ${new Date().toLocaleTimeString()}`,
+            duration: 3000,
+          })
+        }, 1000)
 
         if (data.reset) {
           setRecentlyShown(new Set([randomApp.app_id]))

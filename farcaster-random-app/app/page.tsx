@@ -71,9 +71,16 @@ export default function AppRoulette() {
         setShowRouletteAnimation(false)
 
         // Check for airdrop win (1 in 1000 chance)
+        let isWinner = false
         if (user && user.fid && user.primaryAddress) {
           const randomNumber = Math.floor(Math.random() * 1000) + 1
-          const isWinner = randomNumber === 1
+          isWinner = randomNumber === 1
+          
+          console.log("Airdrop check:", {
+            userFid: user.fid,
+            randomNumber: randomNumber,
+            isWinner: isWinner
+          })
 
           if (isWinner) {
             try {
@@ -109,10 +116,13 @@ export default function AppRoulette() {
           }
         }
 
-        toast({
-          title: "🎰 Jackpot!",
-          description: `Discovered ${randomApp.name}`,
-        })
+        // Only show normal toast if not a winner
+        if (!isWinner) {
+          toast({
+            title: "🎰 Jackpot!",
+            description: `Discovered ${randomApp.name}`,
+          })
+        }
 
         if (data.reset) {
           setRecentlyShown(new Set([randomApp.app_id]))

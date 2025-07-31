@@ -416,47 +416,11 @@ export default function AppRoulette() {
 
                 
 
-                <div className="flex justify-center">
-                  <Button
-                    onClick={getRandomApp}
-                    disabled={isLoading}
-                    variant="outline"
-                    className="border-primary/30 hover:bg-primary/5 text-foreground font-semibold transition-all duration-300 hover:scale-105 rounded-2xl px-8 py-3 shadow-lg hover:shadow-xl backdrop-blur-sm bg-background/50 group"
-                  >
-                    <Shuffle className={`w-5 h-5 mr-3 ${isSpinning ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-300`} />
-                    Spin Again
-                  </Button>
-                </div>
-              </div>
-            ) : error ? (
-              <div className="py-20 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-                <div className="relative w-20 h-20 mx-auto mb-8">
-                  <div className="absolute inset-0 bg-destructive/20 rounded-full blur-md animate-pulse"></div>
-                  <div className="relative w-full h-full bg-destructive/10 rounded-full flex items-center justify-center border border-destructive/20 shadow-lg">
-                    <Sparkles className="w-10 h-10 text-destructive drop-shadow-sm" />
-                  </div>
-                </div>
-                <h3 className="text-3xl font-bold text-foreground mb-4 bg-gradient-to-r from-destructive to-destructive/80 bg-clip-text text-transparent">Need More Apps!</h3>
-                <p className="text-muted-foreground mb-10 max-w-md mx-auto text-lg font-medium">
-                  We need more mini apps! Add your app to help grow the roulette!
-                </p>
-                {(
-                  <Button
-                    onClick={getRandomApp}
-                    className="premium-gradient hover:shadow-2xl text-white h-14 px-8 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl border border-white/20 group"
-                  >
-                    <Shuffle className="w-6 h-6 mr-3 group-hover:rotate-180 transition-transform duration-500" />
-                    Spin the Roulette
-                  </Button>
-                )}
-              </div>
-                         ) : (
-               <div className="py-20 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-                 {/* Airdrop Eligibility Status - Centered */}
+                                 {/* Airdrop Eligibility Status */}
                  {userEligibility && (
-                   <div className="mb-8 p-6 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30 max-w-md mx-auto">
-                     <div className="flex items-center justify-between mb-4">
-                       <h4 className="text-xl font-semibold text-foreground">🎁 $CITY Token Airdrop</h4>
+                   <div className="mt-6 p-4 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30">
+                     <div className="flex items-center justify-between mb-3">
+                       <h4 className="text-lg font-semibold text-foreground">🎁 $CITY Token Airdrop</h4>
                        <div className="flex items-center space-x-2">
                          <div className={`w-3 h-3 rounded-full ${userEligibility.is_eligible ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
                          <span className="text-sm font-medium">
@@ -465,7 +429,7 @@ export default function AppRoulette() {
                        </div>
                      </div>
                      
-                     <div className="grid grid-cols-2 gap-4 mb-4">
+                     <div className="grid grid-cols-2 gap-4 mb-3">
                        <div className="flex items-center space-x-2">
                          <div className={`w-2 h-2 rounded-full ${userEligibility.has_spun ? 'bg-green-500' : 'bg-gray-400'}`}></div>
                          <span className="text-sm text-muted-foreground">Spin the roulette</span>
@@ -506,6 +470,95 @@ export default function AppRoulette() {
                      )}
                    </div>
                  )}
+
+                 <div className="flex justify-center">
+                   <Button
+                     onClick={getRandomApp}
+                     disabled={isLoading}
+                     variant="outline"
+                     className="border-primary/30 hover:bg-primary/5 text-foreground font-semibold transition-all duration-300 hover:scale-105 rounded-2xl px-8 py-3 shadow-lg hover:shadow-xl backdrop-blur-sm bg-background/50 group"
+                   >
+                     <Shuffle className={`w-5 h-5 mr-3 ${isSpinning ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-300`} />
+                     Spin Again
+                   </Button>
+                 </div>
+              </div>
+            ) : error ? (
+              <div className="py-20 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+                <div className="relative w-20 h-20 mx-auto mb-8">
+                  <div className="absolute inset-0 bg-destructive/20 rounded-full blur-md animate-pulse"></div>
+                  <div className="relative w-full h-full bg-destructive/10 rounded-full flex items-center justify-center border border-destructive/20 shadow-lg">
+                    <Sparkles className="w-10 h-10 text-destructive drop-shadow-sm" />
+                  </div>
+                </div>
+                <h3 className="text-3xl font-bold text-foreground mb-4 bg-gradient-to-r from-destructive to-destructive/80 bg-clip-text text-transparent">Need More Apps!</h3>
+                <p className="text-muted-foreground mb-10 max-w-md mx-auto text-lg font-medium">
+                  We need more mini apps! Add your app to help grow the roulette!
+                </p>
+                {(
+                  <Button
+                    onClick={getRandomApp}
+                    className="premium-gradient hover:shadow-2xl text-white h-14 px-8 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl border border-white/20 group"
+                  >
+                    <Shuffle className="w-6 h-6 mr-3 group-hover:rotate-180 transition-transform duration-500" />
+                    Spin the Roulette
+                  </Button>
+                )}
+              </div>
+                         ) : (
+               <div className="py-20 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+                                   {/* Airdrop Eligibility Status - Centered */}
+                  <div className="mb-8 p-6 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30 max-w-md mx-auto">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-xl font-semibold text-foreground">🎁 $CITY Token Airdrop</h4>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-3 h-3 rounded-full ${userEligibility?.is_eligible ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
+                        <span className="text-sm font-medium">
+                          {userEligibility?.is_eligible ? 'Eligible' : 'In Progress'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 rounded-full ${userEligibility?.has_spun ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                        <span className="text-sm text-muted-foreground">Spin the roulette</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 rounded-full ${userEligibility?.has_shared ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                        <span className="text-sm text-muted-foreground">Share on Farcaster</span>
+                      </div>
+                    </div>
+
+                    {userEligibility?.can_claim && (
+                      <Button
+                        onClick={claimTokens}
+                        disabled={isClaiming}
+                        className="w-full premium-gradient hover:shadow-2xl text-white h-12 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-xl border border-white/20 group"
+                      >
+                        {isClaiming ? (
+                          <>
+                            <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
+                            Claiming...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-5 h-5 mr-3" />
+                            Claim 100 $CITY Tokens
+                          </>
+                        )}
+                      </Button>
+                    )}
+
+                    {userEligibility?.has_claimed && (
+                      <div className="text-center py-3">
+                        <div className="flex items-center justify-center space-x-2 text-green-600">
+                          <Check className="w-5 h-5" />
+                          <span className="font-semibold">Claimed {userEligibility.tokens_claimed} $CITY tokens!</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                  <h3 className="text-4xl font-bold text-foreground mb-6 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                    Ready to spin?

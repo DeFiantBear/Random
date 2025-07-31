@@ -46,6 +46,7 @@ export default function AppRoulette() {
       
       // Get Quick Auth token and fetch user data
       const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
+      console.log("Quick Auth response status:", response.status)
       
       if (response.ok) {
         const userData = await response.json()
@@ -64,6 +65,8 @@ export default function AppRoulette() {
           const eligibilityData = await eligibilityResponse.json()
           console.log("Eligibility data:", eligibilityData)
           setUserEligibility(eligibilityData)
+        } else {
+          console.error("Failed to check eligibility:", eligibilityResponse.status)
         }
         
         toast({
@@ -71,6 +74,8 @@ export default function AppRoulette() {
           description: `Welcome, FID: ${userData.fid}`,
         })
       } else {
+        const errorData = await response.json().catch(() => ({}))
+        console.error("Quick Auth failed:", response.status, errorData)
         throw new Error("Failed to authenticate with Quick Auth")
       }
     } catch (error) {
@@ -373,11 +378,15 @@ export default function AppRoulette() {
         
         // Try to get user data with Quick Auth
         try {
+          console.log("Attempting Quick Auth...")
           const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/me`)
+          console.log("Quick Auth response status:", response.status)
+          
           if (response.ok) {
             const userData = await response.json()
             console.log("User data from Quick Auth:", userData)
             setUser(userData)
+            setShowWalletConnect(false) // Hide wallet connect when user is authenticated
             
             // Check eligibility with the FID
             const eligibilityResponse = await fetch("/api/check-eligibility", {
@@ -390,13 +399,15 @@ export default function AppRoulette() {
               const eligibilityData = await eligibilityResponse.json()
               console.log("Eligibility data:", eligibilityData)
               setUserEligibility(eligibilityData)
+            } else {
+              console.error("Failed to check eligibility:", eligibilityResponse.status)
             }
           } else {
             console.log("No authenticated user, showing wallet connect")
             setShowWalletConnect(true)
           }
         } catch (authError) {
-          console.log("Quick Auth failed, showing wallet connect")
+          console.error("Quick Auth failed:", authError)
           setShowWalletConnect(true)
         }
         

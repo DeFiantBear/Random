@@ -46,10 +46,19 @@ export async function GET(request: NextRequest) {
     }
 
     try {
+      // Get the correct domain for token validation
+      const host = request.headers.get('host') || 'localhost:3000'
+      const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
+      const domain = `${protocol}://${host}`
+      
+      console.log('Validating token for domain:', domain)
+      
       const payload = await client.verifyJwt({
         token: authorization.split(' ')[1] as string,
-        domain: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000',
+        domain: domain,
       })
+
+      console.log('Token payload:', payload)
 
       const user = await resolveUser(payload.sub)
       console.log('Authenticated user:', user)

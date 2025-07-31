@@ -39,6 +39,7 @@ export default function AppRoulette() {
   // Check eligibility for a user
   const checkEligibility = async (farcasterId: string) => {
     try {
+      console.log("Checking eligibility for FID:", farcasterId)
       const response = await fetch("/api/check-eligibility", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -47,8 +48,10 @@ export default function AppRoulette() {
       
       if (response.ok) {
         const eligibilityData = await response.json()
-        console.log("Eligibility data:", eligibilityData)
+        console.log("Eligibility data received:", eligibilityData)
         setUserEligibility(eligibilityData)
+      } else {
+        console.error("Failed to check eligibility:", response.status)
       }
     } catch (error) {
       console.error("Error checking eligibility:", error)
@@ -76,7 +79,7 @@ export default function AppRoulette() {
       
       if (response.ok) {
         const data = await response.json()
-        console.log("Eligibility updated:", data)
+        console.log("Eligibility updated successfully:", data)
         setUserEligibility(data)
         
         if (action === 'share' && data.is_eligible && !data.has_claimed) {
@@ -87,6 +90,8 @@ export default function AppRoulette() {
         }
       } else {
         console.error("Failed to update eligibility:", response.status)
+        const errorText = await response.text()
+        console.error("Error response:", errorText)
       }
     } catch (error) {
       console.error("Error updating eligibility:", error)
@@ -539,16 +544,9 @@ export default function AppRoulette() {
                 )}
 
                 <div className="flex justify-center">
-                  <Button
-                    onClick={getRandomApp}
-                    disabled={isLoading}
-                    variant="outline"
-                    className="border-primary/30 hover:bg-primary/5 text-foreground font-semibold transition-all duration-300 hover:scale-105 rounded-2xl px-8 py-3 shadow-lg hover:shadow-xl backdrop-blur-sm bg-background/50 group"
-                  >
-                    <Shuffle className={`w-5 h-5 mr-3 ${isSpinning ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-300`} />
-                    Spin Again
-                  </Button>
-                </div>
+
+
+                              </div>
               </div>
             ) : error ? (
               <div className="py-20 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">

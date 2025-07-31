@@ -159,41 +159,16 @@ export default function AppRoulette() {
     try {
       setIsAuthenticating(true)
       
-      // Check if we're in a Farcaster environment
-      const isInFarcaster = window.location.href.includes('farcaster.xyz') || 
-                           window.location.href.includes('warpcast.com') ||
-                           window.navigator.userAgent.includes('Farcaster')
+      // Use the simple authentication method from the docs
+      const userData = await sdk.quickAuth.getUserData()
       
-      if (isInFarcaster) {
-        // In Farcaster environment, try to get user data directly
-        try {
-          const userData = await sdk.quickAuth.getUserData()
-          if (userData && userData.fid) {
-            setUser(userData)
-            toast({
-              title: "Welcome!",
-              description: `Signed in as FID: ${userData.fid}`,
-            })
-            return
-          }
-        } catch (directError) {
-          console.log("Direct auth failed, trying fetch method:", directError)
-        }
-      }
-      
-      // Fallback to the standard fetch method
-      const response = await sdk.quickAuth.fetch(`${window.location.origin}/api/auth`)
-      
-      if (response.ok) {
-        const userData = await response.json()
+      if (userData && userData.fid) {
         setUser(userData)
         toast({
           title: "Welcome!",
           description: `Signed in as FID: ${userData.fid}`,
         })
       } else {
-        const errorData = await response.json().catch(() => ({}))
-        console.error("Auth response error:", errorData)
         toast({
           title: "Sign In Failed",
           description: "Couldn't sign in with Farcaster. Please try again.",
@@ -221,13 +196,9 @@ export default function AppRoulette() {
         await sdk.actions.ready()
         console.log("App initialized")
         
-        // Check if we're in Farcaster and auto-authenticate
-        const isInFarcaster = window.location.href.includes('farcaster.xyz') || 
-                             window.location.href.includes('warpcast.com') ||
-                             window.navigator.userAgent.includes('Farcaster')
-        
-        if (isInFarcaster && !user) {
-          console.log("In Farcaster environment, attempting auto-auth...")
+        // Try to auto-authenticate if not already signed in
+        if (!user) {
+          console.log("Attempting auto-authentication...")
           try {
             const userData = await sdk.quickAuth.getUserData()
             if (userData && userData.fid) {

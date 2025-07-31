@@ -72,22 +72,12 @@ export default function AppRoulette() {
          setIsSpinning(false)
          setShowRouletteAnimation(false)
 
-         // Check for airdrop win (1 in 1000 chance)
+         // Check for airdrop win (1 in 100 chance)
          if (user && user.fid && user.primaryAddress) {
-           const randomNumber = Math.floor(Math.random() * 1000) + 1
+           const randomNumber = Math.floor(Math.random() * 100) + 1
            const isWinner = randomNumber === 1
            
            console.log("Airdrop check:", { randomNumber, isWinner, userFid: user.fid })
-
-           // Test toast system on first spin (for debugging)
-           if (recentlyShown.size === 0) {
-             console.log("First spin - testing toast system")
-             toast({
-               title: "🎰 Welcome!",
-               description: "You're signed in and ready to win!",
-               duration: 3000,
-             })
-           }
 
            if (isWinner) {
              try {
@@ -105,16 +95,35 @@ export default function AppRoulette() {
                })
 
                if (winnerResponse.ok) {
-                 // Show winner celebration
+                 // Multiple notification methods to ensure winner is notified
+                 
+                 // 1. Toast notification
                  toast({
                    title: "🎉 JACKPOT! 🎉",
                    description: "You just won 100 CITY tokens! Check your wallet soon!",
-                   duration: 10000,
+                   duration: 15000,
                  })
                  
-                 console.log("Winner recorded:", user.fid)
+                 // 2. Browser alert (impossible to miss)
+                 alert("🎉 JACKPOT! 🎉\n\nYou just won 100 CITY tokens!\n\nCheck your wallet soon!")
+                 
+                 // 3. Console log for debugging
+                 console.log("🎉 WINNER! 🎉", {
+                   fid: user.fid,
+                   wallet: user.primaryAddress,
+                   app: randomApp.name,
+                   timestamp: new Date().toISOString()
+                 })
+                 
+                 // 4. Page title notification
+                 const originalTitle = document.title
+                 document.title = "🎉 JACKPOT! You Won! 🎉"
+                 setTimeout(() => {
+                   document.title = originalTitle
+                 }, 5000)
+                 
                } else {
-                 console.error("Failed to record winner")
+                 console.error("Failed to record winner:", await winnerResponse.text())
                }
              } catch (error) {
                console.error("Error recording winner:", error)

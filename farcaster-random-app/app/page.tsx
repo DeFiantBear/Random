@@ -246,8 +246,6 @@ export default function AppRoulette() {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        await getRandomApp()
-        
         // Tell Farcaster the app is ready to display
         await sdk.actions.ready()
       } catch (error) {
@@ -416,60 +414,7 @@ export default function AppRoulette() {
                   </Button>
                 </div>
 
-                {/* Airdrop Eligibility Status */}
-                {userEligibility && (
-                  <div className="mt-6 p-4 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-lg font-semibold text-foreground">🎁 $CITY Token Airdrop</h4>
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-3 h-3 rounded-full ${userEligibility.is_eligible ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
-                        <span className="text-sm font-medium">
-                          {userEligibility.is_eligible ? 'Eligible' : 'In Progress'}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${userEligibility.has_spun ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                        <span className="text-sm text-muted-foreground">Spin the roulette</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className={`w-2 h-2 rounded-full ${userEligibility.has_shared ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                        <span className="text-sm text-muted-foreground">Share on Farcaster</span>
-                      </div>
-                    </div>
-
-                    {userEligibility.can_claim && (
-                      <Button
-                        onClick={claimTokens}
-                        disabled={isClaiming}
-                        className="w-full premium-gradient hover:shadow-2xl text-white h-12 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-xl border border-white/20 group"
-                      >
-                        {isClaiming ? (
-                          <>
-                            <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
-                            Claiming...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-5 h-5 mr-3" />
-                            Claim 100 $CITY Tokens
-                          </>
-                        )}
-                      </Button>
-                    )}
-
-                    {userEligibility.has_claimed && (
-                      <div className="text-center py-3">
-                        <div className="flex items-center justify-center space-x-2 text-green-600">
-                          <Check className="w-5 h-5" />
-                          <span className="font-semibold">Claimed {userEligibility.tokens_claimed} $CITY tokens!</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
+                
 
                 <div className="flex justify-center">
                   <Button
@@ -505,40 +450,79 @@ export default function AppRoulette() {
                   </Button>
                 )}
               </div>
-            ) : (
-              <div className="py-20 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
-                <div className="relative w-32 h-32 mx-auto mb-10">
-                  <div className="absolute inset-0 rounded-full animate-glow bg-primary/20 blur-lg"></div>
-                  <div className="relative w-full h-full premium-gradient rounded-full flex items-center justify-center shadow-2xl animate-float">
-                    <Sparkles className="w-16 h-16 text-white drop-shadow-lg" />
-                  </div>
-                </div>
-                <h3 className="text-4xl font-bold text-foreground mb-6 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                  {isLoading ? "🎰 Spinning the roulette..." : "Ready to spin?"}
-                </h3>
-                <p className="text-muted-foreground mb-12 text-xl font-medium max-w-md mx-auto">
-                  {isLoading ? "Finding your next favorite app..." : "Discover amazing Farcaster mini apps built on Base"}
-                </p>
-                {!isLoading && (
-                  <Button
-                    onClick={getRandomApp}
-                    className="premium-gradient hover:shadow-2xl text-white h-16 px-10 text-xl font-bold shadow-xl transition-all duration-300 hover:scale-110 rounded-2xl border border-white/20 group animate-glow"
-                  >
-                    <Shuffle className="w-7 h-7 mr-3 group-hover:rotate-180 transition-transform duration-500" />
-                    Spin the Roulette
-                  </Button>
-                )}
-                {isLoading && (
-                  <div className="flex items-center justify-center space-x-3">
-                    <div className="relative">
-                      <RefreshCw className="w-8 h-8 text-primary animate-spin" />
-                      <div className="absolute inset-0 w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
-                    </div>
-                    <span className="text-muted-foreground font-semibold text-lg">Spinning...</span>
-                  </div>
-                )}
-              </div>
-            )}
+                         ) : (
+               <div className="py-20 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">
+                 {/* Airdrop Eligibility Status - Centered */}
+                 {userEligibility && (
+                   <div className="mb-8 p-6 bg-background/50 backdrop-blur-sm rounded-2xl border border-border/30 max-w-md mx-auto">
+                     <div className="flex items-center justify-between mb-4">
+                       <h4 className="text-xl font-semibold text-foreground">🎁 $CITY Token Airdrop</h4>
+                       <div className="flex items-center space-x-2">
+                         <div className={`w-3 h-3 rounded-full ${userEligibility.is_eligible ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
+                         <span className="text-sm font-medium">
+                           {userEligibility.is_eligible ? 'Eligible' : 'In Progress'}
+                         </span>
+                       </div>
+                     </div>
+                     
+                     <div className="grid grid-cols-2 gap-4 mb-4">
+                       <div className="flex items-center space-x-2">
+                         <div className={`w-2 h-2 rounded-full ${userEligibility.has_spun ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                         <span className="text-sm text-muted-foreground">Spin the roulette</span>
+                       </div>
+                       <div className="flex items-center space-x-2">
+                         <div className={`w-2 h-2 rounded-full ${userEligibility.has_shared ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                         <span className="text-sm text-muted-foreground">Share on Farcaster</span>
+                       </div>
+                     </div>
+
+                     {userEligibility.can_claim && (
+                       <Button
+                         onClick={claimTokens}
+                         disabled={isClaiming}
+                         className="w-full premium-gradient hover:shadow-2xl text-white h-12 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-xl border border-white/20 group"
+                       >
+                         {isClaiming ? (
+                           <>
+                             <RefreshCw className="w-5 h-5 mr-3 animate-spin" />
+                             Claiming...
+                           </>
+                         ) : (
+                           <>
+                             <Sparkles className="w-5 h-5 mr-3" />
+                             Claim 100 $CITY Tokens
+                           </>
+                         )}
+                       </Button>
+                     )}
+
+                     {userEligibility.has_claimed && (
+                       <div className="text-center py-3">
+                         <div className="flex items-center justify-center space-x-2 text-green-600">
+                           <Check className="w-5 h-5" />
+                           <span className="font-semibold">Claimed {userEligibility.tokens_claimed} $CITY tokens!</span>
+                         </div>
+                       </div>
+                     )}
+                   </div>
+                 )}
+
+                 <h3 className="text-4xl font-bold text-foreground mb-6 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                   Ready to spin?
+                 </h3>
+                 <p className="text-muted-foreground mb-12 text-xl font-medium max-w-md mx-auto">
+                   Discover amazing Farcaster mini apps built on Base
+                 </p>
+                 
+                 <Button
+                   onClick={getRandomApp}
+                   className="premium-gradient hover:shadow-2xl text-white h-16 px-10 text-xl font-bold shadow-xl transition-all duration-300 hover:scale-110 rounded-2xl border border-white/20 group animate-glow"
+                 >
+                   <Shuffle className="w-7 h-7 mr-3 group-hover:rotate-180 transition-transform duration-500" />
+                   Spin the Roulette
+                 </Button>
+               </div>
+             )}
           </CardContent>
         </Card>
       </div>

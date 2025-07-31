@@ -29,13 +29,11 @@ export default function AppRoulette() {
   const [user, setUser] = useState<FarcasterUser | null>(null)
   const [isAuthenticating, setIsAuthenticating] = useState(false)
   
-  // Add a proper spin counter for testing
-  const [spinCount, setSpinCount] = useState(0)
+
   
   const { toast } = useToast()
 
   const getRandomApp = async () => {
-    console.log("=== SPIN START ===")
     setIsLoading(true)
     setIsSpinning(true)
     setShowRouletteAnimation(true)
@@ -69,87 +67,47 @@ export default function AppRoulette() {
       const randomApp = data.apps[randomIndex]
 
                     setTimeout(async () => {
-         console.log("=== TIMEOUT START ===")
-         
-         // Increment spin counter
-         const newSpinCount = spinCount + 1
-         console.log("Current spin count:", newSpinCount)
-         
          setCurrentApp(randomApp)
          setRecentlyShown((prev) => new Set([...prev, randomApp.app_id]))
-         setSpinCount(newSpinCount)
          setIsSpinning(false)
          setShowRouletteAnimation(false)
 
-         // Check for airdrop win (1 in 10 chance for testing)
-         console.log("=== AIRDROP DEBUG START ===")
-         let isWinner = false
-         const randomNumber = Math.floor(Math.random() * 10) + 1
-         isWinner = randomNumber === 1
-         
-         console.log("Airdrop check:", {
-           userFid: user?.fid || "Not signed in",
-           randomNumber: randomNumber,
-           isWinner: isWinner,
-           userSignedIn: !!user,
-           timestamp: new Date().toISOString(),
-           spinCount: newSpinCount
-         })
-         
-         // Force a win every 3rd spin for testing
-         if (newSpinCount % 3 === 0) {
-           isWinner = true
-           console.log("FORCED WIN on spin", newSpinCount)
-         }
+         // Check for airdrop win (1 in 1000 chance)
+         if (user && user.fid && user.primaryAddress) {
+           const randomNumber = Math.floor(Math.random() * 1000) + 1
+           const isWinner = randomNumber === 1
 
-        if (isWinner) {
-          if (user && user.fid && user.primaryAddress) {
-            try {
-              // Record the winner in database
-              const winnerResponse = await fetch("/api/airdrop/record-winner", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  fid: user.fid,
-                  wallet_address: user.primaryAddress,
-                  app_discovered: randomApp.name
-                }),
-              })
+           if (isWinner) {
+             try {
+               // Record the winner in database
+               const winnerResponse = await fetch("/api/airdrop/record-winner", {
+                 method: "POST",
+                 headers: {
+                   "Content-Type": "application/json",
+                 },
+                 body: JSON.stringify({
+                   fid: user.fid,
+                   wallet_address: user.primaryAddress,
+                   app_discovered: randomApp.name
+                 }),
+               })
 
-              if (winnerResponse.ok) {
-                // Show winner celebration
-                toast({
-                  title: "🎉 JACKPOT! 🎉",
-                  description: "You just won 100 CITY tokens! Check your wallet soon!",
-                  duration: 10000,
-                })
-                
-                console.log("Winner recorded:", user.fid)
-              } else {
-                console.error("Failed to record winner")
-              }
-            } catch (error) {
-              console.error("Error recording winner:", error)
-            }
-          } else {
-            // Show winner celebration even without auth (for testing)
-            toast({
-              title: "🎉 JACKPOT! 🎉",
-              description: "You just won 100 CITY tokens! Sign in to claim them!",
-              duration: 10000,
-            })
-            console.log("Winner (not signed in):", randomNumber)
-          }
-        }
-
-                 // Only show toast for winners
-         if (isWinner) {
-           console.log("WINNER! Showing winner toast")
-           alert("🎉 JACKPOT! 🎉 You won!") // Test alert
-         } else {
-           console.log("No win this time")
+               if (winnerResponse.ok) {
+                 // Show winner celebration
+                 toast({
+                   title: "🎉 JACKPOT! 🎉",
+                   description: "You just won 100 CITY tokens! Check your wallet soon!",
+                   duration: 10000,
+                 })
+                 
+                 console.log("Winner recorded:", user.fid)
+               } else {
+                 console.error("Failed to record winner")
+               }
+             } catch (error) {
+               console.error("Error recording winner:", error)
+             }
+           }
          }
 
         if (data.reset) {

@@ -159,11 +159,10 @@ export default function AppRoulette() {
     try {
       setIsAuthenticating(true)
       
-      // Use Quick Auth to get authenticated user data
-      const res = await sdk.quickAuth.fetch(`${window.location.origin}/api/auth`)
+      // Use the proper Farcaster authentication method
+      const userData = await sdk.quickAuth.getUserData()
       
-      if (res.ok) {
-        const userData = await res.json()
+      if (userData && userData.fid) {
         setUser(userData)
         toast({
           title: "Welcome!",

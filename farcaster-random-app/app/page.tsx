@@ -29,6 +29,9 @@ export default function AppRoulette() {
   const [user, setUser] = useState<FarcasterUser | null>(null)
   const [isAuthenticating, setIsAuthenticating] = useState(false)
   
+  // Add a proper spin counter for testing
+  const [spinCount, setSpinCount] = useState(0)
+  
   const { toast } = useToast()
 
   const getRandomApp = async () => {
@@ -68,12 +71,13 @@ export default function AppRoulette() {
                     setTimeout(async () => {
          console.log("=== TIMEOUT START ===")
          
-         // Calculate spin count BEFORE updating state
-         const currentSpinCount = recentlyShown.size + 1
-         console.log("Current spin count:", currentSpinCount)
+         // Increment spin counter
+         const newSpinCount = spinCount + 1
+         console.log("Current spin count:", newSpinCount)
          
          setCurrentApp(randomApp)
          setRecentlyShown((prev) => new Set([...prev, randomApp.app_id]))
+         setSpinCount(newSpinCount)
          setIsSpinning(false)
          setShowRouletteAnimation(false)
 
@@ -89,13 +93,13 @@ export default function AppRoulette() {
            isWinner: isWinner,
            userSignedIn: !!user,
            timestamp: new Date().toISOString(),
-           spinCount: currentSpinCount
+           spinCount: newSpinCount
          })
          
          // Force a win every 3rd spin for testing
-         if (currentSpinCount % 3 === 0) {
+         if (newSpinCount % 3 === 0) {
            isWinner = true
-           console.log("FORCED WIN on spin", currentSpinCount)
+           console.log("FORCED WIN on spin", newSpinCount)
          }
 
         if (isWinner) {

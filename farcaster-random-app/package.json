@@ -9,6 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@farcaster/hub-nodejs": "^0.15.5",
     "@farcaster/miniapp-sdk": "^0.1.8",
     "@hookform/resolvers": "^3.9.1",
     "@noble/hashes": "^1.8.0",

@@ -421,11 +421,53 @@ export default function AppRoulette() {
       try {
         console.log("Initializing app...")
         
-        // Skip Farcaster SDK for now and show manual input immediately
-        console.log("Showing manual input for testing...")
-        setShowManualInput(true)
+        // Always call sdk.actions.ready() first for Farcaster Mini Apps
+        console.log("Calling sdk.actions.ready()...")
+        await sdk.actions.ready()
+        console.log("sdk.actions.ready() completed")
         
-        // Don't call sdk.actions.ready() to avoid errors
+        // Try to get user data from Farcaster context
+        try {
+          console.log("Trying to get Farcaster context...")
+          const context = await sdk.context
+          console.log("Farcaster context:", context)
+          
+          if (context && context.user && context.user.fid) {
+            const fid = context.user.fid.toString()
+            console.log("Found FID from context:", fid)
+            
+            const userData = {
+              fid: fid,
+              walletAddress: "0x1234567890123456789012345678901234567890"
+            }
+            
+            localStorage.setItem('farcaster_user_data', JSON.stringify(userData))
+            setUserInfo(userData)
+            
+            // Check eligibility with real FID
+            const response = await fetch("/api/check-eligibility", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ farcaster_id: userData.fid })
+            })
+            
+            if (response.ok) {
+              const data = await response.json()
+              console.log("Eligibility data:", data)
+              setUserEligibility(data)
+            }
+            
+            console.log("Successfully initialized with Farcaster user data")
+          } else {
+            console.log("No user data in context, showing manual input")
+            setShowManualInput(true)
+          }
+        } catch (contextError) {
+          console.error("Error getting Farcaster context:", contextError)
+          console.log("Falling back to manual input")
+          setShowManualInput(true)
+        }
+        
         console.log("App initialized successfully")
       } catch (error) {
         console.error("Error initializing app:", error)

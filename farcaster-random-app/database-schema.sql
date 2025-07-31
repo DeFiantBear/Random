@@ -1,23 +1,22 @@
--- Database schema for App Roulette user authentication
+-- Database schema for App Roulette
 
--- Create user_logins table to store Farcaster user authentication data
-CREATE TABLE IF NOT EXISTS user_logins (
+-- Create mini_apps table to store Farcaster mini apps
+CREATE TABLE IF NOT EXISTS mini_apps (
   id SERIAL PRIMARY KEY,
-  farcaster_id TEXT NOT NULL UNIQUE,
-  wallet_address TEXT NOT NULL,
-  login_timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  app_id TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  description TEXT,
+  mini_app_url TEXT NOT NULL UNIQUE,
+  creator TEXT DEFAULT 'unknown',
+  category TEXT DEFAULT 'Other',
+  added_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create index on farcaster_id for faster lookups
-CREATE INDEX IF NOT EXISTS idx_user_logins_farcaster_id ON user_logins(farcaster_id);
-
--- Create index on wallet_address for future airdrop queries
-CREATE INDEX IF NOT EXISTS idx_user_logins_wallet_address ON user_logins(wallet_address);
-
--- Add RLS (Row Level Security) policies if needed
--- ALTER TABLE user_logins ENABLE ROW LEVEL SECURITY;
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_mini_apps_app_id ON mini_apps(app_id);
+CREATE INDEX IF NOT EXISTS idx_mini_apps_url ON mini_apps(mini_app_url);
+CREATE INDEX IF NOT EXISTS idx_mini_apps_added_at ON mini_apps(added_at);
 
 -- Optional: Create a function to update the updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -29,15 +28,18 @@ END;
 $$ language 'plpgsql';
 
 -- Create trigger to automatically update updated_at
-CREATE TRIGGER update_user_logins_updated_at 
-    BEFORE UPDATE ON user_logins 
+CREATE TRIGGER update_mini_apps_updated_at 
+    BEFORE UPDATE ON mini_apps 
     FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
 
 -- Comments for documentation
-COMMENT ON TABLE user_logins IS 'Stores Farcaster user authentication data for App Roulette';
-COMMENT ON COLUMN user_logins.farcaster_id IS 'Farcaster ID (FID) of the user';
-COMMENT ON COLUMN user_logins.wallet_address IS 'Primary Ethereum wallet address of the user';
-COMMENT ON COLUMN user_logins.login_timestamp IS 'Timestamp of the most recent login';
-COMMENT ON COLUMN user_logins.created_at IS 'Timestamp when the user first logged in';
-COMMENT ON COLUMN user_logins.updated_at IS 'Timestamp when the record was last updated'; 
+COMMENT ON TABLE mini_apps IS 'Stores Farcaster mini apps for the App Roulette';
+COMMENT ON COLUMN mini_apps.app_id IS 'Unique identifier for the mini app';
+COMMENT ON COLUMN mini_apps.name IS 'Display name of the mini app';
+COMMENT ON COLUMN mini_apps.description IS 'Description of the mini app';
+COMMENT ON COLUMN mini_apps.mini_app_url IS 'URL to the Farcaster mini app';
+COMMENT ON COLUMN mini_apps.creator IS 'Creator of the mini app';
+COMMENT ON COLUMN mini_apps.category IS 'Category of the mini app';
+COMMENT ON COLUMN mini_apps.added_at IS 'Timestamp when the app was added';
+COMMENT ON COLUMN mini_apps.updated_at IS 'Timestamp when the record was last updated'; 

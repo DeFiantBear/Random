@@ -19,10 +19,6 @@ export default function AppRoulette() {
   const [showRouletteAnimation, setShowRouletteAnimation] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   
-  // User authentication state
-  const [user, setUser] = useState<{ fid: number; primaryAddress?: string } | null>(null)
-  const [isAuthenticating, setIsAuthenticating] = useState(false)
-  
   const { toast } = useToast()
 
   const getRandomApp = async () => {
@@ -153,32 +149,12 @@ export default function AppRoulette() {
     const initializeApp = async () => {
       try {
         console.log("Initializing app...")
-        setIsAuthenticating(true)
-        
-        // Use Quick Auth to get authenticated user data
-        console.log("Attempting Quick Auth...")
-        const res = await sdk.quickAuth.fetch(`${window.location.origin}/api/auth`)
-        console.log("Quick Auth response status:", res.status)
-        console.log("Quick Auth response ok:", res.ok)
-        
-        if (res.ok) {
-          const userData = await res.json()
-          console.log("Authenticated user data:", userData)
-          setUser(userData)
-        } else {
-          const errorText = await res.text()
-          console.log("Quick Auth failed:", errorText)
-          console.log("No authenticated user found - app will work without tracking")
-        }
         
         // Signal that the app is ready
         await sdk.actions.ready()
         console.log("App initialized")
       } catch (error) {
         console.error("Error initializing app:", error)
-        console.error("Error details:", error)
-      } finally {
-        setIsAuthenticating(false)
       }
     }
 
@@ -222,12 +198,6 @@ export default function AppRoulette() {
             </div>
 
             <div className="flex items-center space-x-3">
-              {user && (
-                <div className="hidden sm:flex items-center space-x-2 text-sm text-muted-foreground">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span>FID: {user.fid}</span>
-                </div>
-              )}
               <Button
                 onClick={() => setShowAddForm(!showAddForm)}
                 className="premium-gradient hover:shadow-xl text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 h-10 sm:h-12 rounded-xl border border-white/20"
@@ -250,23 +220,7 @@ export default function AppRoulette() {
 
         <Card className="border border-border/30 shadow-2xl bg-card/80 backdrop-blur-xl rounded-3xl overflow-hidden hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] animate-float">
           <CardContent className="p-8 sm:p-10 relative">
-            {isAuthenticating ? (
-              <div className="py-20 text-center">
-                <div className="relative w-32 h-32 mx-auto mb-10">
-                  <div className="absolute inset-0 rounded-full animate-glow bg-primary/20 blur-md"></div>
-                  <div className="absolute inset-2 border-4 border-border/30 border-t-primary rounded-full animate-spin shadow-lg"></div>
-                  <div className="absolute inset-4 premium-gradient rounded-full flex items-center justify-center shadow-xl">
-                    <Sparkles className="w-8 h-8 text-white animate-pulse drop-shadow-lg" />
-                  </div>
-                </div>
-                <h3 className="text-3xl font-bold text-foreground mb-4 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                  🔗 Connecting to Farcaster...
-                </h3>
-                <p className="text-muted-foreground text-xl font-medium">
-                  Getting your wallet address securely
-                </p>
-              </div>
-            ) : showRouletteAnimation ? (
+            {showRouletteAnimation ? (
               <div className="py-20 text-center">
                 <div className="relative w-32 h-32 mx-auto mb-10">
                   {/* Outer glowing ring */}
@@ -387,15 +341,13 @@ export default function AppRoulette() {
                 <p className="text-muted-foreground mb-10 max-w-md mx-auto text-lg font-medium">
                   We need more mini apps! Add your app to help grow the roulette!
                 </p>
-                {(
-                  <Button
-                    onClick={getRandomApp}
-                    className="premium-gradient hover:shadow-2xl text-white h-14 px-8 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl border border-white/20 group"
-                  >
-                    <Shuffle className="w-6 h-6 mr-3 group-hover:rotate-180 transition-transform duration-500" />
-                    Spin the Roulette
-                  </Button>
-                )}
+                <Button
+                  onClick={getRandomApp}
+                  className="premium-gradient hover:shadow-2xl text-white h-14 px-8 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl border border-white/20 group"
+                >
+                  <Shuffle className="w-6 h-6 mr-3 group-hover:rotate-180 transition-transform duration-500" />
+                  Spin the Roulette
+                </Button>
               </div>
             ) : (
               <div className="py-20 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">

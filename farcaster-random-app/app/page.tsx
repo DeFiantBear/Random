@@ -68,21 +68,46 @@ export default function AppRoulette() {
     console.log(`Updating eligibility for action: ${action}`)
     console.log("Current userInfo:", userInfo)
     
-    // Use real user data only
-    try {
-      if (!userInfo?.fid) {
-        console.error("No user FID available")
-        toast({
-          title: "Error",
-          description: "No user data available. Please refresh and try again.",
-          variant: "destructive",
-        })
-        return
+    // Try to get user data from multiple sources
+    let fid = null
+    
+    // First try userInfo
+    if (userInfo?.fid) {
+      fid = userInfo.fid
+      console.log(`Using FID from userInfo: ${fid}`)
+    } else {
+      // Try localStorage
+      const storedUserData = localStorage.getItem('farcaster_user_data')
+      if (storedUserData) {
+        try {
+          const parsedData = JSON.parse(storedUserData)
+          if (parsedData.fid) {
+            fid = parsedData.fid
+            console.log(`Using FID from localStorage: ${fid}`)
+            // Update userInfo state
+            setUserInfo(parsedData)
+          }
+        } catch (e) {
+          console.error("Failed to parse localStorage data:", e)
+        }
       }
-      
-      const fid = userInfo.fid
-      console.log(`Using FID: ${fid} for ${action}`)
-      
+    }
+    
+    // If still no FID, show manual input
+    if (!fid) {
+      console.error("No user FID available from any source")
+      toast({
+        title: "User Data Required",
+        description: "Please enter your Farcaster ID to participate in the airdrop.",
+        variant: "destructive",
+      })
+      setShowManualInput(true)
+      return
+    }
+    
+    console.log(`Using FID: ${fid} for ${action}`)
+    
+    try {
       // Update eligibility in database
       const response = await fetch("/api/update-eligibility", {
         method: "POST",
@@ -108,7 +133,8 @@ export default function AppRoulette() {
           })
         }
       } else {
-        console.error("API call failed:", response.status)
+        const errorText = await response.text()
+        console.error("API call failed:", response.status, errorText)
         toast({
           title: "Error",
           description: "Could not update eligibility. Please try again.",
@@ -459,13 +485,76 @@ export default function AppRoulette() {
             
             console.log("Successfully initialized with Farcaster user data")
           } else {
-            console.log("No user data in context, showing manual input")
-            setShowManualInput(true)
+            console.log("No user data in context, checking localStorage...")
+            // Check localStorage for existing user data
+            const storedUserData = localStorage.getItem('farcaster_user_data')
+            if (storedUserData) {
+              try {
+                const parsedData = JSON.parse(storedUserData)
+                if (parsedData.fid) {
+                  console.log("Found user data in localStorage:", parsedData)
+                  setUserInfo(parsedData)
+                  
+                  // Check eligibility with stored FID
+                  const response = await fetch("/api/check-eligibility", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ farcaster_id: parsedData.fid })
+                  })
+                  
+                  if (response.ok) {
+                    const data = await response.json()
+                    console.log("Eligibility data:", data)
+                    setUserEligibility(data)
+                  }
+                } else {
+                  setShowManualInput(true)
+                }
+              } catch (e) {
+                console.error("Failed to parse localStorage data:", e)
+                setShowManualInput(true)
+              }
+            } else {
+              console.log("No stored user data, showing manual input")
+              setShowManualInput(true)
+            }
           }
         } catch (contextError) {
           console.error("Error getting Farcaster context:", contextError)
-          console.log("Falling back to manual input")
-          setShowManualInput(true)
+          console.log("Falling back to localStorage check")
+          
+          // Check localStorage for existing user data
+          const storedUserData = localStorage.getItem('farcaster_user_data')
+          if (storedUserData) {
+            try {
+              const parsedData = JSON.parse(storedUserData)
+              if (parsedData.fid) {
+                console.log("Found user data in localStorage:", parsedData)
+                setUserInfo(parsedData)
+                
+                // Check eligibility with stored FID
+                const response = await fetch("/api/check-eligibility", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ farcaster_id: parsedData.fid })
+                })
+                
+                if (response.ok) {
+                  const data = await response.json()
+                  console.log("Eligibility data:", data)
+                  setUserEligibility(data)
+                }
+              } else {
+                setShowManualInput(true)
+              }
+            } catch (e) {
+              console.error("Failed to parse localStorage data:", e)
+              setShowManualInput(true)
+            }
+          } else {
+            console.log("No stored user data, showing manual input")
+            setShowManualInput(true)
+          }
         }
         
         console.log("App initialized successfully")

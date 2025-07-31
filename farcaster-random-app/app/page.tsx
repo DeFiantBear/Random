@@ -76,6 +76,18 @@ export default function AppRoulette() {
          if (user && user.fid && user.primaryAddress) {
            const randomNumber = Math.floor(Math.random() * 1000) + 1
            const isWinner = randomNumber === 1
+           
+           console.log("Airdrop check:", { randomNumber, isWinner, userFid: user.fid })
+
+           // Test toast system on first spin (for debugging)
+           if (recentlyShown.size === 0) {
+             console.log("First spin - testing toast system")
+             toast({
+               title: "🎰 Welcome!",
+               description: "You're signed in and ready to win!",
+               duration: 3000,
+             })
+           }
 
            if (isWinner) {
              try {
@@ -110,13 +122,9 @@ export default function AppRoulette() {
            }
          }
 
-        if (data.reset) {
-          setRecentlyShown(new Set([randomApp.app_id]))
-          toast({
-            title: "All apps shown!",
-            description: "Starting over with a fresh selection",
-          })
-        }
+                 if (data.reset) {
+           setRecentlyShown(new Set([randomApp.app_id]))
+         }
       }, 2000)
 
     } catch (error) {

@@ -43,17 +43,15 @@ export default function AppRoulette() {
   // Check user eligibility
   const checkEligibility = async () => {
     try {
-      // Get user info from Farcaster context
-      // Note: Farcaster SDK context methods may vary by version
-      // For now, we'll use a secure approach that works with the current SDK
       console.log("Getting user info from Farcaster context...")
       
-      // In production, you would get the user's FID and wallet address from Farcaster
-      // For now, we'll simulate this for demo purposes
+      // For now, use demo mode to test the functionality
+      // In production, you would get real Farcaster user data
       const mockUserData = {
         fid: "demo_fid_123",
         walletAddress: "0x1234567890123456789012345678901234567890"
       }
+      console.log("Using demo user data:", mockUserData)
       setUserInfo(mockUserData)
       
       // Check eligibility from database
@@ -65,11 +63,13 @@ export default function AppRoulette() {
       
       if (response.ok) {
         const data = await response.json()
+        console.log("Eligibility data:", data)
         setUserEligibility(data)
+      } else {
+        console.error("Failed to check eligibility:", response.status)
       }
     } catch (error) {
       console.error("Error getting user info:", error)
-      // Fallback to demo mode if Farcaster context not available
     }
   }
 

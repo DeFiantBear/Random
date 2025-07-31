@@ -3,11 +3,17 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Shuffle, Plus, ExternalLink, Sparkles, Circle, Share2, Copy, Check } from "lucide-react"
+import { Shuffle, Plus, ExternalLink, Sparkles, Circle, Share2, Copy, Check, User } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import AddAppForm from "@/components/add-app-form"
 import type { FarcasterApp } from "@/types/app"
 import { sdk } from '@farcaster/miniapp-sdk'
+
+interface FarcasterUser {
+  fid: number
+  primaryAddress?: string
+  username?: string
+}
 
 export default function AppRoulette() {
   const [currentApp, setCurrentApp] = useState<FarcasterApp | null>(null)
@@ -18,6 +24,10 @@ export default function AppRoulette() {
   const [isSpinning, setIsSpinning] = useState(false)
   const [showRouletteAnimation, setShowRouletteAnimation] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
+  
+  // Farcaster authentication state
+  const [user, setUser] = useState<FarcasterUser | null>(null)
+  const [isAuthenticating, setIsAuthenticating] = useState(false)
   
   const { toast } = useToast()
 
@@ -145,6 +155,39 @@ export default function AppRoulette() {
     }
   }
 
+  const signInWithFarcaster = async () => {
+    try {
+      setIsAuthenticating(true)
+      
+      // Use Quick Auth to get authenticated user data
+      const res = await sdk.quickAuth.fetch(`${window.location.origin}/api/auth`)
+      
+      if (res.ok) {
+        const userData = await res.json()
+        setUser(userData)
+        toast({
+          title: "Welcome!",
+          description: `Signed in as FID: ${userData.fid}`,
+        })
+      } else {
+        toast({
+          title: "Sign In Failed",
+          description: "Couldn't sign in with Farcaster. Please try again.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Error signing in:", error)
+      toast({
+        title: "Sign In Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsAuthenticating(false)
+    }
+  }
+
   useEffect(() => {
     const initializeApp = async () => {
       try {
@@ -198,6 +241,33 @@ export default function AppRoulette() {
             </div>
 
             <div className="flex items-center space-x-3">
+              {user ? (
+                <div className="flex items-center space-x-2 text-sm text-muted-foreground bg-background/50 px-3 py-2 rounded-full border border-border/50">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span>FID: {user.fid}</span>
+                </div>
+              ) : (
+                <Button
+                  onClick={signInWithFarcaster}
+                  disabled={isAuthenticating}
+                  variant="outline"
+                  className="border-primary/30 hover:bg-primary/10 text-foreground font-semibold transition-all duration-300 hover:scale-105 rounded-xl px-4 py-2 shadow-lg hover:shadow-xl backdrop-blur-sm bg-background/50"
+                >
+                  {isAuthenticating ? (
+                    <>
+                      <Circle className="w-4 h-4 mr-2 animate-spin" />
+                      <span className="hidden sm:inline">Signing In...</span>
+                      <span className="sm:hidden">...</span>
+                    </>
+                  ) : (
+                    <>
+                      <User className="w-4 h-4 mr-2" />
+                      <span className="hidden sm:inline">Sign In</span>
+                      <span className="sm:hidden">Sign In</span>
+                    </>
+                  )}
+                </Button>
+              )}
               <Button
                 onClick={() => setShowAddForm(!showAddForm)}
                 className="premium-gradient hover:shadow-xl text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 h-10 sm:h-12 rounded-xl border border-white/20"

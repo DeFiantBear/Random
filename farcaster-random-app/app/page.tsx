@@ -243,12 +243,17 @@ export default function AppRoulette() {
             </div>
 
             <div className="flex items-center space-x-3">
-              {user ? (
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground bg-background/50 px-3 py-2 rounded-full border border-border/50">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span>FID: {user.fid}</span>
-                </div>
-              ) : (
+                             {user ? (
+                 <div className="flex items-center space-x-2 text-sm text-muted-foreground bg-background/50 px-3 py-2 rounded-full border border-border/50">
+                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                   <span>FID: {user.fid}</span>
+                   {user.primaryAddress && (
+                     <span className="text-xs opacity-70">
+                       {user.primaryAddress.slice(0, 6)}...{user.primaryAddress.slice(-4)}
+                     </span>
+                   )}
+                 </div>
+               ) : (
                 <Button
                   onClick={signInWithFarcaster}
                   disabled={isAuthenticating}

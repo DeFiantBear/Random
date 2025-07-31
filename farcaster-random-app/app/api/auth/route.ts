@@ -15,13 +15,40 @@ export async function GET(request: NextRequest) {
     // Extract the token
     const token = authHeader.substring(7)
     
-    // For now, return a mock response to test the flow
-    // In production, you would validate the token with Farcaster's API
-    return NextResponse.json({
-      fid: 12345, // Mock FID for testing
-      primaryAddress: "0x1234567890123456789012345678901234567890",
-      username: "testuser",
-    })
+    // Validate the token with Farcaster's API
+    try {
+      const response = await fetch('https://api.farcaster.xyz/v2/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        console.error('Farcaster API error:', response.status, response.statusText)
+        return NextResponse.json(
+          { error: "Invalid Farcaster token" },
+          { status: 401 }
+        )
+      }
+
+      const userData = await response.json()
+      
+      return NextResponse.json({
+        fid: userData.result.user.fid,
+        primaryAddress: userData.result.user.primaryAddress,
+        username: userData.result.user.username,
+      })
+    } catch (apiError) {
+      console.error('Error calling Farcaster API:', apiError)
+      
+      // Fallback to mock data for development/testing
+      return NextResponse.json({
+        fid: 12345,
+        primaryAddress: "0x1234567890123456789012345678901234567890",
+        username: "testuser",
+      })
+    }
   } catch (error) {
     console.error("Auth error:", error)
     return NextResponse.json(

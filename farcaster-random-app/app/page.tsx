@@ -159,10 +159,11 @@ export default function AppRoulette() {
     try {
       setIsAuthenticating(true)
       
-      // Use the simple authentication method from the docs
-      const userData = await sdk.quickAuth.getUserData()
+      // Use the authenticated fetch method from the docs
+      const res = await sdk.quickAuth.fetch(`${window.location.origin}/api/auth`)
       
-      if (userData && userData.fid) {
+      if (res.ok) {
+        const userData = await res.json()
         setUser(userData)
         toast({
           title: "Welcome!",
@@ -200,8 +201,9 @@ export default function AppRoulette() {
         if (!user) {
           console.log("Attempting auto-authentication...")
           try {
-            const userData = await sdk.quickAuth.getUserData()
-            if (userData && userData.fid) {
+            const res = await sdk.quickAuth.fetch(`${window.location.origin}/api/auth`)
+            if (res.ok) {
+              const userData = await res.json()
               setUser(userData)
               console.log("Auto-authenticated as FID:", userData.fid)
             }

@@ -1,6 +1,7 @@
 // $CITY Token Contract Configuration
 export const CITY_TOKEN_ADDRESS = '0xaad86a4fe9557297ddd0b073d3d32ef8a407188b' as const
 export const TOKENS_PER_CLAIM = 100
+export const TOTAL_AIRDROP_LIMIT = 1_000_000 // 1 million tokens total
 
 // ERC20 Token ABI (minimal for transfer function)
 export const ERC20_ABI = [

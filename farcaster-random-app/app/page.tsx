@@ -32,9 +32,6 @@ export default function AppRoulette() {
   // Spin counter for airdrop testing
   const [spinCount, setSpinCount] = useState(0)
   
-  // Share win state
-  const [showShareWin, setShowShareWin] = useState(false)
-  
 
   
   const { toast } = useToast()
@@ -44,7 +41,6 @@ export default function AppRoulette() {
     setIsSpinning(true)
     setShowRouletteAnimation(true)
     setError(null)
-    setShowShareWin(false) // Reset share win button
 
     try {
       const response = await fetch("/api/apps", {
@@ -117,15 +113,21 @@ export default function AppRoulette() {
                                if (winnerResponse.ok) {
                   // Single, clear notification for winner
                   
-                                     // 1. Toast notification (primary method)
+                                     // 1. Toast notification with share action
                    toast({
                      title: "🎉 YOU WON! 🎉",
                      description: "You just won 100 CITY tokens! Check your wallet soon!",
                      duration: 10000,
+                     action: (
+                       <Button
+                         onClick={shareWinOnFarcaster}
+                         className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white text-sm font-bold px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105 border border-yellow-300/50"
+                       >
+                         <Sparkles className="w-4 h-4 mr-2" />
+                         Share Win! 🎉
+                       </Button>
+                     ),
                    })
-                   
-                   // 2. Show share win button
-                   setShowShareWin(true)
                   
                                      // 2. Console log for debugging
                    console.log("🎉 WINNER RECORDED! 🎉", {
@@ -269,13 +271,10 @@ export default function AppRoulette() {
         url: `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`
       })
       
-      toast({
-        title: "Win Shared! 🎉",
-        description: "Your victory has been shared with the community!",
-      })
-      
-      // Hide the share win button after sharing
-      setShowShareWin(false)
+             toast({
+         title: "Win Shared! 🎉",
+         description: "Your victory has been shared with the community!",
+       })
     } catch (error) {
       console.error("Error sharing win on Farcaster:", error)
       toast({
@@ -580,18 +579,7 @@ export default function AppRoulette() {
                       </Button>
                     </div>
                     
-                    {/* Share Your Win Button - Only shows when user has won */}
-                    {showShareWin && (
-                      <div className="animate-in slide-in-from-bottom-4 duration-500">
-                        <Button
-                          onClick={shareWinOnFarcaster}
-                          className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white h-14 text-lg font-bold shadow-2xl transition-all duration-300 hover:scale-105 rounded-2xl border border-yellow-300/50 group animate-pulse"
-                        >
-                          <Sparkles className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" />
-                          🎉 Share Your Win! 🎉
-                        </Button>
-                      </div>
-                    )}
+                    
                   </div>
               </div>
             ) : error ? (

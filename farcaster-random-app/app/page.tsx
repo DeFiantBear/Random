@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Shuffle, Plus, ExternalLink, Sparkles, Circle, Share2, Copy, Check, User, Info } from "lucide-react"
+import { Shuffle, Plus, ExternalLink, Sparkles, Circle, Share2, Copy, Check, User } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import AddAppForm from "@/components/add-app-form"
 import type { FarcasterApp } from "@/types/app"
@@ -543,23 +543,14 @@ export default function AppRoulette() {
                    )}
                  </Button>
                )}
-                               <Button
-                  onClick={() => setShowAddForm(!showAddForm)}
-                  className="premium-gradient hover:shadow-xl text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 h-10 sm:h-12 rounded-xl border border-white/20"
-                >
-                  <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                  <span className="hidden sm:inline">Add App</span>
-                  <span className="sm:hidden">Add</span>
-                </Button>
-                <Button
-                  onClick={() => window.open('https://second-city-studio.gitbook.io/second-city-studio/app-roulette-mini-app', '_blank')}
-                  variant="outline"
-                  className="border-primary/30 hover:bg-primary/10 text-foreground font-semibold transition-all duration-300 hover:scale-105 rounded-xl px-3 py-2 shadow-lg hover:shadow-xl backdrop-blur-sm bg-background/50"
-                >
-                  <Info className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">About</span>
-                  <span className="sm:hidden">About</span>
-                </Button>
+                                                <Button
+                   onClick={() => setShowAddForm(!showAddForm)}
+                   className="premium-gradient hover:shadow-xl text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 h-10 sm:h-12 rounded-xl border border-white/20"
+                 >
+                   <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                   <span className="hidden sm:inline">Add App</span>
+                   <span className="sm:hidden">Add</span>
+                 </Button>
              </div>
           </div>
         </div>

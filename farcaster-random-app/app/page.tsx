@@ -99,46 +99,58 @@ export default function AppRoulette() {
                  }),
                })
 
-               if (winnerResponse.ok) {
-                 // Multiple notification methods to ensure winner is notified
+                               if (winnerResponse.ok) {
+                  // Single, clear notification for winner
+                  
+                  // 1. Toast notification (primary method)
+                  toast({
+                    title: "🎉 YOU WON! 🎉",
+                    description: "You just won 100 CITY tokens! Check your wallet soon!",
+                    duration: 10000,
+                  })
+                  
+                  // 2. Console log for debugging
+                  console.log("🎉 WINNER RECORDED! 🎉", {
+                    fid: user.fid,
+                    wallet: user.primaryAddress,
+                    app: randomApp.name,
+                    timestamp: new Date().toISOString()
+                  })
+                  
+                  // 3. Page title notification (visual indicator)
+                  const originalTitle = document.title
+                  document.title = "🎉 YOU WON! 🎉"
+                  setTimeout(() => {
+                    document.title = originalTitle
+                  }, 5000)
                  
-                 // 1. Toast notification
-                 toast({
-                   title: "🎉 YOU WON! 🎉",
-                   description: "You just won 100 CITY tokens! Check your wallet soon!",
-                   duration: 15000,
-                 })
-                 
-                 // 2. Browser alert (impossible to miss)
-                 alert("🎉 YOU WON! 🎉\n\nYou just won 100 CITY tokens!\n\nCheck your wallet soon!")
-                 
-                 // 3. Console log for debugging
-                 console.log("🎉 WINNER RECORDED! 🎉", {
-                   fid: user.fid,
-                   wallet: user.primaryAddress,
-                   app: randomApp.name,
-                   timestamp: new Date().toISOString()
-                 })
-                 
-                 // 4. Page title notification
-                 const originalTitle = document.title
-                 document.title = "🎉 YOU WON! 🎉"
-                 setTimeout(() => {
-                   document.title = originalTitle
-                 }, 5000)
-                 
-               } else {
-                 console.error("Failed to record winner:", await winnerResponse.text())
-                 alert("❌ Failed to record your win. Please try again!")
-               }
-             } catch (error) {
-               console.error("Error recording winner:", error)
-               alert("❌ Error recording your win. Please try again!")
-             }
-           } else {
-             console.log("❌ User not signed in - cannot record win")
-             alert("❌ Please sign in with Farcaster to win tokens!")
-           }
+                               } else {
+                  console.error("Failed to record winner:", await winnerResponse.text())
+                  toast({
+                    title: "❌ Error",
+                    description: "Failed to record your win. Please try again!",
+                    variant: "destructive",
+                    duration: 5000,
+                  })
+                }
+              } catch (error) {
+                console.error("Error recording winner:", error)
+                toast({
+                  title: "❌ Error",
+                  description: "Error recording your win. Please try again!",
+                  variant: "destructive",
+                  duration: 5000,
+                })
+              }
+            } else {
+              console.log("❌ User not signed in - cannot record win")
+              toast({
+                title: "❌ Sign In Required",
+                description: "Please sign in with Farcaster to win tokens!",
+                variant: "destructive",
+                duration: 5000,
+              })
+            }
 
                  if (data.reset) {
            setRecentlyShown(new Set([randomApp.app_id]))

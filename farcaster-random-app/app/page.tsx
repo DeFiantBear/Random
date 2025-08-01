@@ -125,13 +125,24 @@ export default function AppRoulette() {
                   }, 5000)
                  
                                } else {
-                  console.error("Failed to record winner:", await winnerResponse.text())
-                  toast({
-                    title: "❌ Error",
-                    description: "Failed to record your win. Please try again!",
-                    variant: "destructive",
-                    duration: 5000,
-                  })
+                  const errorText = await winnerResponse.text()
+                  console.error("Failed to record winner:", errorText)
+                  
+                  // Check if it's the "already won today" error
+                  if (errorText.includes("already won today")) {
+                    toast({
+                      title: "🎉 Already Won Today! 🎉",
+                      description: "You've already won today! Come back tomorrow for another chance!",
+                      duration: 8000,
+                    })
+                  } else {
+                    toast({
+                      title: "❌ Error",
+                      description: "Failed to record your win. Please try again!",
+                      variant: "destructive",
+                      duration: 5000,
+                    })
+                  }
                 }
               } catch (error) {
                 console.error("Error recording winner:", error)

@@ -34,7 +34,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // REMOVED: Allow multiple wins per user - every spin = every win!
+    // Check if this wallet has already won today
+    const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD format
+    const { data: existingWinner } = await supabase
+      .from('airdrop_winners')
+      .select('id')
+      .eq('wallet_address', wallet_address)
+      .gte('won_at', today)
+      .single()
+
+    if (existingWinner) {
+      return NextResponse.json(
+        { error: "This wallet has already won today. Try again tomorrow!" },
+        { status: 409 }
+      )
+    }
 
     // Record the winner
     const { data, error } = await supabase

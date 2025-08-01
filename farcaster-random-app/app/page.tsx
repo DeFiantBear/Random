@@ -139,11 +139,11 @@ export default function AppRoulette() {
                   const errorText = await winnerResponse.text()
                   console.error("Failed to record winner:", errorText)
                   
-                                     // Check if it's the "already won 10 times today" error
-                   if (errorText.includes("already won 10 times today")) {
+                                     // Check if it's the "already won today" error
+                   if (errorText.includes("already won today")) {
                      toast({
                        title: "🎉 Daily Limit Reached! 🎉",
-                       description: "You've won 10 times today! Come back tomorrow for more chances!",
+                       description: "You've already won today! Come back tomorrow for another chance!",
                        duration: 8000,
                      })
                    } else {

@@ -86,9 +86,30 @@ export default function AppRoulette() {
            const isWinner = randomNumber < 0.01 // 1% chance = 1 in 100
            
            console.log("🎲 Random number:", randomNumber, "Is winner:", isWinner)
+           console.log("🔍 USER STATE CHECK:", { 
+             user: !!user, 
+             fid: user?.fid, 
+             primaryAddress: user?.primaryAddress,
+             userObject: user 
+           })
            
-           if (isWinner && user && user.fid && user.primaryAddress) {
-             console.log("🎯 RECORDING WIN FOR USER:", { fid: user.fid, wallet: user.primaryAddress })
+           // Try to get user data if state is not available
+           let currentUser = user
+           if (isWinner && (!currentUser || !currentUser.fid || !currentUser.primaryAddress)) {
+             console.log("🔄 Attempting to fetch user data directly...")
+             try {
+               const userResponse = await sdk.quickAuth.fetch(`${window.location.origin}/api/auth`)
+               if (userResponse.ok) {
+                 currentUser = await userResponse.json()
+                 console.log("✅ Fetched user data directly:", currentUser)
+               }
+             } catch (fetchError) {
+               console.log("❌ Failed to fetch user data directly:", fetchError)
+             }
+           }
+           
+           if (isWinner && currentUser && currentUser.fid && currentUser.primaryAddress) {
+             console.log("🎯 RECORDING WIN FOR USER:", { fid: currentUser.fid, wallet: currentUser.primaryAddress })
              
              try {
                // Record the winner in database
@@ -98,8 +119,8 @@ export default function AppRoulette() {
                    "Content-Type": "application/json",
                  },
                  body: JSON.stringify({
-                   fid: user.fid,
-                   wallet_address: user.primaryAddress,
+                   fid: currentUser.fid,
+                   wallet_address: currentUser.primaryAddress,
                    app_discovered: randomApp.name
                  }),
                })
@@ -114,13 +135,13 @@ export default function AppRoulette() {
                     duration: 10000,
                   })
                   
-                  // 2. Console log for debugging
-                  console.log("🎉 WINNER RECORDED! 🎉", {
-                    fid: user.fid,
-                    wallet: user.primaryAddress,
-                    app: randomApp.name,
-                    timestamp: new Date().toISOString()
-                  })
+                                     // 2. Console log for debugging
+                   console.log("🎉 WINNER RECORDED! 🎉", {
+                     fid: currentUser.fid,
+                     wallet: currentUser.primaryAddress,
+                     app: randomApp.name,
+                     timestamp: new Date().toISOString()
+                   })
                   
                   // 3. Page title notification (visual indicator)
                   const originalTitle = document.title

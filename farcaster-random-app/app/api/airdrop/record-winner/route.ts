@@ -34,18 +34,26 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if this wallet has already won today
+    // Check if this wallet has already won 10 times today (max 10 wins per day)
     const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD format
-    const { data: existingWinner } = await supabase
+    const { data: existingWins, error: countError } = await supabase
       .from('airdrop_winners')
       .select('id')
       .eq('wallet_address', wallet_address)
       .gte('won_at', today)
-      .single()
 
-    if (existingWinner) {
+    if (countError) {
+      console.error("Error checking existing wins:", countError)
       return NextResponse.json(
-        { error: "This wallet has already won today. Try again tomorrow!" },
+        { error: "Failed to check existing wins" },
+        { status: 500 }
+      )
+    }
+
+    // Allow up to 10 wins per day per wallet
+    if (existingWins && existingWins.length >= 10) {
+      return NextResponse.json(
+        { error: "This wallet has already won 10 times today. Try again tomorrow!" },
         { status: 409 }
       )
     }

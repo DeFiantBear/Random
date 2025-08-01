@@ -79,14 +79,19 @@ export default function AppRoulette() {
           const newSpinCount = spinCount + 1
           setSpinCount(newSpinCount)
           
-          console.log("🎯 REACHED AIRDROP SECTION - Spin:", newSpinCount)
+                     console.log("🎯 REACHED AIRDROP SECTION - Spin:", newSpinCount)
 
-                              // EVERY SPIN = EVERY USER WINS!
-           if (user && user.fid && user.primaryAddress) {
-             console.log("🎯 RECORDING SPIN FOR USER:", { fid: user.fid, wallet: user.primaryAddress })
+           // RANDOM WIN: 1 in 100 chance to win
+           const randomNumber = Math.random()
+           const isWinner = randomNumber < 0.01 // 1% chance = 1 in 100
+           
+           console.log("🎲 Random number:", randomNumber, "Is winner:", isWinner)
+           
+           if (isWinner && user && user.fid && user.primaryAddress) {
+             console.log("🎯 RECORDING WIN FOR USER:", { fid: user.fid, wallet: user.primaryAddress })
              
              try {
-               // Record EVERY spin in database
+               // Record the winner in database
                const winnerResponse = await fetch("/api/airdrop/record-winner", {
                  method: "POST",
                  headers: {
@@ -128,14 +133,14 @@ export default function AppRoulette() {
                   const errorText = await winnerResponse.text()
                   console.error("Failed to record winner:", errorText)
                   
-                  // Check if it's the "already won today" error
-                  if (errorText.includes("already won today")) {
-                    toast({
-                      title: "🎉 Already Won Today! 🎉",
-                      description: "You've already won today! Come back tomorrow for another chance!",
-                      duration: 8000,
-                    })
-                  } else {
+                                     // Check if it's the "already won 10 times today" error
+                   if (errorText.includes("already won 10 times today")) {
+                     toast({
+                       title: "🎉 Daily Limit Reached! 🎉",
+                       description: "You've won 10 times today! Come back tomorrow for more chances!",
+                       duration: 8000,
+                     })
+                   } else {
                     toast({
                       title: "❌ Error",
                       description: "Failed to record your win. Please try again!",

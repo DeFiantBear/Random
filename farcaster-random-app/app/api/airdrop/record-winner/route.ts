@@ -34,13 +34,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // TEMPORARY: Allow unlimited wins for testing
     // Check if this wallet has already won 3 times today (max 3 wins per 24 hours)
     const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD format
     const { data: existingWins, error: countError } = await supabase
       .from('airdrop_winners')
       .select('id')
       .eq('wallet_address', wallet_address)
-      .gte('won_at', today)
+      // .gte('won_at', today) // TEMPORARILY DISABLED FOR TESTING
 
     if (countError) {
       console.error("Error checking existing wins:", countError)
@@ -50,12 +51,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (existingWins && existingWins.length >= 3) {
-      return NextResponse.json(
-        { error: "This wallet has already won 3 times today. Try again tomorrow!" },
-        { status: 409 }
-      )
-    }
+    // TEMPORARILY DISABLED FOR TESTING
+    // if (existingWins && existingWins.length >= 3) {
+    //   return NextResponse.json(
+    //     { error: "This wallet has already won 3 times today. Try again tomorrow!" },
+    //     { status: 409 }
+    //   )
+    // }
 
     // Record the winner
     const { data, error } = await supabase

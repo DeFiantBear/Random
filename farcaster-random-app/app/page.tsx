@@ -91,8 +91,8 @@ export default function AppRoulette() {
           
           console.log("🔍 AIRDROP CONDITION CHECK:", conditionCheck)
           
-          // Simple alert to show the condition
-          alert(`Airdrop Check:\nUser: ${conditionCheck.user}\nFID: ${conditionCheck.fid}\nWallet: ${conditionCheck.primaryAddress}\nCondition: ${conditionCheck.condition}`)
+                     // Simple alert to show the condition
+           alert(`Airdrop Check:\nUser: ${conditionCheck.user}\nFID: ${conditionCheck.fid}\nWallet: ${conditionCheck.primaryAddress}\nCondition: ${conditionCheck.condition}\n\nFull user object: ${JSON.stringify(user, null, 2)}`)
           
           if (user && user.fid && user.primaryAddress) {
            const randomNumber = Math.floor(Math.random() * 100) + 1

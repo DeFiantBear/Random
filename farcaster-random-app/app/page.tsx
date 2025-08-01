@@ -81,9 +81,9 @@ export default function AppRoulette() {
           
                      console.log("🎯 REACHED AIRDROP SECTION - Spin:", newSpinCount)
 
-           // RANDOM WIN: 1 in 100 chance to win
-           const randomNumber = Math.random()
-           const isWinner = randomNumber < 0.01 // 1% chance = 1 in 100
+                       // RANDOM WIN: 1 in 20 chance to win
+            const randomNumber = Math.random()
+            const isWinner = randomNumber < 0.05 // 5% chance = 1 in 20
            
            console.log("🎲 Random number:", randomNumber, "Is winner:", isWinner)
            console.log("🔍 USER STATE DEBUG:", { 

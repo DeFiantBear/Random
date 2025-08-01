@@ -29,6 +29,9 @@ export default function AppRoulette() {
   const [user, setUser] = useState<FarcasterUser | null>(null)
   const [isAuthenticating, setIsAuthenticating] = useState(false)
   
+  // Spin counter for airdrop testing
+  const [spinCount, setSpinCount] = useState(0)
+  
 
   
   const { toast } = useToast()
@@ -66,23 +69,27 @@ export default function AppRoulette() {
       const randomIndex = Math.floor(Math.random() * data.apps.length)
       const randomApp = data.apps[randomIndex]
 
-                    setTimeout(async () => {
-         setCurrentApp(randomApp)
-         setRecentlyShown((prev) => new Set([...prev, randomApp.app_id]))
-         setIsSpinning(false)
-         setShowRouletteAnimation(false)
+                            setTimeout(async () => {
+          setCurrentApp(randomApp)
+          setRecentlyShown((prev) => new Set([...prev, randomApp.app_id]))
+          setIsSpinning(false)
+          setShowRouletteAnimation(false)
+          
+          // Increment spin counter
+          const newSpinCount = spinCount + 1
+          setSpinCount(newSpinCount)
 
          // Check for airdrop win (1 in 100 chance)
          if (user && user.fid && user.primaryAddress) {
            const randomNumber = Math.floor(Math.random() * 100) + 1
            let isWinner = randomNumber === 1
            
-           // FOR TESTING: Force a win every 10th spin to verify system works
-           const spinCount = recentlyShown.size + 1
-           if (spinCount % 10 === 0) {
-             isWinner = true
-             console.log("🧪 FORCED WIN for testing on spin", spinCount)
-           }
+                       // FOR TESTING: Force a win every 10th spin to verify system works
+            console.log("🧪 Spin count check:", { newSpinCount, recentlyShownSize: recentlyShown.size })
+            if (newSpinCount % 10 === 0) {
+              isWinner = true
+              console.log("🧪 FORCED WIN for testing on spin", newSpinCount)
+            }
            
            console.log("=== AIRDROP DEBUG ===")
            console.log("User signed in:", !!user)

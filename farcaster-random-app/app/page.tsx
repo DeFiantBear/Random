@@ -452,14 +452,14 @@ export default function AppRoulette() {
                 <span className="text-lg sm:text-xl lg:text-2xl font-semibold text-foreground bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">
                   App Roulette
                 </span>
-                <a 
-                  href="https://linktr.ee/2ndCityStudio" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-xs text-muted-foreground hover:text-primary transition-all duration-300 cursor-pointer hover:scale-105"
-                >
-                  by Second City Studio
-                </a>
+                                 <a 
+                   href="https://farcaster.xyz/2ndcitystudio" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   className="text-xs text-muted-foreground hover:text-primary transition-all duration-300 cursor-pointer hover:scale-105"
+                 >
+                   by Second City Studio
+                 </a>
               </div>
             </div>
 

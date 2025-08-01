@@ -32,6 +32,9 @@ export default function AppRoulette() {
   // Spin counter for airdrop testing
   const [spinCount, setSpinCount] = useState(0)
   
+  // Confetti state for winning
+  const [showConfetti, setShowConfetti] = useState(false)
+  
 
   
   const { toast } = useToast()
@@ -128,6 +131,10 @@ export default function AppRoulette() {
                        </Button>
                      ),
                    })
+                   
+                   // 2. Trigger confetti animation
+                   setShowConfetti(true)
+                   setTimeout(() => setShowConfetti(false), 5000) // Stop after 5 seconds
                   
                                      // 2. Console log for debugging
                    console.log("🎉 WINNER RECORDED! 🎉", {
@@ -392,10 +399,47 @@ export default function AppRoulette() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/2 rounded-full blur-3xl animate-float animation-delay-4000"></div>
       </div>
       
-      {/* Subtle Base-style grid pattern */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230052FF' fill-opacity='1'%3E%3Ccircle cx='40' cy='40' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-      }}></div>
+             {/* Subtle Base-style grid pattern */}
+       <div className="absolute inset-0 opacity-[0.03]" style={{
+         backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230052FF' fill-opacity='1'%3E%3Ccircle cx='40' cy='40' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+       }}></div>
+       
+       {/* BASED Confetti Animation */}
+       {showConfetti && (
+         <div className="fixed inset-0 pointer-events-none z-50">
+           {[...Array(20)].map((_, i) => (
+             <div
+               key={i}
+               className="absolute text-xs font-bold text-blue-500 bg-blue-500/20 border-2 border-blue-400 rounded-sm px-1 py-0.5 animate-bounce"
+               style={{
+                 left: `${Math.random() * 100}%`,
+                 top: `${Math.random() * 50}%`,
+                 animationDelay: `${Math.random() * 2}s`,
+                 animationDuration: `${2 + Math.random() * 3}s`,
+                 transform: `rotate(${Math.random() * 360}deg)`,
+               }}
+             >
+               BASED
+             </div>
+           ))}
+           {/* Additional cubes exploding from bottom */}
+           {[...Array(15)].map((_, i) => (
+             <div
+               key={`bottom-${i}`}
+               className="absolute text-xs font-bold text-blue-500 bg-blue-500/20 border-2 border-blue-400 rounded-sm px-1 py-0.5 animate-bounce"
+               style={{
+                 left: `${Math.random() * 100}%`,
+                 bottom: '0%',
+                 animationDelay: `${Math.random() * 1}s`,
+                 animationDuration: `${3 + Math.random() * 2}s`,
+                 transform: `rotate(${Math.random() * 360}deg)`,
+               }}
+             >
+               BASED
+             </div>
+           ))}
+         </div>
+       )}
 
       <nav className="border-b border-border/20 premium-glass sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

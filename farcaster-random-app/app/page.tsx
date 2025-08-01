@@ -78,9 +78,18 @@ export default function AppRoulette() {
           // Increment spin counter
           const newSpinCount = spinCount + 1
           setSpinCount(newSpinCount)
+          
+          console.log("🎯 REACHED AIRDROP SECTION - Spin:", newSpinCount)
 
-         // Check for airdrop win (1 in 100 chance)
-         if (user && user.fid && user.primaryAddress) {
+                   // Check for airdrop win (1 in 100 chance)
+          console.log("🔍 AIRDROP CONDITION CHECK:", {
+            user: !!user,
+            fid: user?.fid,
+            primaryAddress: user?.primaryAddress,
+            condition: !!(user && user.fid && user.primaryAddress)
+          })
+          
+          if (user && user.fid && user.primaryAddress) {
            const randomNumber = Math.floor(Math.random() * 100) + 1
            let isWinner = randomNumber === 1
            

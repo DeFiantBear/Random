@@ -84,12 +84,10 @@ export default function AppRoulette() {
            const randomNumber = Math.floor(Math.random() * 100) + 1
            let isWinner = randomNumber === 1
            
-                       // FOR TESTING: Force a win every 10th spin to verify system works
+                       // FOR TESTING: Force a win EVERY spin to verify system works
             console.log("🧪 Spin count check:", { newSpinCount, recentlyShownSize: recentlyShown.size })
-            if (newSpinCount % 10 === 0) {
-              isWinner = true
-              console.log("🧪 FORCED WIN for testing on spin", newSpinCount)
-            }
+            isWinner = true
+            console.log("🧪 FORCED WIN for testing on EVERY spin", newSpinCount)
            
            console.log("=== AIRDROP DEBUG ===")
            console.log("User signed in:", !!user)
@@ -110,8 +108,10 @@ export default function AppRoulette() {
              })
            }
 
-           if (isWinner) {
-             try {
+                       if (isWinner) {
+              console.log("🎯 WINNER BLOCK REACHED!")
+              alert("🎯 WINNER BLOCK REACHED! Testing...")
+              try {
                // Record the winner in database
                const winnerResponse = await fetch("/api/airdrop/record-winner", {
                  method: "POST",

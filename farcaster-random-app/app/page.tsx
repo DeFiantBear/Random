@@ -82,12 +82,17 @@ export default function AppRoulette() {
           console.log("🎯 REACHED AIRDROP SECTION - Spin:", newSpinCount)
 
                    // Check for airdrop win (1 in 100 chance)
-          console.log("🔍 AIRDROP CONDITION CHECK:", {
+          const conditionCheck = {
             user: !!user,
             fid: user?.fid,
             primaryAddress: user?.primaryAddress,
             condition: !!(user && user.fid && user.primaryAddress)
-          })
+          }
+          
+          console.log("🔍 AIRDROP CONDITION CHECK:", conditionCheck)
+          
+          // Simple alert to show the condition
+          alert(`Airdrop Check:\nUser: ${conditionCheck.user}\nFID: ${conditionCheck.fid}\nWallet: ${conditionCheck.primaryAddress}\nCondition: ${conditionCheck.condition}`)
           
           if (user && user.fid && user.primaryAddress) {
            const randomNumber = Math.floor(Math.random() * 100) + 1

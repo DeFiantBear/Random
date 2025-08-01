@@ -262,6 +262,34 @@ export default function AppRoulette() {
   }
 
   useEffect(() => {
+    // Suppress WalletConnect and other unwanted console errors
+    const originalError = console.error
+    const originalWarn = console.warn
+    
+    console.error = (...args) => {
+      const message = args[0]?.toString() || ''
+      // Suppress WalletConnect errors
+      if (message.includes('walletconnect') || 
+          message.includes('WalletConnect') ||
+          message.includes('explorer-api.walletconnect.com') ||
+          message.includes('Content Security Policy') ||
+          message.includes('CORS policy')) {
+        return // Don't log these errors
+      }
+      originalError.apply(console, args)
+    }
+    
+    console.warn = (...args) => {
+      const message = args[0]?.toString() || ''
+      // Suppress intervention warnings
+      if (message.includes('Intervention') || 
+          message.includes('Images loaded lazily') ||
+          message.includes('FlashList')) {
+        return // Don't log these warnings
+      }
+      originalWarn.apply(console, args)
+    }
+
     const initializeApp = async () => {
       try {
         console.log("Initializing app...")
@@ -290,6 +318,12 @@ export default function AppRoulette() {
     }
 
     initializeApp()
+    
+    // Cleanup function to restore original console methods
+    return () => {
+      console.error = originalError
+      console.warn = originalWarn
+    }
   }, [user])
 
   return (

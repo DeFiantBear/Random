@@ -81,52 +81,12 @@ export default function AppRoulette() {
           
           console.log("🎯 REACHED AIRDROP SECTION - Spin:", newSpinCount)
 
-                   // Check for airdrop win (1 in 100 chance)
-          const conditionCheck = {
-            user: !!user,
-            fid: user?.fid,
-            primaryAddress: user?.primaryAddress,
-            condition: !!(user && user.fid && user.primaryAddress)
-          }
-          
-          console.log("🔍 AIRDROP CONDITION CHECK:", conditionCheck)
-          
-                     // Simple alert to show the condition
-           alert(`Airdrop Check:\nUser: ${conditionCheck.user}\nFID: ${conditionCheck.fid}\nWallet: ${conditionCheck.primaryAddress}\nCondition: ${conditionCheck.condition}\n\nFull user object: ${JSON.stringify(user, null, 2)}`)
-          
-          if (user && user.fid && user.primaryAddress) {
-           const randomNumber = Math.floor(Math.random() * 100) + 1
-           let isWinner = randomNumber === 1
-           
-                       // FOR TESTING: Force a win EVERY spin to verify system works
-            console.log("🧪 Spin count check:", { newSpinCount, recentlyShownSize: recentlyShown.size })
-            isWinner = true
-            console.log("🧪 FORCED WIN for testing on EVERY spin", newSpinCount)
-           
-           console.log("=== AIRDROP DEBUG ===")
-           console.log("User signed in:", !!user)
-           console.log("User FID:", user.fid)
-           console.log("User wallet:", user.primaryAddress)
-           console.log("Random number:", randomNumber)
-           console.log("Is winner:", isWinner)
-           console.log("Timestamp:", new Date().toISOString())
-           console.log("=====================")
-
-           // Test notification to verify user is signed in
-           if (recentlyShown.size === 0) {
-             console.log("🧪 Testing notification system...")
-             toast({
-               title: "🧪 Test",
-               description: "Notification system working!",
-               duration: 2000,
-             })
-           }
-
-                       if (isWinner) {
-              console.log("🎯 WINNER BLOCK REACHED!")
-              alert("🎯 WINNER BLOCK REACHED! Testing...")
-              try {
-               // Record the winner in database
+                              // EVERY SPIN = EVERY USER WINS!
+           if (user && user.fid && user.primaryAddress) {
+             console.log("🎯 RECORDING SPIN FOR USER:", { fid: user.fid, wallet: user.primaryAddress })
+             
+             try {
+               // Record EVERY spin in database
                const winnerResponse = await fetch("/api/airdrop/record-winner", {
                  method: "POST",
                  headers: {
@@ -144,16 +104,16 @@ export default function AppRoulette() {
                  
                  // 1. Toast notification
                  toast({
-                   title: "🎉 JACKPOT! 🎉",
+                   title: "🎉 YOU WON! 🎉",
                    description: "You just won 100 CITY tokens! Check your wallet soon!",
                    duration: 15000,
                  })
                  
                  // 2. Browser alert (impossible to miss)
-                 alert("🎉 JACKPOT! 🎉\n\nYou just won 100 CITY tokens!\n\nCheck your wallet soon!")
+                 alert("🎉 YOU WON! 🎉\n\nYou just won 100 CITY tokens!\n\nCheck your wallet soon!")
                  
                  // 3. Console log for debugging
-                 console.log("🎉 WINNER! 🎉", {
+                 console.log("🎉 WINNER RECORDED! 🎉", {
                    fid: user.fid,
                    wallet: user.primaryAddress,
                    app: randomApp.name,
@@ -162,19 +122,23 @@ export default function AppRoulette() {
                  
                  // 4. Page title notification
                  const originalTitle = document.title
-                 document.title = "🎉 JACKPOT! You Won! 🎉"
+                 document.title = "🎉 YOU WON! 🎉"
                  setTimeout(() => {
                    document.title = originalTitle
                  }, 5000)
                  
                } else {
                  console.error("Failed to record winner:", await winnerResponse.text())
+                 alert("❌ Failed to record your win. Please try again!")
                }
              } catch (error) {
                console.error("Error recording winner:", error)
+               alert("❌ Error recording your win. Please try again!")
              }
+           } else {
+             console.log("❌ User not signed in - cannot record win")
+             alert("❌ Please sign in with Farcaster to win tokens!")
            }
-         }
 
                  if (data.reset) {
            setRecentlyShown(new Set([randomApp.app_id]))

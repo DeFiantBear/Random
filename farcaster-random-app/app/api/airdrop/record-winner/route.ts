@@ -34,19 +34,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if this FID has already won (prevent duplicates)
-    const { data: existingWinner } = await supabase
-      .from('airdrop_winners')
-      .select('id')
-      .eq('fid', fid)
-      .single()
-
-    if (existingWinner) {
-      return NextResponse.json(
-        { error: "This FID has already won an airdrop" },
-        { status: 409 }
-      )
-    }
+    // REMOVED: Allow multiple wins per user - every spin = every win!
 
     // Record the winner
     const { data, error } = await supabase

@@ -32,6 +32,9 @@ export default function AppRoulette() {
   // Spin counter for airdrop testing
   const [spinCount, setSpinCount] = useState(0)
   
+  // Share win state
+  const [showShareWin, setShowShareWin] = useState(false)
+  
 
   
   const { toast } = useToast()
@@ -41,6 +44,7 @@ export default function AppRoulette() {
     setIsSpinning(true)
     setShowRouletteAnimation(true)
     setError(null)
+    setShowShareWin(false) // Reset share win button
 
     try {
       const response = await fetch("/api/apps", {
@@ -113,12 +117,15 @@ export default function AppRoulette() {
                                if (winnerResponse.ok) {
                   // Single, clear notification for winner
                   
-                  // 1. Toast notification (primary method)
-                  toast({
-                    title: "🎉 YOU WON! 🎉",
-                    description: "You just won 100 CITY tokens! Check your wallet soon!",
-                    duration: 10000,
-                  })
+                                     // 1. Toast notification (primary method)
+                   toast({
+                     title: "🎉 YOU WON! 🎉",
+                     description: "You just won 100 CITY tokens! Check your wallet soon!",
+                     duration: 10000,
+                   })
+                   
+                   // 2. Show share win button
+                   setShowShareWin(true)
                   
                                      // 2. Console log for debugging
                    console.log("🎉 WINNER RECORDED! 🎉", {
@@ -247,6 +254,33 @@ export default function AppRoulette() {
       toast({
         title: "Share Failed",
         description: "Couldn't share on Farcaster. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const shareWinOnFarcaster = async () => {
+    if (!currentApp) return
+
+    try {
+      const shareText = `🎉 I just won 100 $CITY tokens spinning App Roulette!\n\n🎰 Discovered "${currentApp.name}" while finding amazing Farcaster apps!\n\n🔥 Try this app: ${currentApp.mini_app_url}\n\n🎰 Spin and win tokens: https://base-app-roulette.vercel.app/`
+      
+      await sdk.actions.openUrl({
+        url: `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`
+      })
+      
+      toast({
+        title: "Win Shared! 🎉",
+        description: "Your victory has been shared with the community!",
+      })
+      
+      // Hide the share win button after sharing
+      setShowShareWin(false)
+    } catch (error) {
+      console.error("Error sharing win on Farcaster:", error)
+      toast({
+        title: "Share Failed",
+        description: "Couldn't share your win. Please try again.",
         variant: "destructive",
       })
     }
@@ -517,35 +551,48 @@ export default function AppRoulette() {
 
                                    </div>
 
-                 <div className="flex flex-col gap-4">
-                   <Button
-                     onClick={getRandomApp}
-                     disabled={isLoading}
-                     className="premium-gradient hover:shadow-2xl text-white h-14 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl border border-white/20 group"
-                   >
-                     <Shuffle className={`w-5 h-5 mr-3 ${isSpinning ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-300`} />
-                     Spin Again
-                   </Button>
-                   
-                   <div className="flex flex-col sm:flex-row gap-4">
-                     <Button
-                       onClick={openMiniApp}
-                       variant="outline"
-                       className="flex-1 border-primary/30 hover:bg-primary/10 text-foreground h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl backdrop-blur-sm bg-background/50 group"
-                     >
-                       <ExternalLink className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
-                       Visit App
-                     </Button>
-                     <Button
-                       onClick={shareOnFarcaster}
-                       variant="outline"
-                       className="flex-1 border-primary/30 hover:bg-primary/10 text-foreground h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl backdrop-blur-sm bg-background/50 group"
-                     >
-                       <Share2 className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
-                       Share on Farcaster
-                     </Button>
-                   </div>
-                 </div>
+                                   <div className="flex flex-col gap-4">
+                    <Button
+                      onClick={getRandomApp}
+                      disabled={isLoading}
+                      className="premium-gradient hover:shadow-2xl text-white h-14 text-lg font-semibold shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl border border-white/20 group"
+                    >
+                      <Shuffle className={`w-5 h-5 mr-3 ${isSpinning ? 'animate-spin' : 'group-hover:rotate-180'} transition-transform duration-300`} />
+                      Spin Again
+                    </Button>
+                    
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <Button
+                        onClick={openMiniApp}
+                        variant="outline"
+                        className="flex-1 border-primary/30 hover:bg-primary/10 text-foreground h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl backdrop-blur-sm bg-background/50 group"
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
+                        Visit App
+                      </Button>
+                      <Button
+                        onClick={shareOnFarcaster}
+                        variant="outline"
+                        className="flex-1 border-primary/30 hover:bg-primary/10 text-foreground h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-2xl backdrop-blur-sm bg-background/50 group"
+                      >
+                        <Share2 className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
+                        Share on Farcaster
+                      </Button>
+                    </div>
+                    
+                    {/* Share Your Win Button - Only shows when user has won */}
+                    {showShareWin && (
+                      <div className="animate-in slide-in-from-bottom-4 duration-500">
+                        <Button
+                          onClick={shareWinOnFarcaster}
+                          className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white h-14 text-lg font-bold shadow-2xl transition-all duration-300 hover:scale-105 rounded-2xl border border-yellow-300/50 group animate-pulse"
+                        >
+                          <Sparkles className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" />
+                          🎉 Share Your Win! 🎉
+                        </Button>
+                      </div>
+                    )}
+                  </div>
               </div>
             ) : error ? (
               <div className="py-20 text-center animate-in fade-in-0 slide-in-from-bottom-4 duration-500">

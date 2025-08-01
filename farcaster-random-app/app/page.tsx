@@ -86,6 +86,12 @@ export default function AppRoulette() {
            const isWinner = randomNumber < 0.01 // 1% chance = 1 in 100
            
            console.log("🎲 Random number:", randomNumber, "Is winner:", isWinner)
+           console.log("🔍 USER STATE DEBUG:", { 
+             user: !!user, 
+             fid: user?.fid, 
+             primaryAddress: user?.primaryAddress,
+             condition: !!(isWinner && user && user.fid && user.primaryAddress)
+           })
            
            if (isWinner && user && user.fid && user.primaryAddress) {
              console.log("🎯 RECORDING WIN FOR USER:", { fid: user.fid, wallet: user.primaryAddress })

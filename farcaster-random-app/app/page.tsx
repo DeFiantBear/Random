@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Shuffle, Plus, ExternalLink, Sparkles, Circle, Share2, Copy, Check, User } from "lucide-react"
+import { Shuffle, Plus, ExternalLink, Sparkles, Circle, Share2, Copy, Check, User, Info } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import AddAppForm from "@/components/add-app-form"
 import type { FarcasterApp } from "@/types/app"
@@ -34,6 +34,9 @@ export default function AppRoulette() {
   
   // Confetti state for winning
   const [showConfetti, setShowConfetti] = useState(false)
+  
+  // Welcome popup state
+  const [showWelcomePopup, setShowWelcomePopup] = useState(true)
   
 
   
@@ -404,42 +407,85 @@ export default function AppRoulette() {
          backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230052FF' fill-opacity='1'%3E%3Ccircle cx='40' cy='40' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
        }}></div>
        
-       {/* BASED Confetti Animation */}
-       {showConfetti && (
-         <div className="fixed inset-0 pointer-events-none z-50">
-           {[...Array(20)].map((_, i) => (
-             <div
-               key={i}
-               className="absolute text-xs font-bold text-blue-500 bg-blue-500/20 border-2 border-blue-400 rounded-sm px-1 py-0.5 animate-bounce"
-               style={{
-                 left: `${Math.random() * 100}%`,
-                 top: `${Math.random() * 50}%`,
-                 animationDelay: `${Math.random() * 2}s`,
-                 animationDuration: `${2 + Math.random() * 3}s`,
-                 transform: `rotate(${Math.random() * 360}deg)`,
-               }}
-             >
-               BASED
-             </div>
-           ))}
-           {/* Additional cubes exploding from bottom */}
-           {[...Array(15)].map((_, i) => (
-             <div
-               key={`bottom-${i}`}
-               className="absolute text-xs font-bold text-blue-500 bg-blue-500/20 border-2 border-blue-400 rounded-sm px-1 py-0.5 animate-bounce"
-               style={{
-                 left: `${Math.random() * 100}%`,
-                 bottom: '0%',
-                 animationDelay: `${Math.random() * 1}s`,
-                 animationDuration: `${3 + Math.random() * 2}s`,
-                 transform: `rotate(${Math.random() * 360}deg)`,
-               }}
-             >
-               BASED
-             </div>
-           ))}
-         </div>
-       )}
+               {/* BASED Confetti Animation */}
+        {showConfetti && (
+          <div className="fixed inset-0 pointer-events-none z-50">
+            {[...Array(25)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute text-2xl animate-bounce"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 50}%`,
+                  animationDelay: `${Math.random() * 2}s`,
+                  animationDuration: `${2 + Math.random() * 3}s`,
+                  transform: `rotate(${Math.random() * 360}deg)`,
+                }}
+              >
+                🟦
+              </div>
+            ))}
+            {/* Additional squares exploding from bottom */}
+            {[...Array(20)].map((_, i) => (
+              <div
+                key={`bottom-${i}`}
+                className="absolute text-2xl animate-bounce"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  bottom: '0%',
+                  animationDelay: `${Math.random() * 1}s`,
+                  animationDuration: `${3 + Math.random() * 2}s`,
+                  transform: `rotate(${Math.random() * 360}deg)`,
+                }}
+              >
+                🟦
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Welcome Popup */}
+        {showWelcomePopup && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-card border border-border/30 rounded-2xl p-6 max-w-md w-full shadow-2xl animate-in slide-in-from-bottom-4 duration-500">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-foreground">🎰 Welcome to App Roulette!</h3>
+                <Button
+                  onClick={() => setShowWelcomePopup(false)}
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-background/50 rounded-lg"
+                >
+                  ✕
+                </Button>
+              </div>
+              
+              <div className="space-y-3 text-sm text-muted-foreground">
+                <p><strong className="text-foreground">How to play:</strong></p>
+                <ul className="space-y-2 ml-4">
+                  <li>• <strong>Spin</strong> to discover new Farcaster apps</li>
+                  <li>• <strong>1 in 20 chance</strong> to win 100 $CITY tokens</li>
+                  <li>• <strong>1 win per day</strong> per wallet</li>
+                  <li>• <strong>72 hours</strong> for token delivery</li>
+                  <li>• <strong>Share</strong> your discoveries and wins!</li>
+                </ul>
+                
+                <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 mt-4">
+                  <p className="text-xs text-primary font-medium">
+                    💡 <strong>Pro tip:</strong> Open this link in your Farcaster app for the best experience and to win tokens!
+                  </p>
+                </div>
+              </div>
+              
+              <Button
+                onClick={() => setShowWelcomePopup(false)}
+                className="w-full mt-4 premium-gradient text-white font-semibold"
+              >
+                Let's Spin! 🎰
+              </Button>
+            </div>
+          </div>
+        )}
 
       <nav className="border-b border-border/20 premium-glass sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -463,49 +509,58 @@ export default function AppRoulette() {
               </div>
             </div>
 
-            <div className="flex items-center space-x-3">
-                             {user ? (
-                 <div className="flex items-center space-x-2 text-sm text-muted-foreground bg-background/50 px-3 py-2 rounded-full border border-border/50">
-                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                   {user.primaryAddress ? (
-                     <span className="font-mono text-xs">
-                       {user.primaryAddress.slice(0, 6)}...{user.primaryAddress.slice(-4)}
-                     </span>
+                         <div className="flex items-center space-x-3">
+                              {user ? (
+                  <div className="flex items-center space-x-2 text-sm text-muted-foreground bg-background/50 px-3 py-2 rounded-full border border-border/50">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    {user.primaryAddress ? (
+                      <span className="font-mono text-xs">
+                        {user.primaryAddress.slice(0, 6)}...{user.primaryAddress.slice(-4)}
+                      </span>
+                    ) : (
+                      <span>Connected</span>
+                    )}
+                  </div>
+                ) : (
+                 <Button
+                   onClick={signInWithFarcaster}
+                   disabled={isAuthenticating}
+                   variant="outline"
+                   className="border-primary/30 hover:bg-primary/10 text-foreground font-semibold transition-all duration-300 hover:scale-105 rounded-xl px-4 py-2 shadow-lg hover:shadow-xl backdrop-blur-sm bg-background/50"
+                 >
+                   {isAuthenticating ? (
+                     <>
+                       <Circle className="w-4 h-4 mr-2 animate-spin" />
+                       <span className="hidden sm:inline">Signing In...</span>
+                       <span className="sm:hidden">...</span>
+                     </>
                    ) : (
-                     <span>Connected</span>
+                     <>
+                       <User className="w-4 h-4 mr-2" />
+                       <span className="hidden sm:inline">Sign In</span>
+                       <span className="sm:hidden">Sign In</span>
+                     </>
                    )}
-                 </div>
-               ) : (
-                <Button
-                  onClick={signInWithFarcaster}
-                  disabled={isAuthenticating}
-                  variant="outline"
-                  className="border-primary/30 hover:bg-primary/10 text-foreground font-semibold transition-all duration-300 hover:scale-105 rounded-xl px-4 py-2 shadow-lg hover:shadow-xl backdrop-blur-sm bg-background/50"
-                >
-                  {isAuthenticating ? (
-                    <>
-                      <Circle className="w-4 h-4 mr-2 animate-spin" />
-                      <span className="hidden sm:inline">Signing In...</span>
-                      <span className="sm:hidden">...</span>
-                    </>
-                  ) : (
-                    <>
-                      <User className="w-4 h-4 mr-2" />
-                      <span className="hidden sm:inline">Sign In</span>
-                      <span className="sm:hidden">Sign In</span>
-                    </>
-                  )}
-                </Button>
-              )}
-              <Button
-                onClick={() => setShowAddForm(!showAddForm)}
-                className="premium-gradient hover:shadow-xl text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 h-10 sm:h-12 rounded-xl border border-white/20"
-              >
-                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                <span className="hidden sm:inline">Add App</span>
-                <span className="sm:hidden">Add</span>
-              </Button>
-            </div>
+                 </Button>
+               )}
+               <Button
+                 onClick={() => window.open('https://second-city-studio.gitbook.io/second-city-studio/app-roulette-mini-app', '_blank')}
+                 variant="outline"
+                 className="border-primary/30 hover:bg-primary/10 text-foreground font-semibold transition-all duration-300 hover:scale-105 rounded-xl px-3 py-2 shadow-lg hover:shadow-xl backdrop-blur-sm bg-background/50"
+               >
+                 <Info className="w-4 h-4 mr-2" />
+                 <span className="hidden sm:inline">About</span>
+                 <span className="sm:hidden">About</span>
+               </Button>
+               <Button
+                 onClick={() => setShowAddForm(!showAddForm)}
+                 className="premium-gradient hover:shadow-xl text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 h-10 sm:h-12 rounded-xl border border-white/20"
+               >
+                 <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                 <span className="hidden sm:inline">Add App</span>
+                 <span className="sm:hidden">Add</span>
+               </Button>
+             </div>
           </div>
         </div>
       </nav>

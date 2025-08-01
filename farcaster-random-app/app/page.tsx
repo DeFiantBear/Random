@@ -164,15 +164,17 @@ export default function AppRoulette() {
                   duration: 5000,
                 })
               }
-            } else {
-              console.log("❌ User not signed in - cannot record win")
-              toast({
-                title: "❌ Sign In Required",
-                description: "Please sign in with Farcaster to win tokens!",
-                variant: "destructive",
-                duration: 5000,
-              })
-            }
+                         } else if (!user || !user.fid || !user.primaryAddress) {
+               console.log("❌ User not signed in - cannot record win")
+               toast({
+                 title: "❌ Sign In Required",
+                 description: "Please sign in with Farcaster to win tokens!",
+                 variant: "destructive",
+                 duration: 5000,
+               })
+             } else {
+               console.log("🎲 Not a winner this time - try again!")
+             }
 
                  if (data.reset) {
            setRecentlyShown(new Set([randomApp.app_id]))

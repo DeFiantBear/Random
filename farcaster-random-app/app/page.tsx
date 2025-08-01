@@ -543,23 +543,23 @@ export default function AppRoulette() {
                    )}
                  </Button>
                )}
-               <Button
-                 onClick={() => window.open('https://second-city-studio.gitbook.io/second-city-studio/app-roulette-mini-app', '_blank')}
-                 variant="outline"
-                 className="border-primary/30 hover:bg-primary/10 text-foreground font-semibold transition-all duration-300 hover:scale-105 rounded-xl px-3 py-2 shadow-lg hover:shadow-xl backdrop-blur-sm bg-background/50"
-               >
-                 <Info className="w-4 h-4 mr-2" />
-                 <span className="hidden sm:inline">About</span>
-                 <span className="sm:hidden">About</span>
-               </Button>
-               <Button
-                 onClick={() => setShowAddForm(!showAddForm)}
-                 className="premium-gradient hover:shadow-xl text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 h-10 sm:h-12 rounded-xl border border-white/20"
-               >
-                 <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                 <span className="hidden sm:inline">Add App</span>
-                 <span className="sm:hidden">Add</span>
-               </Button>
+                               <Button
+                  onClick={() => setShowAddForm(!showAddForm)}
+                  className="premium-gradient hover:shadow-xl text-white font-semibold shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 h-10 sm:h-12 rounded-xl border border-white/20"
+                >
+                  <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <span className="hidden sm:inline">Add App</span>
+                  <span className="sm:hidden">Add</span>
+                </Button>
+                <Button
+                  onClick={() => window.open('https://second-city-studio.gitbook.io/second-city-studio/app-roulette-mini-app', '_blank')}
+                  variant="outline"
+                  className="border-primary/30 hover:bg-primary/10 text-foreground font-semibold transition-all duration-300 hover:scale-105 rounded-xl px-3 py-2 shadow-lg hover:shadow-xl backdrop-blur-sm bg-background/50"
+                >
+                  <Info className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">About</span>
+                  <span className="sm:hidden">About</span>
+                </Button>
              </div>
           </div>
         </div>
@@ -611,10 +611,10 @@ export default function AppRoulette() {
             ) : currentApp && !isLoading ? (
               <div className="space-y-8 animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
                 <div className="text-center">
-                  <div className="mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 premium-gradient rounded-2xl mb-6 shadow-xl animate-float">
-                      <Sparkles className="w-8 h-8 text-white drop-shadow-lg" />
-                    </div>
+                                     <div className="mb-8">
+                     <div className="inline-flex items-center justify-center w-16 h-16 premium-gradient rounded-xl mb-6 shadow-xl animate-float">
+                       <Circle className="w-8 h-8 text-white animate-premium-spin drop-shadow-lg" />
+                     </div>
                     <h3 className="text-4xl font-bold text-foreground mb-4 bg-gradient-to-r from-primary via-primary/90 to-primary/80 bg-clip-text text-transparent">
                       {currentApp.name}
                     </h3>

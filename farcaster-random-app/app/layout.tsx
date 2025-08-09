@@ -54,25 +54,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  // Create the fc:miniapp content using the centralized config
-  const fcMiniappContent = JSON.stringify({
-    version: FARCASTER_CONFIG.EMBED_CONFIG.version,
-    imageUrl: FARCASTER_CONFIG.EMBED_CONFIG.imageUrl,
-    aspectRatio: FARCASTER_CONFIG.EMBED_CONFIG.aspectRatio,
-    button: FARCASTER_CONFIG.EMBED_CONFIG.button,
-    app: {
-      name: "App Roulette",
-      url: FARCASTER_CONFIG.BASE_URL,
-      icon: FARCASTER_CONFIG.EMBED_CONFIG.imageUrl,
-      description: "Discover amazing Farcaster mini apps with our interactive roulette!"
-    }
-  });
-
   return (
     <html lang="en">
       <head>
         <link rel="preconnect" href="https://auth.farcaster.xyz" />
-        <meta property="fc:miniapp" content={fcMiniappContent} />
+        <meta property="fc:miniapp" content='{"version":"1","imageUrl":"https://base-app-roulette.vercel.app/Screenshot.png","aspectRatio":"3:2","button":{"title":"🎰 Spin the Roulette","action":{"type":"link","url":"https://base-app-roulette.vercel.app"}},"app":{"name":"App Roulette","url":"https://base-app-roulette.vercel.app","icon":"https://base-app-roulette.vercel.app/Screenshot.png","description":"Discover amazing Farcaster mini apps with our interactive roulette!"}}' />
         <meta property="og:title" content="App Roulette 🎰" />
         <meta property="og:description" content="Spin & discover amazing Farcaster mini apps!" />
         <meta property="og:image" content={FARCASTER_CONFIG.EMBED_IMAGE_URL} />

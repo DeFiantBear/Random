@@ -59,7 +59,13 @@ export default function RootLayout({
     version: FARCASTER_CONFIG.EMBED_CONFIG.version,
     imageUrl: FARCASTER_CONFIG.EMBED_CONFIG.imageUrl,
     aspectRatio: FARCASTER_CONFIG.EMBED_CONFIG.aspectRatio,
-    button: FARCASTER_CONFIG.EMBED_CONFIG.button
+    button: FARCASTER_CONFIG.EMBED_CONFIG.button,
+    app: {
+      name: "App Roulette",
+      url: FARCASTER_CONFIG.BASE_URL,
+      icon: FARCASTER_CONFIG.EMBED_CONFIG.imageUrl,
+      description: "Discover amazing Farcaster mini apps with our interactive roulette!"
+    }
   });
 
   return (

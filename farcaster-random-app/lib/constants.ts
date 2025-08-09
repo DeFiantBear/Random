@@ -13,7 +13,7 @@ export const FARCASTER_CONFIG = {
     button: {
       title: "🎰 Spin the Roulette",
       action: {
-        type: "launch_miniapp",
+        type: "link", // Changed from "launch_miniapp" for proper Mini App recognition
         url: "https://base-app-roulette.vercel.app",
         name: "App Roulette",
         splashImageUrl: "https://base-app-roulette.vercel.app/Screenshot.png",

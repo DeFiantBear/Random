@@ -8,6 +8,12 @@ export async function GET() {
     image: FARCASTER_CONFIG.EMBED_IMAGE_URL,
     external_url: FARCASTER_CONFIG.BASE_URL,
     app_url: FARCASTER_CONFIG.BASE_URL,
+    app: {
+      name: "App Roulette",
+      url: FARCASTER_CONFIG.BASE_URL,
+      icon: FARCASTER_CONFIG.EMBED_IMAGE_URL,
+      description: "Discover amazing Farcaster mini apps with our interactive roulette!"
+    },
     category: "entertainment",
     tags: ["farcaster", "mini-apps", "discovery", "roulette", "apps"],
     author: {

@@ -57,15 +57,9 @@ export default function RootLayout({
   // Create the fc:miniapp content using the centralized config
   const fcMiniappContent = JSON.stringify({
     version: FARCASTER_CONFIG.EMBED_CONFIG.version,
-    imageUrl: FARCASTER_CONFIG.EMBED_IMAGE_URL,
+    imageUrl: FARCASTER_CONFIG.EMBED_CONFIG.imageUrl,
     aspectRatio: FARCASTER_CONFIG.EMBED_CONFIG.aspectRatio,
-    button: FARCASTER_CONFIG.EMBED_CONFIG.button,
-    app: {
-      name: "App Roulette",
-      url: FARCASTER_CONFIG.BASE_URL,
-      icon: FARCASTER_CONFIG.EMBED_IMAGE_URL,
-      description: "Discover amazing Farcaster mini apps with our interactive roulette!"
-    }
+    button: FARCASTER_CONFIG.EMBED_CONFIG.button
   });
 
   return (

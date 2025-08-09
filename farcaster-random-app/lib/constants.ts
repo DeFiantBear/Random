@@ -6,18 +6,16 @@ export const FARCASTER_CONFIG = {
   // App URLs
   BASE_URL: "https://base-app-roulette.vercel.app",
   
-  // Embed configuration
+  // Embed configuration for fc:miniapp meta tag
   EMBED_CONFIG: {
     version: "1",
+    imageUrl: "https://base-app-roulette.vercel.app/Screenshot.png",
     aspectRatio: "3:2",
     button: {
       title: "🎰 Spin the Roulette",
       action: {
-        type: "link", // Changed from "launch_miniapp" for proper Mini App recognition
-        url: "https://base-app-roulette.vercel.app",
-        name: "App Roulette",
-        splashImageUrl: "https://base-app-roulette.vercel.app/Screenshot.png",
-        splashBackgroundColor: "#1e293b"
+        type: "link",
+        url: "https://base-app-roulette.vercel.app"
       }
     }
   }
